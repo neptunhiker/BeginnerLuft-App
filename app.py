@@ -1,10 +1,11 @@
 import tkinter as tk
 from tkinter import ttk
+from frames.boilerplate import Boilerplate
 from frames.password import Password
 from frames.start import Entry
 from frames.windows import set_dpi_awareness
 from design.colors import bl_colors
-from design.fonts import bl_font_large
+import design.fonts as bl_fonts
 
 
 class BeginnerLuftApp(tk.Tk):
@@ -13,7 +14,10 @@ class BeginnerLuftApp(tk.Tk):
         super(BeginnerLuftApp, self).__init__(*args, **kwargs)
 
         self.title("BeginnerLuft APP")
-        self.geometry("600x400")
+        w, h = self.winfo_screenwidth(), self.winfo_screenheight()
+        self.geometry("%dx%d+0+0" % (w, h))  # sets screen to full size
+
+        # self.geometry("600x400")
 
         # set the style to clam to have more styling flexibility
         self.style = ttk.Style(self)
@@ -35,9 +39,16 @@ class BeginnerLuftApp(tk.Tk):
         starting_frame = Entry(
             parent=container,
             controller=self,
-            next_screen=lambda event: self.show_frame(Password),
+            next_screen=lambda event: self.show_frame(Boilerplate),
         )
         starting_frame.grid(row=0, column=0, sticky="NSEW")
+
+        boilerplate_frame = Boilerplate(
+            parent=container,
+            controller=self,
+            back_function=lambda: self.show_frame(Entry)
+        )
+        boilerplate_frame.grid(row=0, column=0, sticky="NSEW")
 
         password_frame = Password(
             parent=container,
@@ -49,7 +60,8 @@ class BeginnerLuftApp(tk.Tk):
         # Allow for switching between frames
         self.frames = {
             Entry: starting_frame,
-            Password: password_frame
+            Boilerplate: boilerplate_frame,
+            Password: password_frame,
         }
 
         self.show_frame(Entry)
@@ -59,7 +71,6 @@ class BeginnerLuftApp(tk.Tk):
         frame.tkraise()
 
     def configure_styles(self):
-
         self["background"] = bl_colors["bg primary"]
         self.style.configure(
             "TLabel",
@@ -67,10 +78,10 @@ class BeginnerLuftApp(tk.Tk):
             foreground=bl_colors["fg primary"],
         )
 
-        self.style.configure(
-            "Title.TLabel",
-            font=bl_font_large,
-        )
+        self.style.configure("Title.TLabel", font=bl_fonts.bl_font_title)
+        self.style.configure("Header.TLabel", font=bl_fonts.bl_font_header)
+        self.style.configure("Secondary.TLabel", background=bl_colors["bg secondary"],
+                             foreground=bl_colors["fg primary"], )
 
         self.style.configure(
             "Testing.TLabel",
@@ -84,8 +95,18 @@ class BeginnerLuftApp(tk.Tk):
         )
 
         self.style.configure(
+            "Secondary.TFrame",
+            background=bl_colors["bg secondary"]
+        )
+
+        self.style.configure(
             "Testing.TFrame",
             background=bl_colors["bg testing"],
+        )
+
+        self.style.configure(
+            "TButton",
+            background=bl_colors["bg secondary"]
         )
 
 

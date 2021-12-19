@@ -3,18 +3,17 @@ from tkinter import ttk
 from widgets.buttons import BLButton
 
 
-class Password(ttk.Frame):
-    """A Frame for password settings"""
+class Boilerplate(ttk.Frame):
+    """A boilerplate frame"""
 
     def __init__(self, parent, controller, back_function):
-        super(Password, self).__init__(parent)
+        super().__init__(parent)
         self["style"] = "Secondary.TFrame"
         self.controller = controller
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=0)
         self.rowconfigure(1, weight=1)
         self.rowconfigure(2, weight=0)
-
 
         # NAV TOP FRAME
         nav_top_frame = ttk.Frame(self)
@@ -23,7 +22,7 @@ class Password(ttk.Frame):
 
         header = ttk.Label(
             nav_top_frame,
-            text="Passwort ändern",
+            text=f"{self.__class__.__name__}",
             style="Header.TLabel",
             justify="center",
             anchor="center"
@@ -38,8 +37,8 @@ class Password(ttk.Frame):
 
         lbl = ttk.Label(
             content_frame,
-                        text=f"Content for {self.__class__.__name__}",
-        style="Secondary.TLabel")
+            text=f"Content for {self.__class__.__name__}",
+            style="Secondary.TLabel")
         lbl.grid()
 
         # NAV BOTTOM FRAME
@@ -53,5 +52,3 @@ class Password(ttk.Frame):
             command=back_function,
         )
         back_button.grid(sticky="SW", pady=10)
-
-
