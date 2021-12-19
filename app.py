@@ -17,7 +17,8 @@ class BeginnerLuftApp(tk.Tk):
         w, h = self.winfo_screenwidth(), self.winfo_screenheight()
         self.geometry("%dx%d+0+0" % (w, h))  # sets screen to full size
 
-        # self.geometry("600x400")
+        # to be continued: login screen and adding current user here
+        self.current_user = "Erika Musterfrau"
 
         # set the style to clam to have more styling flexibility
         self.style = ttk.Style(self)
@@ -39,7 +40,7 @@ class BeginnerLuftApp(tk.Tk):
         starting_frame = Entry(
             parent=container,
             controller=self,
-            next_screen=lambda event: self.show_frame(Boilerplate),
+            next_screen=lambda event: self.show_frame(Password),
         )
         starting_frame.grid(row=0, column=0, sticky="NSEW")
 
@@ -74,14 +75,15 @@ class BeginnerLuftApp(tk.Tk):
         self["background"] = bl_colors["bg primary"]
         self.style.configure(
             "TLabel",
+            font=bl_fonts.default_font,
             background=bl_colors["bg primary"],
             foreground=bl_colors["fg primary"],
         )
 
         self.style.configure("Title.TLabel", font=bl_fonts.bl_font_title)
         self.style.configure("Header.TLabel", font=bl_fonts.bl_font_header)
-        self.style.configure("Secondary.TLabel", background=bl_colors["bg secondary"],
-                             foreground=bl_colors["fg primary"], )
+        self.style.configure("Secondary.TLabel", background=bl_colors["bg secondary"],foreground=bl_colors["fg primary"], )
+        self.style.configure("Bold.Secondary.TLabel", font=bl_fonts.bl_font_bold)
 
         self.style.configure(
             "Testing.TLabel",
