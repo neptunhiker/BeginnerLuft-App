@@ -1,0 +1,1 @@
+from frames.windows import set_dpi_awareness
