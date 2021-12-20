@@ -20,7 +20,6 @@ class Entry(ttk.Frame):
         image = image.resize((desired_width, calculated_height), Image.ANTIALIAS)
         bl_logo = ImageTk.PhotoImage(image)
 
-
         lbl_logo = ttk.Label(
             self,
             image=bl_logo,
@@ -29,12 +28,4 @@ class Entry(ttk.Frame):
         lbl_logo.image = bl_logo
         lbl_logo.grid()
 
-        # header = ttk.Label(
-        #     self,
-        #     style="Title.TLabel",
-        #     text="BeginnerLuft",
-        #     anchor="center",
-        #     cursor="hand2",
-        # )
-        # header.grid(row=0, column=0, sticky="EW")
         lbl_logo.bind("<Button-1>", next_screen)

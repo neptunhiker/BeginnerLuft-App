@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from databases.database import Database
-from frames.boilerplate import Boilerplate
+from frames.boilerplate import Boilerplate, BackgroundTest
 from frames.login import Login
 from frames.password import Password
 from frames.start import Entry
@@ -48,6 +48,13 @@ class BeginnerLuftApp(tk.Tk):
         )
         starting_frame.grid(row=0, column=0, sticky="NSEW")
 
+        background_test_frame = BackgroundTest(
+            parent=self.container,
+            controller=self,
+            next_function=lambda: self.show_frame(Entry),
+        )
+        background_test_frame.grid(row=0, column=0, sticky="NSEW")
+
         login_frame = Login(
             parent=self.container,
             controller=self,
@@ -67,9 +74,10 @@ class BeginnerLuftApp(tk.Tk):
             Entry: starting_frame,
             Login: login_frame,
             Password: password_frame,
+            BackgroundTest: background_test_frame
         }
 
-        self.show_frame(Login)
+        self.show_frame(Login)  # change this line to determine the starting screen
 
     def show_frame(self, container):
         frame = self.frames[container]
@@ -107,6 +115,17 @@ class BeginnerLuftApp(tk.Tk):
         self.style.configure(
             "Secondary.TFrame",
             background=bl_colors["bg secondary"]
+        )
+
+        self.style.configure(
+            "Border.Secondary.TFrame",
+            relief=tk.SOLID,
+            bordercolor=bl_colors["bg primary"],
+        )
+
+        self.style.configure(
+            "Grey.TFrame",
+            background="#f6f4f3"
         )
 
         self.style.configure(
