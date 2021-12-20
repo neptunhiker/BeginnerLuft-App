@@ -104,7 +104,7 @@ class Login(ttk.Frame):
             print(f"login successful for {user}")
             self.controller.current_user = user
 
-
+            # to be continued
             # this is a workaround for a refresh function - not good, refactor!
             self.controller.frames[Password].destroy()
             new_pw_frame = Password(
