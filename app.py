@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from databases.database import Database
 from frames.boilerplate import Boilerplate
 from frames.login import Login
 from frames.password import Password
@@ -16,6 +17,9 @@ class BeginnerLuftApp(tk.Tk):
 
         self.title("BeginnerLuft APP")
         self.full_screen_window()
+
+        # initialize data base
+        self.db = Database(database_path="../Database/test_database.db")
 
         # to be continued: login screen and adding current user here
         self.current_user = "Erika Musterfrau"
@@ -87,6 +91,8 @@ class BeginnerLuftApp(tk.Tk):
         self.style.configure("Bold.Secondary.TLabel", font=bl_fonts.bl_font_bold)
         self.style.configure("Secondary.Header.TLabel", background=bl_colors["bg secondary"],
                              foreground=bl_colors["fg primary"])
+        self.style.configure("Secondary.Error.TLabel", background=bl_colors["bg secondary"],
+                             foreground="red", font=bl_fonts.bl_font_error)
         self.style.configure(
             "Testing.TLabel",
             background=bl_colors["bg testing"],
@@ -116,6 +122,7 @@ class BeginnerLuftApp(tk.Tk):
     def full_screen_window(self):
         w, h = self.winfo_screenwidth(), self.winfo_screenheight()
         self.geometry("%dx%d+0+0" % (w, h))  # sets screen to full size
+
 
 if __name__ == '__main__':
     app = BeginnerLuftApp()
