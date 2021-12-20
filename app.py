@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from frames.boilerplate import Boilerplate
+from frames.login import Login
 from frames.password import Password
 from frames.start import Entry
 from frames.windows import set_dpi_awareness
@@ -14,8 +15,7 @@ class BeginnerLuftApp(tk.Tk):
         super(BeginnerLuftApp, self).__init__(*args, **kwargs)
 
         self.title("BeginnerLuft APP")
-        w, h = self.winfo_screenwidth(), self.winfo_screenheight()
-        self.geometry("%dx%d+0+0" % (w, h))  # sets screen to full size
+        self.full_screen_window()
 
         # to be continued: login screen and adding current user here
         self.current_user = "Erika Musterfrau"
@@ -32,27 +32,27 @@ class BeginnerLuftApp(tk.Tk):
         # Available frames
         """Creates all frames available to the application"""
         # Main container frame
-        container = ttk.Frame(self)
-        container.grid(sticky="NSEW")
-        container.grid_columnconfigure(0, weight=1)
-        container.rowconfigure(0, weight=1)
+        self.container = ttk.Frame(self)
+        self.container.grid(sticky="NSEW")
+        self.container.grid_columnconfigure(0, weight=1)
+        self.container.rowconfigure(0, weight=1)
 
         starting_frame = Entry(
-            parent=container,
+            parent=self.container,
             controller=self,
             next_screen=lambda event: self.show_frame(Password),
         )
         starting_frame.grid(row=0, column=0, sticky="NSEW")
 
-        boilerplate_frame = Boilerplate(
-            parent=container,
+        login_frame = Login(
+            parent=self.container,
             controller=self,
-            back_function=lambda: self.show_frame(Entry)
+            next_function=lambda: self.show_frame(Entry)
         )
-        boilerplate_frame.grid(row=0, column=0, sticky="NSEW")
+        login_frame.grid(row=0, column=0, sticky="NSEW")
 
         password_frame = Password(
-            parent=container,
+            parent=self.container,
             controller=self,
             back_function=lambda: self.show_frame(Entry)
         )
@@ -61,11 +61,11 @@ class BeginnerLuftApp(tk.Tk):
         # Allow for switching between frames
         self.frames = {
             Entry: starting_frame,
-            Boilerplate: boilerplate_frame,
+            Login: login_frame,
             Password: password_frame,
         }
 
-        self.show_frame(Entry)
+        self.show_frame(Login)
 
     def show_frame(self, container):
         frame = self.frames[container]
@@ -82,9 +82,11 @@ class BeginnerLuftApp(tk.Tk):
 
         self.style.configure("Title.TLabel", font=bl_fonts.bl_font_title)
         self.style.configure("Header.TLabel", font=bl_fonts.bl_font_header)
-        self.style.configure("Secondary.TLabel", background=bl_colors["bg secondary"],foreground=bl_colors["fg primary"], )
+        self.style.configure("Secondary.TLabel", background=bl_colors["bg secondary"],
+                             foreground=bl_colors["fg primary"])
         self.style.configure("Bold.Secondary.TLabel", font=bl_fonts.bl_font_bold)
-
+        self.style.configure("Secondary.Header.TLabel", background=bl_colors["bg secondary"],
+                             foreground=bl_colors["fg primary"])
         self.style.configure(
             "Testing.TLabel",
             background=bl_colors["bg testing"],
@@ -111,6 +113,9 @@ class BeginnerLuftApp(tk.Tk):
             background=bl_colors["bg secondary"]
         )
 
+    def full_screen_window(self):
+        w, h = self.winfo_screenwidth(), self.winfo_screenheight()
+        self.geometry("%dx%d+0+0" % (w, h))  # sets screen to full size
 
 if __name__ == '__main__':
     app = BeginnerLuftApp()

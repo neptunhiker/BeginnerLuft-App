@@ -16,7 +16,6 @@ class Password(ttk.Frame):
         self.rowconfigure(1, weight=1)
         self.rowconfigure(2, weight=0)
 
-
         # NAV TOP FRAME
         nav_top_frame = ttk.Frame(self)
         nav_top_frame.grid(row=0, column=0, sticky="EW")
