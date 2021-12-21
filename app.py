@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from databases.database import Database
-from frames.boilerplate import Boilerplate, BackgroundTest
+from frames.boilerplate import Boilerplate, OneHalfFrame
 from frames.dashboard import Dashboard
 from frames.invoice import Invoice
 from frames.login import Login
@@ -51,13 +51,6 @@ class BeginnerLuftApp(tk.Tk):
         )
         starting_frame.grid(row=0, column=0, sticky="NSEW")
 
-        background_test_frame = BackgroundTest(
-            parent=self.container,
-            controller=self,
-            next_function=lambda: self.show_frame(Entry),
-        )
-        background_test_frame.grid(row=0, column=0, sticky="NSEW")
-
         dashboard_frame = Dashboard(
             parent=self.container,
             controller=self,
@@ -77,6 +70,12 @@ class BeginnerLuftApp(tk.Tk):
             next_function=lambda: self.show_frame(Entry)
         )
         login_frame.grid(row=0, column=0, sticky="NSEW")
+
+        one_half_frame = OneHalfFrame(
+            parent=self.container,
+            controller=self,
+        )
+        one_half_frame.grid(row=0, column=0, sticky="NSEW")
 
         password_frame = Password(
             parent=self.container,
@@ -98,11 +97,12 @@ class BeginnerLuftApp(tk.Tk):
             Entry: starting_frame,
             Invoice: invoice_frame,
             Login: login_frame,
+            OneHalfFrame: one_half_frame,
             Password: password_frame,
             TimeTracking: time_tracking_frame,
         }
 
-        self.show_frame(Dashboard)  # change this line to determine the starting screen
+        self.show_frame(OneHalfFrame)  # change this line to determine the starting screen
 
     def show_frame(self, container):
         frame = self.frames[container]
