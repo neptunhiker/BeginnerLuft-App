@@ -7,6 +7,7 @@ from frames.invoice import Invoice
 from frames.login import Login
 from frames.password import Password
 from frames.start import Entry
+from frames.time_tracking import TimeTracking
 from frames.windows import set_dpi_awareness
 from design.colors import bl_colors
 import design.fonts as bl_fonts
@@ -66,7 +67,7 @@ class BeginnerLuftApp(tk.Tk):
         invoice_frame = Invoice(
             parent=self.container,
             controller=self,
-            back_function=lambda: self.show_frame(Entry)
+            back_function=lambda: self.show_frame(Dashboard)
         )
         invoice_frame.grid(row=0, column=0, sticky="NSEW")
 
@@ -84,6 +85,13 @@ class BeginnerLuftApp(tk.Tk):
         )
         password_frame.grid(row=0, column=0, sticky="NSEW")
 
+        time_tracking_frame = TimeTracking(
+            parent=self.container,
+            controller=self,
+            back_function=lambda: self.show_frame(Dashboard)
+        )
+        time_tracking_frame.grid(row=0, column=0, sticky="NSEW")
+
         # Allow for switching between frames
         self.frames = {
             Dashboard: dashboard_frame,
@@ -91,7 +99,7 @@ class BeginnerLuftApp(tk.Tk):
             Invoice: invoice_frame,
             Login: login_frame,
             Password: password_frame,
-            BackgroundTest: background_test_frame
+            TimeTracking: time_tracking_frame,
         }
 
         self.show_frame(Dashboard)  # change this line to determine the starting screen

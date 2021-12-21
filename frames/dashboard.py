@@ -3,6 +3,7 @@ import tkinter as tk
 from PIL import Image, ImageTk
 
 from frames.invoice import Invoice
+from frames.time_tracking import TimeTracking
 from design.colors import bl_colors
 from widgets.buttons import BLButton
 
@@ -37,31 +38,31 @@ class Dashboard(ttk.Frame):
         canvas.rowconfigure(0, weight=1)
 
         frame = ttk.Frame(canvas, style="Secondary.TFrame")
-        frame.grid(ipadx=20, ipady=20)
+        frame.grid()
 
         frame.columnconfigure((0, 1), weight=1)
         frame.rowconfigure(0, weight=1)
 
-        image = Image.open("assets/test_button.png")
-        desired_width = 200
-        ratio = image.height / image.width
-        calculated_height = int(desired_width * ratio)
-        image = image.resize((desired_width, calculated_height), Image.ANTIALIAS)
-        image = ImageTk.PhotoImage(image)
-
         lbl_invoices = ttk.Label(
             frame,
-            image=image,
-            style="Secondary.TLabel",
+            text="Rechnungserstellung",
+            anchor="center",
             cursor="hand2",
         )
-        lbl_invoices.grid(row=0, column=0, padx=10)
-        lbl_invoices.image = image
+        lbl_invoices.grid(row=0, column=0, padx=10, pady=10, sticky="NSEW")
         lbl_invoices.bind("<Button-1>", self.show_invoice_frame)
 
-        lbl_time_tracking = ttk.Label(frame, image=image, style="Secondary.TLabel")
-        lbl_time_tracking.grid(row=0, column=1, padx=10)
-        lbl_time_tracking.image = image
+        lbl_time_tracking = ttk.Label(
+            frame,
+            text="Zeiterfassung",
+            anchor="center",
+            cursor="hand2",
+        )
+        lbl_time_tracking.grid(row=0, column=1, padx=10, pady=10, sticky="NSEW")
+        lbl_time_tracking.bind("<Button-1>", self.show_time_tracking_frame)
 
     def show_invoice_frame(self, event):
         self.controller.show_frame(Invoice)
+
+    def show_time_tracking_frame(self, event):
+        self.controller.show_frame(TimeTracking)
