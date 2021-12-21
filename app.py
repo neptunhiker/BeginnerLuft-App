@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from databases.database import Database
 from frames.boilerplate import Boilerplate, BackgroundTest
+from frames.invoice import Invoice
 from frames.login import Login
 from frames.password import Password
 from frames.start import Entry
@@ -44,7 +45,7 @@ class BeginnerLuftApp(tk.Tk):
         starting_frame = Entry(
             parent=self.container,
             controller=self,
-            next_screen=lambda event: self.show_frame(Password),
+            next_screen=lambda event: self.show_frame(Invoice),
         )
         starting_frame.grid(row=0, column=0, sticky="NSEW")
 
@@ -54,6 +55,13 @@ class BeginnerLuftApp(tk.Tk):
             next_function=lambda: self.show_frame(Entry),
         )
         background_test_frame.grid(row=0, column=0, sticky="NSEW")
+
+        invoice_frame = Invoice(
+            parent=self.container,
+            controller=self,
+            back_function=lambda: self.show_frame(Entry)
+        )
+        invoice_frame.grid(row=0, column=0, sticky="NSEW")
 
         login_frame = Login(
             parent=self.container,
@@ -72,6 +80,7 @@ class BeginnerLuftApp(tk.Tk):
         # Allow for switching between frames
         self.frames = {
             Entry: starting_frame,
+            Invoice: invoice_frame,
             Login: login_frame,
             Password: password_frame,
             BackgroundTest: background_test_frame
@@ -120,7 +129,7 @@ class BeginnerLuftApp(tk.Tk):
         self.style.configure(
             "Border.Secondary.TFrame",
             relief=tk.SOLID,
-            bordercolor=bl_colors["bg primary"],
+            bordercolor=bl_colors["fg primary"],
         )
 
         self.style.configure(
