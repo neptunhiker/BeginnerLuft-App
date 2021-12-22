@@ -28,12 +28,15 @@ def create_invoice_nr(creation_date, participant_first_name, participant_last_na
         creation_date = creation_date.strftime("%Y-%m-%d")
         invoice_nr = f"{creation_date}-{participant_first_name[0]}{participant_last_name[0]}"
     except AttributeError as err:
+        print(err)
         return ""
-    except DateFormatException:
+    except DateFormatException as err:
+        print(err)
         return ""
-    except IndexError:
+    except IndexError as err:
+        print(err)
         return ""
-    
+
     return invoice_nr
 
 
