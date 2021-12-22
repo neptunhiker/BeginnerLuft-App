@@ -4,7 +4,7 @@ from tkinter import ttk
 import tkinter as tk
 from PIL import Image, ImageTk
 
-from objects.data_picker import PickParticipant
+from objects.data_picker import PickJobcenter, PickParticipant, PickTraining
 from widgets.labels import BLBoldClickableSecondaryLabel
 from reports.invoice import PDFInvoice
 from tools import helpers
@@ -117,6 +117,7 @@ class Invoice(ttk.Frame):
             label_texts=lbl_texts,
             string_variables=string_variables,
             starting_row=next_row + 1,
+            func=self.pick_training_from_db,
         )
 
         # coaching data
@@ -149,6 +150,7 @@ class Invoice(ttk.Frame):
             label_texts=lbl_texts,
             string_variables=string_variables,
             starting_row=next_row + 1,
+            func=self.pick_jobcenter_from_db,
         )
 
         # LOWER FRAME
@@ -168,9 +170,17 @@ class Invoice(ttk.Frame):
         # create random data
         self.populate_with_random_data()
 
+    def pick_jobcenter_from_db(self, event):
+        """Opens a new window that allows the user to pick a jobcenter from the database"""
+        PickJobcenter(controller=self.controller, parent=self)
+
     def pick_participant_from_db(self, event):
         """Opens a new window that allows the user to pick a participant from the database"""
         PickParticipant(controller=self.controller, parent=self)
+
+    def pick_training_from_db(self, event):
+        """Opens a new window that allows the user to pick a training (Maßnahme) from the database"""
+        PickTraining(controller=self.controller, parent=self)
 
     def create_widgets(self, frame, title, label_texts, string_variables, starting_row=0, func=None):
         """Create title, label, and entry widgets"""
