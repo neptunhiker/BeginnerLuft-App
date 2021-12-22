@@ -1,190 +1,306 @@
+import datetime
+import os
 from tkinter import ttk
 import tkinter as tk
 from PIL import Image, ImageTk
 
-from design.colors import bl_colors
-from frames.password import Password
-from frames.start import Entry
-from tools.helpers import verify_password
+from objects.data_picker import PickParticipant
+from widgets.labels import BLBoldClickableSecondaryLabel
+from reports.invoice import PDFInvoice
+from tools import helpers
+
 from widgets.buttons import BLButton
 
 
 class Invoice(ttk.Frame):
-    """A frame for creating invoices"""
+    """A test frame for a frame with a picture on the left hand side"""
 
-    def __init__(self, parent, controller, back_function):
+    def __init__(self, parent, controller):
         super().__init__(parent)
         self["style"] = "Secondary.TFrame"
         self.controller = controller
         self.columnconfigure(0, weight=1)
-        self.rowconfigure(0, weight=0)
-        self.rowconfigure(1, weight=1)
-        self.rowconfigure(2, weight=0)
-
-        # NAV TOP FRAME
-        nav_top_frame = ttk.Frame(self)
-        nav_top_frame.grid(row=0, column=0, sticky="EW")
-        nav_top_frame.columnconfigure(0, weight=1)
-
-        header = ttk.Label(
-            nav_top_frame,
-            text=f"{self.__class__.__name__}",
-            style="Header.TLabel",
-            justify="center",
-            anchor="center"
-        )
-        header.grid(pady=10)
-
-        # CONTENT FRAME
-        content_frame = ttk.Frame(self, style="Secondary.TFrame")
-        content_frame.grid(row=1, column=0, sticky="NSEW")
-        content_frame.columnconfigure(0, weight=1)
-        content_frame.rowconfigure(0, weight=1)
-
-        lbl = ttk.Label(
-            content_frame,
-            text=f"Content for {self.__class__.__name__}",
-            style="Secondary.TLabel")
-        lbl.grid()
-
-        # NAV BOTTOM FRAME
-        nav_bottom_frame = ttk.Frame(self)
-        nav_bottom_frame.grid(row=2, column=0, sticky="NESW")
-        nav_bottom_frame.rowconfigure(0, weight=1)
-
-        back_button = BLButton(
-            nav_bottom_frame,
-            text="<< zurück",
-            command=back_function,
-        )
-        back_button.grid(sticky="SW", pady=10)
-
-
-class BackgroundTest(ttk.Frame):
-    """A test frame for background pictures"""
-
-    def __init__(self, parent, controller, next_function):
-        super().__init__(parent)
-        self["style"] = "Secondary.TFrame"
-        self.controller = controller
-        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1)
-        self.next_function = next_function
-        self.login_users = {}
         self.error_text = tk.StringVar()
-        self.user_selected = tk.StringVar()
-        self.pw_given = tk.StringVar()
-        self.ent_pw = None
+
+        frame_left = ttk.Frame(self)
+        frame_left.grid(row=0, column=0, sticky="NSEW")
+        frame_left.rowconfigure(0, weight=1)
+        frame_left.columnconfigure(0, weight=1)
 
         # create background image
-        image = Image.open("assets/people.jpg")
-        desired_width = 1800
+        image = Image.open("assets/office02.jpg")
+        desired_width = 800
         ratio = image.height / image.width
         calculated_height = int(desired_width * ratio)
         image = image.resize((desired_width, calculated_height), Image.ANTIALIAS)
         bg_image = ImageTk.PhotoImage(image)
 
         # create canvas
-        canvas = tk.Canvas(self)
+        canvas = tk.Canvas(frame_left)
         canvas.grid(row=0, column=0, sticky="NSEW")
 
         # set image in canvas
         canvas.create_image(0, 0, image=bg_image, anchor="nw")
         canvas.image = bg_image
 
-        self.widgets()
+        # RIGHT HAND SIDE
+        frame_right = ttk.Frame(self, style="Secondary.TFrame")
+        frame_right.grid(row=0, column=1, sticky="NSEW")
+        frame_right.columnconfigure(0, weight=1)
+        frame_right.rowconfigure((0, 1, 2), weight=1)
 
-    def widgets(self):
-        """Create labels and entry widgets"""
+        # header frame
+        header_frame = ttk.Frame(frame_right, style="Testing.TFrame")
+        header_frame.grid(sticky="EW", padx=20)
+        header_frame.columnconfigure(0, weight=1)
 
-        frame = ttk.Frame(self, style="Border.Secondary.TFrame")
-        frame.grid(row=0, column=0)
-        frame.columnconfigure(0, weight=1)
-        # frame.rowconfigure(0, weight=1)
+        lbl_test = ttk.Label(
+            header_frame,
+            text="Rechnungserstellung - Datenübersicht",
+            style="Secondary.Header.TLabel",
+            anchor="center",
+        )
+        lbl_test.grid(sticky="EW")
 
-        lbl_login = ttk.Label(frame, text="Login", style="Secondary.Header.TLabel")
-        lbl_login.grid(sticky="W", pady=(10, 5))
+        # data frame
+        self.data_frame = ttk.Frame(frame_right, style="Secondary.TFrame")
+        self.data_frame.grid(padx=20)
 
-        lbl_instruction = ttk.Label(frame, text="Zum Fortfahren bitte Einloggen", style="Secondary.TLabel")
-        lbl_instruction.grid(sticky="W")
+        sep_pad_y = 10
 
-        lbl_user = ttk.Label(frame, text="Benutzer:In", style="Secondary.TLabel")
-        lbl_user.grid(sticky="W", pady=(30, 0))
+        # participant data
+        self.participant_title = tk.StringVar()
+        self.participant_first_name = tk.StringVar()
+        self.participant_last_name = tk.StringVar()
+        self.participant_jc_id = tk.StringVar()
+        lbl_texts = ["Anrede", "Vorname", "Nachname", "Kundennummer"]
+        string_variables = [self.participant_title, self.participant_first_name, self.participant_last_name,
+                            self.participant_jc_id]
+        next_row = self.create_widgets(
+            frame=self.data_frame,
+            title="Teilnehmer",
+            label_texts=lbl_texts,
+            string_variables=string_variables,
+            func=self.pick_participant_from_db,
+        )
 
-        cmb_user = ttk.Combobox(frame, textvariable=self.user_selected)
-        for employee in self.controller.db.get_employees():
-            self.login_users[f"{employee.first_name} {employee.last_name}"] = employee.data_base_id
-        cmb_user["values"] = [user_name for user_name in self.login_users.keys()]
-        cmb_user.current(0)
-        cmb_user["state"] = "readonly"
-        cmb_user.bind("<<ComboboxSelected>>", self.handle_user_selection)
-        cmb_user.grid()
+        # invoice data
+        sep = ttk.Separator(self.data_frame)
+        sep.grid(row=next_row, column=0, columnspan=3, sticky="EW", pady=sep_pad_y)
+        lbl_texts = ["Rechnungsnummer", "Name der Rechnungsdatei", "Rechnungsdatum", "Zahlungsziel"]
+        self.invoice_nr = tk.StringVar()
+        self.invoice_name = tk.StringVar()
+        self.invoice_creation_date = tk.StringVar()
+        self.invoice_target_date = tk.StringVar()
+        string_variables = [self.invoice_nr, self.invoice_name, self.invoice_creation_date,
+                            self.invoice_target_date]
+        next_row = self.create_widgets(
+            frame=self.data_frame,
+            title="Rechnungsdaten",
+            label_texts=lbl_texts,
+            string_variables=string_variables,
+            starting_row=next_row + 1,
+        )
 
-        lbl_pw = ttk.Label(frame, text="Passwort", style="Secondary.TLabel")
-        lbl_pw.grid(sticky="W", pady=(10, 0))
+        # training data (Maßnahme)
+        sep = ttk.Separator(self.data_frame)
+        sep.grid(row=next_row, column=0, columnspan=3, sticky="EW", pady=sep_pad_y)
+        lbl_texts = ["Maßnahme", "Kosten pro Unterrichtseinheit"]
+        self.training_name = tk.StringVar()
+        self.training_cost_per_lesson = tk.StringVar()
+        string_variables = [self.training_name, self.training_cost_per_lesson]
+        next_row = self.create_widgets(
+            frame=self.data_frame,
+            title="Maßnahme",
+            label_texts=lbl_texts,
+            string_variables=string_variables,
+            starting_row=next_row + 1,
+        )
 
-        self.ent_pw = ttk.Entry(frame, show="*", textvariable=self.pw_given)
-        self.ent_pw.grid(sticky="EW")
-        self.ent_pw.bind("<Return>", self.login_check)
-        self.pw_given.trace("w", lambda a, b, c, d=self: self.on_change())
+        # coaching data
+        sep = ttk.Separator(self.data_frame)
+        sep.grid(row=next_row, column=0, columnspan=3, sticky="EW", pady=sep_pad_y)
+        lbl_texts = ["Coaching-Beginn", "Coaching-Ende", "Anzahl Unterrichtseinheiten"]
+        self.training_start = tk.StringVar()
+        self.training_end = tk.StringVar()
+        self.training_nr_training_lesseons = tk.StringVar()
+        string_variables = [self.training_start, self.training_end, self.training_nr_training_lesseons]
+        next_row = self.create_widgets(
+            frame=self.data_frame,
+            title="Coaching-Details",
+            label_texts=lbl_texts,
+            string_variables=string_variables,
+            starting_row=next_row + 1,
+        )
 
-        lbl_error = ttk.Label(frame, textvariable=self.error_text, style="Secondary.Error.TLabel")
-        lbl_error.grid(sticky="W")
+        # job center data
+        sep = ttk.Separator(self.data_frame)
+        sep.grid(row=next_row, column=0, columnspan=3, sticky="EW", pady=sep_pad_y)
+        lbl_texts = ["Name des Jobcenters", "Straße und Nr", "PLZ und Ort"]
+        self.jc_name = tk.StringVar()
+        self.jc_street_and_nr = tk.StringVar()
+        self.jc_zip_and_city = tk.StringVar()
+        string_variables = [self.jc_name, self.jc_street_and_nr, self.jc_zip_and_city]
+        next_row = self.create_widgets(
+            frame=self.data_frame,
+            title="Jobcenter",
+            label_texts=lbl_texts,
+            string_variables=string_variables,
+            starting_row=next_row + 1,
+        )
 
-        btn_login = BLButton(frame, text="Login -->")
-        btn_login.grid(pady=(20, 10), sticky="E")
-        btn_login.bind("<Button-1>", self.login_check)
+        # LOWER FRAME
+        button_frame = ttk.Frame(frame_right, style="Secondary.TFrame")
+        button_frame.grid(row=2, column=0, sticky="EW")
+        button_frame.columnconfigure(0, weight=1)
 
-        for child in frame.winfo_children():
-            child.grid_configure(padx=20)
+        # error text
+        lbl_error = ttk.Label(button_frame, textvariable=self.error_text, style="Secondary.Error.TLabel")
+        lbl_error.grid(pady=(0, 10))
 
-        cmb_user.focus()
+        # Go button
+        btn = BLButton(button_frame, text="Rechnung erstellen!")
+        btn.grid()
+        btn.bind("<Button-1>", self.create_invoice)
 
-    def handle_user_selection(self, event):
-        print(self.user_selected.get())
-        self.ent_pw.focus()  # does not seem to have an effect
+        # create random data
+        self.populate_with_random_data()
 
-    def on_change(self):
-        """Remove error text when user changes the password entry field"""
-        self.error_text.set("")
+    def pick_participant_from_db(self, event):
+        """Opens a new window that allows the user to pick a participant from the database"""
+        PickParticipant(controller=self.controller, parent=self)
 
-    def login_check(self, event):
-        """Check whether user can login with given information"""
+    def create_widgets(self, frame, title, label_texts, string_variables, starting_row=0, func=None):
+        """Create title, label, and entry widgets"""
 
-        # get user from frame
-        user = self.user_selected.get()
-        user_database_id = self.login_users[user]
+        pad_y = 5
 
-        # get target password from data base
-        sql = "SELECT * FROM Passwoerter WHERE ID = ?"
-        row = self.controller.db.select_single_query(query=sql, arguments=[user_database_id])
-        target_pw = row["Passwort"]
-
-        # compare passwords
-        if verify_password(target_pw, self.pw_given.get()):
-            print(f"login successful for {user}")
-            self.controller.current_user = user
-
-            # to be continued
-            # this is a workaround for a refresh function - not good, refactor!
-            self.controller.frames[Password].destroy()
-            new_pw_frame = Password(
-                parent=self.controller.container,
-                controller=self.controller,
-                back_function=lambda: self.controller.show_frame(Entry)
+        if func is None:
+            lbl_header = ttk.Label(
+                frame,
+                text=title,
+                style="Bold.Secondary.TLabel"
             )
-            new_pw_frame.grid(row=0, column=0, sticky="NSEW")
-            self.controller.frames[Password] = new_pw_frame
-
-            self.next_function()  # change view to next frame
-            self.controller.full_screen_window()
-
         else:
-            self.pw_given.set("")
-            self.error_text.set("Falsches Passwort")
-            self.ent_pw.focus_set()
+            lbl_header = BLBoldClickableSecondaryLabel(
+                parent=frame,
+                text=title,
+            )
+            lbl_header.bind("<Button-1>", func)
 
+        lbl_header.grid(column=0, row=starting_row, sticky="W", padx=(0, 30))
 
+        row_counter = starting_row
+        for lbl_text, string_variable in zip(label_texts, string_variables):
+            lbl = ttk.Label(frame, text=lbl_text, style="Secondary.TLabel")
+            lbl.grid(row=row_counter, column=1, sticky="W", pady=pad_y, padx=(0, 10))
+            ttk.Entry(frame, textvariable=string_variable).grid(row=row_counter, column=2,
+                                                                sticky="W", pady=pad_y)
+            row_counter += 1
 
+        return row_counter
 
+    def check_completeness(self):
 
+        print("checking completeness")
+
+        completeness_check = True
+
+        # participants
+        pariticpant_entry_fields = [self.participant_title, self.participant_first_name, self.participant_last_name,
+                                    self.participant_jc_id]
+
+        # invoice
+        invoice_entry_fields = [self.invoice_name, self.invoice_nr, self.invoice_creation_date,
+                                self.invoice_target_date]
+
+        # training (Maßnahme)
+        training_entry_fields = [self.training_name, self.training_cost_per_lesson]
+
+        # coaching
+        coaching_entry_fields = [self.training_start, self.training_end, self.training_nr_training_lesseons]
+
+        # jobcenter
+        jc_entry_fields = [self.jc_name, self.jc_street_and_nr, self.jc_zip_and_city]
+
+        for category in [pariticpant_entry_fields, invoice_entry_fields, training_entry_fields, coaching_entry_fields,
+                         jc_entry_fields]:
+            for field in category:
+                if field.get() == "":
+                    completeness_check = False
+
+        if completeness_check:
+            self.error_text.set("")
+        else:
+            self.error_text.set("Bitte alle Datenfelder ausfuellen.")
+
+        return completeness_check
+
+    def create_invoice(self, event):
+        """Creates a PDF invoice and saves it on file"""
+
+        print(self.check_completeness())
+
+        # collect relevant data
+
+        # check that all necessary data are availble
+
+        # if necessary data not available show error message
+
+        # else create pdf invoice and save on file
+        #
+        creation_date = helpers.parse_date_from_string(self.invoice_creation_date.get())
+        target_date = helpers.parse_date_from_string(self.invoice_target_date.get())
+        coaching_start = helpers.parse_date_from_string(self.training_start.get())
+        coaching_end = helpers.parse_date_from_string(self.training_end.get())
+        training_cost_per_lesson = helpers.string_to_float(self.training_cost_per_lesson.get())
+        training_lessons = int(self.training_nr_training_lesseons.get())
+        invoice_total_amount = training_cost_per_lesson * training_lessons
+
+        path = tk.filedialog.askdirectory(initialdir="../Output/PDF Rechnungen")
+        if path:
+            PDFInvoice.from_data(
+                participant_title=self.participant_title.get(),
+                participant_first_name=self.participant_first_name.get(),
+                participant_last_name=self.participant_last_name.get(),
+                participant_id=self.participant_jc_id.get(),
+                invoice_total_amount=invoice_total_amount,
+                invoice_nr=self.invoice_nr.get(),
+                invoice_creation_date=creation_date,
+                invoice_target_date=target_date,
+                training_name=self.training_name.get(),
+                training_cost_per_lesson=training_cost_per_lesson,
+                coaching_start=coaching_start,
+                coaching_end=coaching_end,
+                coaching_nr_lessons=training_lessons,
+                jc_name=self.jc_name.get(),
+                jc_street_and_nr=self.jc_street_and_nr.get(),
+                jc_zip=self.jc_zip_and_city.get().split()[0],
+                jc_city=self.jc_zip_and_city.get().split()[1],
+                path=path
+            )
+
+    def populate_with_random_data(self):
+
+        self.participant_title.set("Herr")
+        self.participant_first_name.set("Juri")
+        self.participant_last_name.set("Ali")
+        self.participant_jc_id.set("1234567-DE")
+
+        creation_date = datetime.date(2021, 12, 22)
+        self.invoice_name.set(f"Rechnung {str(creation_date.year)}-{str(creation_date.month)}-JA")
+        self.invoice_nr.set(f"{str(creation_date.year)}-{str(creation_date.month)}-JA")
+        self.invoice_creation_date.set("22.12.2021")
+        self.invoice_target_date.set("6.1.2022")
+
+        self.training_name.set("Individuelles Berufscoaching")
+        self.training_start.set("09.06.2021")
+        self.training_end.set("12.09.2021")
+        self.training_nr_training_lesseons.set("40")
+        self.training_cost_per_lesson.set("36,35")
+
+        self.jc_name.set("Testjobcenter")
+        self.jc_street_and_nr.set("Berlinerstr. 987")
+        self.jc_zip_and_city.set("12321 Berlin")

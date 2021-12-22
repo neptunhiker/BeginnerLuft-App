@@ -32,6 +32,21 @@ class Database:
 
         return employees
 
+    def get_participants(self):
+        """Return a list of all participants found in the database"""
+
+        sql = "SELECT * FROM Teilnehmer"
+        self.connect_to_database()
+        with closing(self.conn.cursor()) as cursor:
+            cursor.execute(sql)
+            results = cursor.fetchall()
+
+        participants = []
+        for row in results:
+            participants.append(self.create_participant(row=row))
+
+        return participants
+
     def select_single_query(self, query, arguments=None):
         """Executes a select statement and returns the first result of the table row"""
 

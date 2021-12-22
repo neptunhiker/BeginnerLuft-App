@@ -60,7 +60,6 @@ class BeginnerLuftApp(tk.Tk):
         invoice_frame = Invoice(
             parent=self.container,
             controller=self,
-            back_function=lambda: self.show_frame(Dashboard)
         )
         invoice_frame.grid(row=0, column=0, sticky="NSEW")
 
@@ -70,12 +69,6 @@ class BeginnerLuftApp(tk.Tk):
             next_function=lambda: self.show_frame(Entry)
         )
         login_frame.grid(row=0, column=0, sticky="NSEW")
-
-        one_half_frame = OneHalfFrame(
-            parent=self.container,
-            controller=self,
-        )
-        one_half_frame.grid(row=0, column=0, sticky="NSEW")
 
         password_frame = Password(
             parent=self.container,
@@ -97,12 +90,11 @@ class BeginnerLuftApp(tk.Tk):
             Entry: starting_frame,
             Invoice: invoice_frame,
             Login: login_frame,
-            OneHalfFrame: one_half_frame,
             Password: password_frame,
             TimeTracking: time_tracking_frame,
         }
 
-        self.show_frame(OneHalfFrame)  # change this line to determine the starting screen
+        self.show_frame(Login)  # change this line to determine the starting screen
 
     def show_frame(self, container):
         frame = self.frames[container]
@@ -126,6 +118,8 @@ class BeginnerLuftApp(tk.Tk):
                              foreground=bl_colors["fg primary"])
         self.style.configure("Secondary.Error.TLabel", background=bl_colors["bg secondary"],
                              foreground="red", font=bl_fonts.bl_font_error)
+        self.style.configure("Clickable.Secondary.TLabel", foreground=bl_colors["fg blue"])
+        self.style.configure("Bold.Clickable.Secondary.TLabel", font=bl_fonts.bl_font_bold)
         self.style.configure(
             "Testing.TLabel",
             background=bl_colors["bg testing"],
