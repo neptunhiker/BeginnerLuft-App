@@ -22,23 +22,32 @@ def format_to_german_date(date):
 
 def create_invoice_nr(creation_date, participant_first_name, participant_last_name):
     """Create an invoice number based on input arguments"""
-
     try:
         creation_date = parse_date_from_string(creation_date)
-        creation_date = creation_date.strftime("%Y-%m-%d")
-        invoice_nr = f"{creation_date}-{participant_first_name[0]}{participant_last_name[0]}"
     except AttributeError as err:
         print(err)
-        return ""
-    except DateFormatException as err:
-        print(err)
-        return ""
-    except IndexError as err:
-        print(err)
-        return ""
+        pass
+    else:
+        creation_date = creation_date.strftime("%Y-%m-%d")
+    invoice_nr = f"{creation_date}-{participant_first_name[0]}{participant_last_name[0]}"
 
     return invoice_nr
 
+
+def create_invoice_name(creation_date, participant_first_name, participant_last_name):
+    """Create an invoice name based on input arguments"""
+
+    try:
+        creation_date = parse_date_from_string(creation_date)
+    except Exception:
+        creation_date = creation_date.strftime("%Y-%m-%d")
+
+    if participant_first_name == "" or participant_last_name == "":
+        raise AttributeError
+
+    invoice_nr = f"{creation_date} Rechnung {participant_first_name} {participant_last_name}"
+
+    return invoice_nr
 
 def determine_payment_target_date(date, payment_horizon_in_days):
     """Determines a target date for payment"""

@@ -157,6 +157,7 @@ class Invoice(ttk.Frame):
 
         for variable in [self.participant_first_name, self.participant_last_name, self.invoice_creation_date]:
             variable.trace("w", self.change_invoice_nr)
+            variable.trace("w", self.change_invoice_name)
 
         # LOWER FRAME
         button_frame = ttk.Frame(frame_right, style="Secondary.TFrame")
@@ -173,7 +174,30 @@ class Invoice(ttk.Frame):
         btn.bind("<Button-1>", self.create_invoice)
 
         # create random data
-        self.populate_with_random_data()
+        self.pre_populate()
+        # self.populate_with_random_data()
+
+    def change_invoice_name(self, var, index, mode):
+        """Update the invoice name based on data entries"""
+
+        try:
+            self.invoice_name.set(helpers.create_invoice_name(
+                creation_date=self.invoice_creation_date.get(),
+                participant_first_name=self.participant_first_name.get(),
+                participant_last_name=self.participant_last_name.get(),
+            ))
+        except custom_exceptions.DateFormatException as err:
+            print(err)
+            self.invoice_name.set("")
+        except ValueError as err:
+            print(err)
+            self.invoice_name.set("")
+        except IndexError as err:
+            print(err)
+            self.invoice_name.set("")
+        except AttributeError as err:
+            print(err)
+            self.invoice_name.set("")
 
     def change_invoice_nr(self, var, index, mode):
         """Update the invoice nr based on data entries"""
@@ -186,6 +210,8 @@ class Invoice(ttk.Frame):
         except custom_exceptions.DateFormatException:
             self.invoice_nr.set("")
         except ValueError:
+            self.invoice_nr.set("")
+        except IndexError:
             self.invoice_nr.set("")
 
     def pick_jobcenter_from_db(self, event):
@@ -309,6 +335,12 @@ class Invoice(ttk.Frame):
                 jc_city=self.jc_zip_and_city.get().split()[1],
                 path=path
             )
+
+    def pre_populate(self):
+        """Populates the form with some data"""
+
+        self.invoice_creation_date.set(datetime.date.today())
+        self.invoice_target_date.set(helpers.determine_payment_target_date(datetime.date.today(), 14))
 
     def populate_with_random_data(self):
 

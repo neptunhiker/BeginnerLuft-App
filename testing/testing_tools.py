@@ -3,7 +3,7 @@ import unittest
 
 from objects.invoice import Invoice
 from tools.custom_exceptions import DateFormatException
-from tools.helpers import create_invoice_nr, parse_date_from_string, string_to_float
+from tools.helpers import create_invoice_name, create_invoice_nr, parse_date_from_string, string_to_float
 
 
 class StringToFloat(unittest.TestCase):
@@ -52,20 +52,20 @@ class InvoiceNrCreation(unittest.TestCase):
 
     def test_invoice_nr_creation(self):
         date = datetime.date(2021, 8, 4)
-        output = create_invoice_nr(creation_date=date, participant_first_name="Mohammed",
-                                   participant_last_name="Ali")
+        output = create_invoice_nr(creation_date=date, participant_first_name="Mohammed", participant_last_name="Ali")
         target_output = "2021-08-04-MA"
-        self.assertEqual(output, target_output)
+        self.assertEqual(target_output, output)
 
         date = "12.03.2021"
         output = create_invoice_nr(creation_date=date, participant_first_name="Mohammed", participant_last_name="Ali")
         target_output = "2021-03-12-MA"
-        self.assertEqual(output, target_output)
+        self.assertEqual(target_output, output)
+
 
         date = "2022-2-3"
         output = create_invoice_nr(creation_date=date, participant_first_name="Mohammed", participant_last_name="Ali")
         target_output = "2022-02-03-MA"
-        self.assertEqual(output, target_output)
+        self.assertEqual(target_output, output)
 
 
 class TestParseDateString(unittest.TestCase):
@@ -163,6 +163,42 @@ class TestParseDateString(unittest.TestCase):
 
         datestring = "10.03.201"
         self.assertRaises(DateFormatException, parse_date_from_string, datestring)
+
+
+class InvoiceName(unittest.TestCase):
+
+    def test_good_input(self):
+
+        creation_date = datetime.date(2021, 3, 8)
+        participant_first_name = "Rachel"
+        participant_last_name = "Robinson"
+        output = create_invoice_name(creation_date, participant_first_name, participant_last_name)
+        target_output = "2021-03-08 Rechnung Rachel Robinson"
+        self.assertEqual(target_output, output)
+
+        creation_date = "09.3.2021"
+        participant_first_name = "Rachel"
+        participant_last_name = "Robinson"
+        output = create_invoice_name(creation_date, participant_first_name, participant_last_name)
+        target_output = "2021-03-09 Rechnung Rachel Robinson"
+        self.assertEqual(target_output, output)
+
+    def test_bad_input(self):
+        creation_date = ""
+        self.assertRaises(AttributeError, create_invoice_name, creation_date, "Rachel", "Robinson")
+
+        creation_date = "something"
+        self.assertRaises(AttributeError, create_invoice_name, creation_date, "Rachel", "Robinson")
+
+        creation_date = "12.03.2021"
+        self.assertRaises(AttributeError, create_invoice_name, creation_date, "", "Robinson")
+
+        creation_date = "12.03.2021"
+        self.assertRaises(AttributeError, create_invoice_name, creation_date, "Ben", "")
+
+        creation_date = "12.03.2021"
+        self.assertRaises(AttributeError, create_invoice_name, creation_date, "", "")
+
 
 if __name__ == '__main__':
     unittest.main()
