@@ -140,13 +140,12 @@ class Invoice(ttk.Frame):
         # invoice data
         sep = ttk.Separator(self.data_frame)
         sep.grid(row=next_row, column=0, columnspan=3, sticky="EW", pady=sep_pad_y)
-        lbl_texts = ["Rechnungsnummer", "Name der Rechnungsdatei", "Rechnungsdatum", "Zahlungsziel"]
+        lbl_texts = ["Rechnungsdatum", "Zahlungsziel", "Rechnungsnummer", "Name der Rechnungsdatei"]
         self.invoice_nr = tk.StringVar()
         self.invoice_name = tk.StringVar()
         self.invoice_creation_date = tk.StringVar()
         self.invoice_target_date = tk.StringVar()
-        string_variables = [self.invoice_nr, self.invoice_name, self.invoice_creation_date,
-                            self.invoice_target_date]
+        string_variables = [self.invoice_creation_date, self.invoice_target_date, self.invoice_nr, self.invoice_name]
         next_row = self.create_widgets(
             frame=self.data_frame,
             title="Rechnungsdaten",
@@ -155,6 +154,7 @@ class Invoice(ttk.Frame):
             starting_row=next_row + 1,
         )
 
+        # change invoice name and nr when participant data and invoice creation date changes
         for variable in [self.participant_first_name, self.participant_last_name, self.invoice_creation_date]:
             variable.trace("w", self.change_invoice_nr)
             variable.trace("w", self.change_invoice_name)
@@ -174,8 +174,8 @@ class Invoice(ttk.Frame):
         btn.bind("<Button-1>", self.create_invoice)
 
         # create random data
-        self.pre_populate()
-        # self.populate_with_random_data()
+        # self.pre_populate()
+        self.populate_with_random_data()
 
     def change_invoice_name(self, var, index, mode):
         """Update the invoice name based on data entries"""
@@ -250,8 +250,9 @@ class Invoice(ttk.Frame):
         for lbl_text, string_variable in zip(label_texts, string_variables):
             lbl = ttk.Label(frame, text=lbl_text, style="Secondary.TLabel")
             lbl.grid(row=row_counter, column=1, sticky="W", pady=pad_y, padx=(0, 10))
-            ttk.Entry(frame, textvariable=string_variable).grid(row=row_counter, column=2,
-                                                                sticky="W", pady=pad_y)
+            entry = ttk.Entry(frame, textvariable=string_variable)
+            entry.grid(row=row_counter, column=2, sticky="W", pady=pad_y)
+            # entry.bind("<Button-1>", lambda event, widget=entry: self.turn_entry_red(event, widget=entry))  # only works for the last entry in the loop
             row_counter += 1
 
         return row_counter
@@ -292,49 +293,76 @@ class Invoice(ttk.Frame):
 
         return completeness_check
 
+    def check_correctness(self):
+        """Check correctness of data"""
+
+        correctness_check = True
+
+        try:
+            helpers.string_to_float(self.training_cost_per_lesson.get())
+            int(self.training_nr_training_lesseons.get())
+            coaching_start = helpers.parse_date_from_string(self.training_start.get())
+            coaching_end = helpers.parse_date_from_string(self.training_end.get())
+            creation_date = helpers.parse_date_from_string(self.invoice_creation_date.get())
+            target_date = helpers.parse_date_from_string(self.invoice_target_date.get())
+            print(creation_date)
+            print(target_date)
+            if target_date <= creation_date:
+                error_text = "Das Zahlungsziel muss zeitlich nach dem Rechnungsdatum liegen."
+                correctness_check = False
+            elif coaching_end <= coaching_start:
+                error_text = "Das Coaching-Ende muss zeitlich nach dem Coaching-Start liegen."
+                correctness_check = False
+
+        except Exception:
+
+            correctness_check = False
+            error_text = "Bitte alle Datenfelder im richtigen Format ausfuellen."
+
+        if correctness_check:
+            self.error_text.set("")
+        else:
+            self.error_text.set(error_text)
+
+        return correctness_check
+
     def create_invoice(self, event):
         """Creates a PDF invoice and saves it on file"""
 
-        print(self.check_completeness())
+        if self.check_correctness() and self.check_completeness():
 
-        # collect relevant data
+            self.update()
 
-        # check that all necessary data are availble
+            creation_date = helpers.parse_date_from_string(self.invoice_creation_date.get())
+            target_date = helpers.parse_date_from_string(self.invoice_target_date.get())
+            coaching_start = helpers.parse_date_from_string(self.training_start.get())
+            coaching_end = helpers.parse_date_from_string(self.training_end.get())
+            training_cost_per_lesson = helpers.string_to_float(self.training_cost_per_lesson.get())
+            training_lessons = int(self.training_nr_training_lesseons.get())
+            invoice_total_amount = training_cost_per_lesson * training_lessons
 
-        # if necessary data not available show error message
-
-        # else create pdf invoice and save on file
-        #
-        creation_date = helpers.parse_date_from_string(self.invoice_creation_date.get())
-        target_date = helpers.parse_date_from_string(self.invoice_target_date.get())
-        coaching_start = helpers.parse_date_from_string(self.training_start.get())
-        coaching_end = helpers.parse_date_from_string(self.training_end.get())
-        training_cost_per_lesson = helpers.string_to_float(self.training_cost_per_lesson.get())
-        training_lessons = int(self.training_nr_training_lesseons.get())
-        invoice_total_amount = training_cost_per_lesson * training_lessons
-
-        path = tk.filedialog.askdirectory(initialdir="../Output/PDF Rechnungen")
-        if path:
-            PDFInvoice.from_data(
-                participant_title=self.participant_title.get(),
-                participant_first_name=self.participant_first_name.get(),
-                participant_last_name=self.participant_last_name.get(),
-                participant_id=self.participant_jc_id.get(),
-                invoice_total_amount=invoice_total_amount,
-                invoice_nr=self.invoice_nr.get(),
-                invoice_creation_date=creation_date,
-                invoice_target_date=target_date,
-                training_name=self.training_name.get(),
-                training_cost_per_lesson=training_cost_per_lesson,
-                coaching_start=coaching_start,
-                coaching_end=coaching_end,
-                coaching_nr_lessons=training_lessons,
-                jc_name=self.jc_name.get(),
-                jc_street_and_nr=self.jc_street_and_nr.get(),
-                jc_zip=self.jc_zip_and_city.get().split()[0],
-                jc_city=self.jc_zip_and_city.get().split()[1],
-                path=path
-            )
+            path = tk.filedialog.askdirectory(initialdir="../Output/PDF Rechnungen")
+            if path:
+                PDFInvoice.from_data(
+                    participant_title=self.participant_title.get(),
+                    participant_first_name=self.participant_first_name.get(),
+                    participant_last_name=self.participant_last_name.get(),
+                    participant_id=self.participant_jc_id.get(),
+                    invoice_total_amount=invoice_total_amount,
+                    invoice_nr=self.invoice_nr.get(),
+                    invoice_creation_date=creation_date,
+                    invoice_target_date=target_date,
+                    training_name=self.training_name.get(),
+                    training_cost_per_lesson=training_cost_per_lesson,
+                    coaching_start=coaching_start,
+                    coaching_end=coaching_end,
+                    coaching_nr_lessons=training_lessons,
+                    jc_name=self.jc_name.get(),
+                    jc_street_and_nr=self.jc_street_and_nr.get(),
+                    jc_zip=self.jc_zip_and_city.get().split()[0],
+                    jc_city=self.jc_zip_and_city.get().split()[1],
+                    path=path
+                )
 
     def pre_populate(self):
         """Populates the form with some data"""
@@ -364,3 +392,7 @@ class Invoice(ttk.Frame):
         self.jc_name.set("Testjobcenter")
         self.jc_street_and_nr.set("Berlinerstr. 987")
         self.jc_zip_and_city.set("12321 Berlin")
+
+    def turn_entry_red(self, event, widget):
+        """Turns the value of an Entry field to red"""
+        widget.configure(style="Error.TEntry")

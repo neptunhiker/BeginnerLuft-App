@@ -41,9 +41,9 @@ class PDFInvoice(PDFReport):
                  path="../../Output/PDF Rechnungen", save_file=True, show_success_message=True):
 
         self.invoice = invoice
-        self.participant = invoice.var_training
+        self.participant = invoice.participant
         self.training = invoice.training
-        self.jobcenter = invoice.var_training
+        self.jobcenter = invoice.jobcenter
         self.creation_date = invoice.creation_date
         self.date_for_title = invoice.creation_date.strftime('%Y-%m-%d')
         self.date_for_invoice = helpers.format_to_german_date(self.creation_date)
@@ -241,7 +241,7 @@ class PDFInvoice(PDFReport):
             BeginnerLuft gGmbH<br/>
             IBAN: {self.iban}<br/>
             BIC: {self.bic}<br/>
-            Verwendungszweck: {self.participant_name} {self.invoice_nr}
+            Verwendungszweck: {self.invoice_nr}
             """)
 
         para_list.append(para_01)

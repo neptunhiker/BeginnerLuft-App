@@ -157,6 +157,8 @@ class BeginnerLuftApp(tk.Tk):
             background=bl_colors["bg secondary"]
         )
 
+        self.style.configure("Error.TEntry", foreground="red")
+
     def full_screen_window(self):
         w, h = self.winfo_screenwidth(), self.winfo_screenheight()
         self.geometry("%dx%d+0+0" % (w, h))  # sets screen to full size
