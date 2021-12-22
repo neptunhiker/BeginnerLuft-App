@@ -1,6 +1,7 @@
 import random
 from tkinter import ttk
 import tkinter as tk
+import tkinter.filedialog
 from PIL import Image, ImageTk
 
 from design.colors import bl_colors
@@ -78,8 +79,8 @@ class OneHalfFrame(ttk.Frame):
         frame_left.columnconfigure(0, weight=1)
 
         # create background image
-        image = Image.open("assets/office01.jpg")
-        desired_width = 1800
+        image = Image.open("assets/office02.jpg")
+        desired_width = 800
         ratio = image.height / image.width
         calculated_height = int(desired_width * ratio)
         image = image.resize((desired_width, calculated_height), Image.ANTIALIAS)
@@ -194,6 +195,7 @@ class OneHalfFrame(ttk.Frame):
         button_frame.columnconfigure(0, weight=1)
         btn = BLButton(button_frame, text="Rechnung erstellen!")
         btn.grid()
+        btn.bind("<Button-1>", self.create_invoice)
 
     def create_widgets(self, frame, title, label_texts, string_variables, starting_row=0):
         """Create title, label, and entry widgets"""
@@ -216,3 +218,20 @@ class OneHalfFrame(ttk.Frame):
             row_counter += 1
 
         return row_counter
+
+
+    def create_invoice(self, event):
+        """Creates a PDF invoice and saves it on file"""
+
+        # collect relevant data
+
+
+        # check that all necessary data are availble
+
+
+        # if necessary data not available show error message
+
+        
+        # else create pdf invoice and save on file
+
+        tk.filedialog.asksaveasfile()
