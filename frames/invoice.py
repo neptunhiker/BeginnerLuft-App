@@ -5,9 +5,11 @@ import tkinter as tk
 from PIL import Image, ImageTk
 
 from objects.data_picker import PickJobcenter, PickParticipant, PickTraining
+from objects.invoice import Invoice
 from widgets.labels import BLBoldClickableSecondaryLabel
 from reports.invoice import PDFInvoice
 from tools import helpers
+from tools import custom_exceptions
 
 from widgets.buttons import BLButton
 
@@ -86,22 +88,21 @@ class Invoice(ttk.Frame):
             func=self.pick_participant_from_db,
         )
 
-        # invoice data
+        # job center data
         sep = ttk.Separator(self.data_frame)
         sep.grid(row=next_row, column=0, columnspan=3, sticky="EW", pady=sep_pad_y)
-        lbl_texts = ["Rechnungsnummer", "Name der Rechnungsdatei", "Rechnungsdatum", "Zahlungsziel"]
-        self.invoice_nr = tk.StringVar()
-        self.invoice_name = tk.StringVar()
-        self.invoice_creation_date = tk.StringVar()
-        self.invoice_target_date = tk.StringVar()
-        string_variables = [self.invoice_nr, self.invoice_name, self.invoice_creation_date,
-                            self.invoice_target_date]
+        lbl_texts = ["Name des Jobcenters", "Straße und Nr", "PLZ und Ort"]
+        self.jc_name = tk.StringVar()
+        self.jc_street_and_nr = tk.StringVar()
+        self.jc_zip_and_city = tk.StringVar()
+        string_variables = [self.jc_name, self.jc_street_and_nr, self.jc_zip_and_city]
         next_row = self.create_widgets(
             frame=self.data_frame,
-            title="Rechnungsdaten",
+            title="Jobcenter",
             label_texts=lbl_texts,
             string_variables=string_variables,
             starting_row=next_row + 1,
+            func=self.pick_jobcenter_from_db,
         )
 
         # training data (Maßnahme)
@@ -130,28 +131,32 @@ class Invoice(ttk.Frame):
         string_variables = [self.training_start, self.training_end, self.training_nr_training_lesseons]
         next_row = self.create_widgets(
             frame=self.data_frame,
-            title="Coaching-Details",
+            title="Coaching",
             label_texts=lbl_texts,
             string_variables=string_variables,
             starting_row=next_row + 1,
         )
 
-        # job center data
+        # invoice data
         sep = ttk.Separator(self.data_frame)
         sep.grid(row=next_row, column=0, columnspan=3, sticky="EW", pady=sep_pad_y)
-        lbl_texts = ["Name des Jobcenters", "Straße und Nr", "PLZ und Ort"]
-        self.jc_name = tk.StringVar()
-        self.jc_street_and_nr = tk.StringVar()
-        self.jc_zip_and_city = tk.StringVar()
-        string_variables = [self.jc_name, self.jc_street_and_nr, self.jc_zip_and_city]
+        lbl_texts = ["Rechnungsnummer", "Name der Rechnungsdatei", "Rechnungsdatum", "Zahlungsziel"]
+        self.invoice_nr = tk.StringVar()
+        self.invoice_name = tk.StringVar()
+        self.invoice_creation_date = tk.StringVar()
+        self.invoice_target_date = tk.StringVar()
+        string_variables = [self.invoice_nr, self.invoice_name, self.invoice_creation_date,
+                            self.invoice_target_date]
         next_row = self.create_widgets(
             frame=self.data_frame,
-            title="Jobcenter",
+            title="Rechnungsdaten",
             label_texts=lbl_texts,
             string_variables=string_variables,
             starting_row=next_row + 1,
-            func=self.pick_jobcenter_from_db,
         )
+
+        for variable in [self.participant_first_name, self.participant_last_name, self.invoice_creation_date]:
+            variable.trace("w", self.change_invoice_nr)
 
         # LOWER FRAME
         button_frame = ttk.Frame(frame_right, style="Secondary.TFrame")
@@ -169,6 +174,19 @@ class Invoice(ttk.Frame):
 
         # create random data
         self.populate_with_random_data()
+
+    def change_invoice_nr(self, var, index, mode):
+        """Update the invoice nr based on data entries"""
+        try:
+            self.invoice_nr.set(helpers.create_invoice_nr(
+                creation_date=self.invoice_creation_date.get(),
+                participant_first_name=self.participant_first_name.get(),
+                participant_last_name=self.participant_last_name.get()
+            ))
+        except custom_exceptions.DateFormatException:
+            self.invoice_nr.set("")
+        except ValueError:
+            self.invoice_nr.set("")
 
     def pick_jobcenter_from_db(self, event):
         """Opens a new window that allows the user to pick a jobcenter from the database"""

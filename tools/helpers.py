@@ -20,6 +20,23 @@ def format_to_german_date(date):
         return f"Cannot format date {date}"
 
 
+def create_invoice_nr(creation_date, participant_first_name, participant_last_name):
+    """Create an invoice number based on input arguments"""
+
+    try:
+        creation_date = parse_date_from_string(creation_date)
+        creation_date = creation_date.strftime("%Y-%m-%d")
+        invoice_nr = f"{creation_date}-{participant_first_name[0]}{participant_last_name[0]}"
+    except AttributeError as err:
+        return ""
+    except DateFormatException:
+        return ""
+    except IndexError:
+        return ""
+    
+    return invoice_nr
+
+
 def determine_payment_target_date(date, payment_horizon_in_days):
     """Determines a target date for payment"""
 
@@ -68,6 +85,8 @@ def parse_date_from_string(datestring):
             year_format = "%y"
         elif len(year) == 4:
             year_format = "%Y"
+        else:
+            raise DateFormatException
 
         if sep == "-":
             parsing_format = f"{year_format}{sep}%m{sep}%d"

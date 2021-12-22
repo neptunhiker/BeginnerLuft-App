@@ -5,6 +5,9 @@ from objects.jobcenter import Jobcenter
 from objects.people import Participant
 from objects.training import Training
 
+from tools import helpers
+
+
 class Invoice:
 
     def __init__(self, invoice_nr, total_amount, creation_date, target_date, jobcenter,
@@ -44,8 +47,16 @@ class Invoice:
 
 
 if __name__ == '__main__':
+    #
+    # jc = Jobcenter.jobcenter_berlin_mitte()
+    # participant = Participant.test_participant()
+    # invoice = Invoice.test_invoice(participant=participant, jobcenter=jc)
+    # print(invoice)
 
-    jc = Jobcenter.jobcenter_berlin_mitte()
-    participant = Participant.test_participant()
-    invoice = Invoice.test_invoice(participant=participant, jobcenter=jc)
-    print(invoice)
+    invoice_nr = Invoice.create_invoice_nr(
+        creation_date=datetime.date.today(),
+        participant_first_name="Mohi",
+        participant_last_name="Ali"
+    )
+
+    print(invoice_nr)
