@@ -82,6 +82,20 @@ def parse_date_from_string(datestring):
             raise DateFormatException
 
 
+def string_to_float(string):
+    """Convert a string to a float"""
+
+    try:
+        return float(string)
+    except ValueError:
+        dot_last_occurence = string.rfind(".")
+        comma_last_occurence = string.rfind(",")
+        if dot_last_occurence > comma_last_occurence:
+            return float(string.replace(",", ""))
+        else:
+            return float(string.replace(".", "X").replace(",", ".").replace("X", ""))
+
+
 def verify_password(stored_password, provided_password):
     """Verify a stored password against one provided by a user"""
     salt = stored_password[:64]

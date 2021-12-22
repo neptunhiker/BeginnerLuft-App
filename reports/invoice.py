@@ -111,7 +111,7 @@ class PDFInvoice(PDFReport):
     def create_header(self):
         """Create a header for the report"""
 
-        img_path = "../assets/beginnerluft.png"
+        img_path = "assets/beginnerluft.png"
         img_width = self.col_widths[1] * 0.3
         img_height = self.row_heights[0] * 0.5
         img = Image(filename=img_path, width=img_width, height=img_height, kind="proportional")
@@ -356,7 +356,7 @@ class PDFInvoice(PDFReport):
                   invoice_total_amount, invoice_nr, invoice_creation_date, invoice_target_date,
                   training_name, training_cost_per_lesson,
                   coaching_start, coaching_end, coaching_nr_lessons,
-                  jc_name, jc_street_and_nr, jc_zip, jc_city):
+                  jc_name, jc_street_and_nr, jc_zip, jc_city, path):
         """Create instance of class only based on necessary data"""
 
         jc = Jobcenter(name=jc_name, street_and_nr=jc_street_and_nr, zip_code=jc_zip, city=jc_city)
@@ -367,7 +367,7 @@ class PDFInvoice(PDFReport):
                           target_date=invoice_target_date, jobcenter=jc, nr_training_lessons=coaching_nr_lessons,
                           participant=participant, training=training)
         return cls(invoice=invoice, time_period_start=coaching_start, time_period_end=coaching_end,
-                   nr_of_training_lessons=coaching_nr_lessons)
+                   nr_of_training_lessons=coaching_nr_lessons, path=path)
 
 
 if __name__ == '__main__':
