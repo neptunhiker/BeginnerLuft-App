@@ -97,8 +97,12 @@ class AddParticipant(ttk.Frame):
         self.city = tk.StringVar()
         self.jc_id = tk.StringVar()
 
+        self.variables = [self.title, self.first_name, self.last_name, self.street_and_nr, self.zip,
+                          self.city, self.jc_id]
+
         self.cmb_title = ttk.Combobox(content_frame, textvariable=self.title)
         self.cmb_title["values"] = ["Frau", "Herr"]
+        self.cmb_title["state"] = "readonly"
         self.cmb_title.grid(row=0, column=1, padx=pad_x, pady=pad_y, sticky="EW")
 
         self.ent_first_name = ttk.Entry(content_frame, textvariable=self.first_name)
@@ -144,7 +148,11 @@ class AddParticipant(ttk.Frame):
 
         # write to data base
         if self.write_to_db():
-            self.show_success_message()
+            first_name = self.first_name.get()
+            last_name = self.first_name.get()
+            full_name = f"{first_name} {last_name}"
+            self.clear_all_fields()
+            self.show_success_message(name=full_name)
 
     def completeness_check(self):
         """Check if all mandatory fields have been filled out"""
@@ -235,7 +243,13 @@ class AddParticipant(ttk.Frame):
         else:
             return True
 
-    def show_success_message(self):
+    def show_success_message(self, name):
         header = "Datenbankeintrag erfolgreich"
-        message = f"{self.first_name.get()} {self.last_name.get()} wurde erfolgreich in die Datenbank eingetragen."
+        message = f"{name} wurde erfolgreich in die Datenbank eingetragen."
         MessageWindow(message_header=header, message=message)
+
+    def clear_all_fields(self):
+        for variable in self.variables:
+            print(variable.get())
+            variable.set("")
+            print(variable.get())
