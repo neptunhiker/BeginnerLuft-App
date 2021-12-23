@@ -1,7 +1,10 @@
+import sqlite3
+
 from PIL import Image, ImageTk
 import tkinter as tk
 from tkinter import ttk
 
+from tools import helpers
 from widgets.buttons import BLButton
 
 
@@ -50,8 +53,13 @@ class PickParticipant(tk.Toplevel):
 
         # dropdown menu
         self.cmb_participants = ttk.Combobox(frame_right, textvariable=self.participant)
-        for participant in self.controller.db.get_participants():
-            self.participants[str(participant.data_base_id)] = participant
+        try:
+            for participant in self.controller.db.get_participants():
+                self.participants[str(participant.data_base_id)] = participant
+        except sqlite3.OperationalError:
+            self.destroy()
+            helpers.DatabaseErrorWindow()
+            return
 
         sorted_values = sorted(self.participants.values(), key=lambda x: x.first_name)
         self.cmb_participants["values"] = [f"{participant.first_name} {participant.last_name} - (ID: " 
@@ -143,8 +151,13 @@ class PickJobcenter(tk.Toplevel):
 
         # dropdown menu
         self.cmb_jobcenter = ttk.Combobox(frame_right, textvariable=self.jobcenter)
-        for jc in self.controller.db.get_jobcenters():
-            self.jobcenters[str(jc.data_base_id)] = jc
+        try:
+            for jc in self.controller.db.get_jobcenters():
+                self.jobcenters[str(jc.data_base_id)] = jc
+        except sqlite3.OperationalError:
+            self.destroy()
+            helpers.DatabaseErrorWindow()
+            return
 
         sorted_values = sorted(self.jobcenters.values(), key=lambda x: x.name)
         self.cmb_jobcenter["values"] = [f"{jc.name} - (ID: " 
@@ -236,8 +249,13 @@ class PickTraining(tk.Toplevel):
 
         # dropdown menu
         self.cmb_training = ttk.Combobox(frame_right, textvariable=self.var_training)
-        for training in self.controller.db.get_trainings():
-            self.trainings[str(training.data_base_id)] = training
+        try:
+            for training in self.controller.db.get_trainings():
+                self.trainings[str(training.data_base_id)] = training
+        except sqlite3.OperationalError:
+            self.destroy()
+            helpers.DatabaseErrorWindow()
+            return
 
         self.cmb_training["values"] = [f"{training.name} - (ID: " 
                                            f"{training.data_base_id})" for training

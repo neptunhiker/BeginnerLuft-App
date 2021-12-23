@@ -212,6 +212,12 @@ class MessageWindow(tk.Toplevel):
         # subprocess.Popen([f"'{self.path_to_file}'"], shell=True)  # does not work
         pass
 
+
+class DatabaseErrorWindow(MessageWindow):
+
+    def __init__(self):
+        super(DatabaseErrorWindow, self).__init__(message_header="Datenbankfehler", message="Some problems ...")
+
 if __name__ == '__main__':
     MessageWindow(message_header="Test", message="a very long message with a lot of text and some more text"
                                                  "and even more and more and more and maybeeven some more text")
