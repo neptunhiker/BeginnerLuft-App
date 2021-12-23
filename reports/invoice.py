@@ -37,7 +37,7 @@ class PDFReport(ABC):
 class PDFInvoice(PDFReport):
     """An invoice in pdf format"""
 
-    def __init__(self, invoice, time_period_start, time_period_end, nr_of_training_lessons,
+    def __init__(self, invoice_name, invoice, time_period_start, time_period_end, nr_of_training_lessons,
                  path="../../Output/PDF Rechnungen", save_file=True, show_success_message=True):
 
         self.invoice = invoice
@@ -49,7 +49,6 @@ class PDFInvoice(PDFReport):
         self.date_for_invoice = helpers.format_to_german_date(self.creation_date)
         self.payment_horizon = (invoice.target_date - self.creation_date).days
         self.latest_payment_date = helpers.format_to_german_date(invoice.target_date)
-        name = f"{self.date_for_title} BeginnerLuft Rechnung {self.participant.full_name}"
         super().__init__()
         self.participant_name = self.participant.full_name
         self.participant_title = self.participant.title
@@ -68,14 +67,14 @@ class PDFInvoice(PDFReport):
         self.bl_street = "Bandelstr. 1"
         self.bl_zip_city = "10559 Berlin"
         self.path = path
-        self.full_path = f"{path}/{name}.pdf"
+        self.full_path = f"{path}/{invoice_name}.pdf"
 
         self.width = A4[0]
         self.height = A4[1]
 
         # Create the pdf
         self.pdf = canvas.Canvas(self.full_path, pagesize=A4)
-        self.pdf.setTitle(name)
+        self.pdf.setTitle(invoice_name)
 
         # Defining the size-structure of the report
         self.col_widths = [0.1 * self.width, 0.8 * self.width, 0.1 * self.width]
@@ -349,11 +348,11 @@ class PDFInvoice(PDFReport):
 
     def show_success_message(self):
         msg = f"Rechnung für {self.participant_name} erstellt und gespeichert unter\n\n{self.full_path}"
-        helpers.MessageWindow(message_header="Rechnung erstellt!", message=msg)
+        helpers.MessageWindow(message_header="Rechnung erstellt!", message=msg, path_to_file=self.full_path)
 
     @classmethod
     def from_data(cls, participant_title, participant_first_name, participant_last_name, participant_id,
-                  invoice_total_amount, invoice_nr, invoice_creation_date, invoice_target_date,
+                  invoice_name, invoice_total_amount, invoice_nr, invoice_creation_date, invoice_target_date,
                   training_name, training_cost_per_lesson,
                   coaching_start, coaching_end, coaching_nr_lessons,
                   jc_name, jc_street_and_nr, jc_zip, jc_city, path):
@@ -366,8 +365,8 @@ class PDFInvoice(PDFReport):
         invoice = Invoice(invoice_nr=invoice_nr, total_amount=invoice_total_amount, creation_date=invoice_creation_date,
                           target_date=invoice_target_date, jobcenter=jc, nr_training_lessons=coaching_nr_lessons,
                           participant=participant, training=training)
-        return cls(invoice=invoice, time_period_start=coaching_start, time_period_end=coaching_end,
-                   nr_of_training_lessons=coaching_nr_lessons, path=path)
+        return cls(invoice_name=invoice_name, invoice=invoice, time_period_start=coaching_start, time_period_end=coaching_end,
+                   nr_of_training_lessons=coaching_nr_lessons, path=path, show_success_message=False)
 
 
 if __name__ == '__main__':

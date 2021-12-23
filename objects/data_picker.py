@@ -53,9 +53,10 @@ class PickParticipant(tk.Toplevel):
         for participant in self.controller.db.get_participants():
             self.participants[str(participant.data_base_id)] = participant
 
+        sorted_values = sorted(self.participants.values(), key=lambda x: x.first_name)
         self.cmb_participants["values"] = [f"{participant.first_name} {participant.last_name} - (ID: " 
                                            f"{participant.data_base_id})" for participant
-                                           in self.participants.values()]
+                                           in sorted_values]
         self.cmb_participants["state"] = "readonly"
         self.cmb_participants.bind("<<ComboboxSelected>>", self.handle_user_selection)
         self.cmb_participants.grid(padx=20)
@@ -145,9 +146,10 @@ class PickJobcenter(tk.Toplevel):
         for jc in self.controller.db.get_jobcenters():
             self.jobcenters[str(jc.data_base_id)] = jc
 
+        sorted_values = sorted(self.jobcenters.values(), key=lambda x: x.name)
         self.cmb_jobcenter["values"] = [f"{jc.name} - (ID: " 
                                            f"{jc.data_base_id})" for jc
-                                        in self.jobcenters.values()]
+                                        in sorted_values]
         self.cmb_jobcenter["state"] = "readonly"
         self.cmb_jobcenter.bind("<<ComboboxSelected>>", self.handle_user_selection)
         self.cmb_jobcenter.grid(padx=20)

@@ -2,6 +2,7 @@ import datetime
 import os
 from tkinter import ttk
 import tkinter as tk
+from tkinter import messagebox
 from PIL import Image, ImageTk
 
 from objects.data_picker import PickJobcenter, PickParticipant, PickTraining
@@ -185,8 +186,8 @@ class Invoice(ttk.Frame):
         btn.bind("<Button-1>", self.create_invoice)
 
         # create random data
-        self.pre_populate()
-        # self.populate_with_random_data()
+        # self.pre_populate()
+        self.populate_with_random_data()
 
     def change_invoice_name(self, var, index, mode):
         """Update the invoice name based on data entries"""
@@ -352,28 +353,56 @@ class Invoice(ttk.Frame):
             training_lessons = int(self.training_nr_training_lesseons.get())
             invoice_total_amount = training_cost_per_lesson * training_lessons
 
+            # ask user where to save the file
             path = tk.filedialog.askdirectory(initialdir="../Output/PDF Rechnungen")
+
             if path:
-                PDFInvoice.from_data(
-                    participant_title=self.participant_title.get(),
-                    participant_first_name=self.participant_first_name.get(),
-                    participant_last_name=self.participant_last_name.get(),
-                    participant_id=self.participant_jc_id.get(),
-                    invoice_total_amount=invoice_total_amount,
-                    invoice_nr=self.invoice_nr.get(),
-                    invoice_creation_date=creation_date,
-                    invoice_target_date=target_date,
-                    training_name=self.training_name.get(),
-                    training_cost_per_lesson=training_cost_per_lesson,
-                    coaching_start=coaching_start,
-                    coaching_end=coaching_end,
-                    coaching_nr_lessons=training_lessons,
-                    jc_name=self.jc_name.get(),
-                    jc_street_and_nr=self.jc_street_and_nr.get(),
-                    jc_zip=self.jc_zip_and_city.get().split()[0],
-                    jc_city=self.jc_zip_and_city.get().split()[1],
-                    path=path
-                )
+                saving_path = os.path.join(path, f"{self.invoice_name.get()}.pdf")
+
+                # if file does not exist yet, create it
+                overwrite = True
+                if helpers.check_if_file_exists(saving_path):
+
+                    overwrite = messagebox.askyesno(
+                        "Rechnung existiert bereits",
+                        f"Es existiert bereits eine Rechnung für {self.participant_first_name.get()} "
+                        f"{self.participant_last_name.get()} am gewählten Speicherort. Soll die Rechnung "
+                        f"überschrieben werden?",
+                        default="no"
+                    )
+
+                if overwrite:
+                    PDFInvoice.from_data(
+                        participant_title=self.participant_title.get(),
+                        participant_first_name=self.participant_first_name.get(),
+                        participant_last_name=self.participant_last_name.get(),
+                        participant_id=self.participant_jc_id.get(),
+                        invoice_name=self.invoice_name.get(),
+                        invoice_total_amount=invoice_total_amount,
+                        invoice_nr=self.invoice_nr.get(),
+                        invoice_creation_date=creation_date,
+                        invoice_target_date=target_date,
+                        training_name=self.training_name.get(),
+                        training_cost_per_lesson=training_cost_per_lesson,
+                        coaching_start=coaching_start,
+                        coaching_end=coaching_end,
+                        coaching_nr_lessons=training_lessons,
+                        jc_name=self.jc_name.get(),
+                        jc_street_and_nr=self.jc_street_and_nr.get(),
+                        jc_zip=self.jc_zip_and_city.get().split()[0],
+                        jc_city=self.jc_zip_and_city.get().split()[1],
+                        path=path
+                    )
+                    helpers.MessageWindow(message_header="Rechnung erstellt",
+                                          message=f"Rechnung für {self.participant_first_name.get()} "
+                                                  f"{self.participant_last_name.get()} erstellt unter: \n\n"
+                                                  f"{saving_path}",
+                                          path_to_file=saving_path)
+
+                else:
+                    helpers.MessageWindow(message_header="Keine Rechnung erstellt",
+                                          message=f"Es wurde keine Rechnung für {self.participant_first_name.get()} "
+                                                  f"{self.participant_last_name.get()} erstellt.")
 
     def pre_populate(self):
         """Populates the form with some data"""

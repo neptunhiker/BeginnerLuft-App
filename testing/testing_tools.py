@@ -3,6 +3,7 @@ import unittest
 
 from objects.invoice import Invoice
 from tools.custom_exceptions import DateFormatException
+from tools import helpers
 from tools.helpers import create_invoice_name, create_invoice_nr, parse_date_from_string, string_to_float
 
 
@@ -198,6 +199,30 @@ class InvoiceName(unittest.TestCase):
 
         creation_date = "12.03.2021"
         self.assertRaises(AttributeError, create_invoice_name, creation_date, "", "")
+
+
+class FileExists(unittest.TestCase):
+    """Check if a file exists"""
+
+    def test_happy_path(self):
+        path_to_file = "testing_tools.py"
+        output = helpers.check_if_file_exists(path_to_file)
+        target_output = True
+        self.assertEqual(target_output, output)
+
+        path_to_file = "nonexistingfile.xls"
+        output = helpers.check_if_file_exists(path_to_file)
+        target_output = False
+        self.assertEqual(target_output, output)
+
+        path_to_file = "random something"
+        output = helpers.check_if_file_exists(path_to_file)
+        target_output = False
+        self.assertEqual(target_output, output)
+
+    def test_non_happy_path(self):
+        path_to_file = 23
+        self.assertRaises(TypeError, helpers.check_if_file_exists, path_to_file)
 
 
 if __name__ == '__main__':

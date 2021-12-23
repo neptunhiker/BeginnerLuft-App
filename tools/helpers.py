@@ -1,8 +1,13 @@
 import datetime
 import hashlib, binascii, os
+from pathlib import Path
+from PIL import Image, ImageTk
+import subprocess
 import tkinter as tk
 from tkinter import ttk
+import webbrowser
 
+from design.colors import bl_colors
 from tools.custom_exceptions import DateFormatException
 
 
@@ -18,6 +23,14 @@ def format_to_german_date(date):
 
     else:
         return f"Cannot format date {date}"
+
+
+def check_if_file_exists(path_to_file):
+    """Check if a file exists"""
+
+    path = Path(path_to_file)
+
+    return path.is_file()
 
 
 def create_invoice_nr(creation_date, participant_first_name, participant_last_name):
@@ -139,38 +152,66 @@ def verify_password(stored_password, provided_password):
         return False
 
 
-class MessageWindow(tk.Toplevel):
-    """Pops up a window with a message defined by a header and a message"""
+class NewWindow(tk.Toplevel):
 
-    def __init__(self, message_header, message, bg_color="yellow", fg_color="black", width=600, height=200):
-        super(MessageWindow, self).__init__()
-        self.title("BeginnerLuft")
-        self.geometry(f"{width}x{height}")
-        self.style = ttk.Style()
-        self.font = "Times New Roman"
-        self.style.configure("MessageHeader.TLabel", font=(self.font, 20, "bold"), background=bg_color,
-                             foreground=fg_color)
-        self.style.configure("Message.TLabel", font=(self.font, 12), background=bg_color, foreground=fg_color)
-
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(0, weight=1)
-        self.frame = ttk.Frame(self)
-        self.frame.grid(row=0, column=0, sticky="nsew")
-        for i in range(2):
-            self.frame.grid_rowconfigure(i, weight=1)
-        self.frame.grid_columnconfigure(0, weight=1)
-
-        lbl_message_header = ttk.Label(self.frame, text=message_header, style="MessageHeader.TLabel", anchor=tk.CENTER,
-                                       justify="center")
-        lbl_message_header.grid(row=0, column=0, sticky="nsew")
-        lbl_message = ttk.Label(self.frame, text=message, style="Message.TLabel", anchor=tk.CENTER, justify="center")
-        lbl_message.grid(row=1, column=0, sticky="nsew")
-
+    def __init__(self):
+        super(NewWindow, self).__init__()
         self.mainloop()
 
 
+class MessageWindow(tk.Toplevel):
+    """Pops up a window with a message defined by a header and a message"""
+
+    def __init__(self, message_header, message, path_to_file=None, width=600, height=200):
+        super(MessageWindow, self).__init__()
+        self.title("BeginnerLuft")
+        self.geometry(f"{width}x{height}")
+        self.columnconfigure((0, 1), weight=1)
+        self.rowconfigure(0, weight=1)
+
+        # LEFT HAND SIDE
+        frame_left = ttk.Frame(self)
+        frame_left.grid(row=0, column=0, sticky="NSEW")
+        frame_left.columnconfigure(0, weight=1)
+        frame_left.rowconfigure(0, weight=1)
+
+        logo = Image.open("assets/bl_logo.png")
+        desired_width = 200
+        ratio = logo.height / logo.width
+        calculated_height = int(desired_width * ratio)
+        logo = logo.resize((desired_width, calculated_height), Image.ANTIALIAS)
+        logo_image = ImageTk.PhotoImage(logo)
+
+        lbl = ttk.Label(frame_left, image=logo_image, style="TLabel")
+        lbl.image = logo_image
+        lbl.grid(padx=20)
+
+        # RIGHT HAND SIDE
+        frame_right = ttk.Frame(self, style="Secondary.TFrame")
+        frame_right.grid(row=0, column=1, sticky="NSEW")
+        frame_right.columnconfigure(0, weight=1)
+        frame_right.rowconfigure((0, 1), weight=1)
+
+        # header
+        lbl_header = ttk.Label(frame_right, text=message_header, style="Secondary.Header.TLabel")
+        lbl_header.grid()
+
+        # message
+        lbl_message = ttk.Label(frame_right, text=message, style="Secondary.TLabel", wraplength=180, anchor="center")
+        lbl_message.grid()
+
+        if path_to_file is not None:
+            self.path_to_file = path_to_file
+            lbl_message.configure(cursor="hand2")
+            lbl_message.bind("<Button-1>", self.open_url)
+
+        self.mainloop()
+
+    def open_url(self, event):
+        """Opens a file"""
+        # subprocess.Popen([f"'{self.path_to_file}'"], shell=True)  # does not work
+        pass
+
 if __name__ == '__main__':
-    stored_password= hash_password("hallo")
-    print()
-    verify_password(stored_password=stored_password, provided_password="hallo")
-    print()
+    MessageWindow(message_header="Test", message="a very long message with a lot of text and some more text"
+                                                 "and even more and more and more and maybeeven some more text")
