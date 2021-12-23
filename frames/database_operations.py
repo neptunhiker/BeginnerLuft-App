@@ -27,8 +27,8 @@ class AddParticipant(ttk.Frame):
         frame_left.columnconfigure(0, weight=1)
 
         # create background image
-        image = Image.open("assets/office02.jpg")
-        desired_width = 800
+        image = Image.open("assets/office01.jpg")
+        desired_width = 1200
         ratio = image.height / image.width
         calculated_height = int(desired_width * ratio)
         image = image.resize((desired_width, calculated_height), Image.ANTIALIAS)
