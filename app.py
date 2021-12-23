@@ -3,6 +3,7 @@ from tkinter import ttk
 from databases.database import Database
 from frames.boilerplate import Boilerplate, OneHalfFrame
 from frames.dashboard import Dashboard
+from frames.database_operations import AddParticipant
 from frames.invoice import Invoice
 from frames.login import Login
 from frames.password import Password
@@ -51,6 +52,12 @@ class BeginnerLuftApp(tk.Tk):
         )
         starting_frame.grid(row=0, column=0, sticky="NSEW")
 
+        add_participant_frame = AddParticipant(
+            parent=self.container,
+            controller=self,
+        )
+        add_participant_frame.grid(row=0, column=0, sticky="NSEW")
+
         dashboard_frame = Dashboard(
             parent=self.container,
             controller=self,
@@ -86,6 +93,7 @@ class BeginnerLuftApp(tk.Tk):
 
         # Allow for switching between frames
         self.frames = {
+            AddParticipant: add_participant_frame,
             Dashboard: dashboard_frame,
             Entry: starting_frame,
             Invoice: invoice_frame,
@@ -94,7 +102,7 @@ class BeginnerLuftApp(tk.Tk):
             TimeTracking: time_tracking_frame,
         }
 
-        self.show_frame(Invoice)  # change this line to determine the starting screen
+        self.show_frame(AddParticipant)  # change this line to determine the starting screen
 
     def show_frame(self, container):
         frame = self.frames[container]
@@ -118,6 +126,8 @@ class BeginnerLuftApp(tk.Tk):
                              foreground=bl_colors["fg primary"])
         self.style.configure("Secondary.Error.TLabel", background=bl_colors["bg secondary"],
                              foreground="red", font=bl_fonts.bl_font_error)
+        self.style.configure("Secondary.Emphasize.TLabel", background=bl_colors["bg secondary"],
+                             foreground="red")
         self.style.configure("Clickable.Secondary.TLabel", foreground=bl_colors["fg blue"])
         self.style.configure("Bold.Clickable.Secondary.TLabel", font=bl_fonts.bl_font_bold)
         self.style.configure(

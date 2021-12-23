@@ -20,6 +20,21 @@ class Database:
         self.conn = sqlite3.connect(self.database_path)
         self.conn.row_factory = sqlite3.Row
 
+    def add_participant(self, participant):
+        """Inser coach data into the data base"""
+
+        sql = "INSERT INTO Teilnehmer (Anrede, Vorname, Nachname, Strasse_und_Nr, PLZ, Stadt, Kundennummer ) " \
+              "VALUES (?, ?, ?, ?, ?, ?, ?)"
+
+        self.connect_to_database()
+        with closing(self.conn.cursor()) as cursor:
+            cursor.execute(sql, (participant.title, participant.first_name, participant.last_name,
+                                 participant.street_and_nr, participant.zip_code, participant.city,
+                                 participant.id_with_jc))
+            self.conn.commit()
+
+        print(f"{participant} successfully added to the database.")
+
     def get_employees(self):
         """Return a list of all employees found in the database"""
         sql = "SELECT * FROM Mitarbeiter"

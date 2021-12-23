@@ -160,7 +160,7 @@ class NewWindow(tk.Toplevel):
 
 
 class MessageWindow(tk.Toplevel):
-    """Pops up a window with a message defined by a header and a message"""
+    """Pops up a window with a header and a message"""
 
     def __init__(self, message_header, message, path_to_file=None, width=600, height=200):
         super(MessageWindow, self).__init__()
@@ -214,9 +214,12 @@ class MessageWindow(tk.Toplevel):
 
 
 class DatabaseErrorWindow(MessageWindow):
+    """Pops up a data base error window"""
 
     def __init__(self):
-        super(DatabaseErrorWindow, self).__init__(message_header="Datenbankfehler", message="Some problems ...")
+        super(DatabaseErrorWindow, self).__init__(message_header="Datenbankfehler",
+                                                  message="Auf die Datenbank kann nicht zugegriffen werden.")
+
 
 if __name__ == '__main__':
     MessageWindow(message_header="Test", message="a very long message with a lot of text and some more text"
