@@ -186,8 +186,8 @@ class Invoice(ttk.Frame):
         btn.bind("<Button-1>", self.create_invoice)
 
         # create random data
-        # self.pre_populate()
-        self.populate_with_random_data()
+        self.pre_populate()
+        # self.populate_with_random_data()
 
     def change_invoice_name(self, var, index, mode):
         """Update the invoice name based on data entries"""
@@ -323,7 +323,7 @@ class Invoice(ttk.Frame):
                 error_text = "Das Zahlungsziel muss zeitlich nach dem Rechnungsdatum liegen."
                 correctness_check = False
             elif coaching_end <= coaching_start:
-                error_text = "Das Coaching-Ende muss zeitlich nach dem Coaching-Start liegen."
+                error_text = "Das Coaching-Ende muss zeitlich nach dem Coaching-Beginn liegen."
                 correctness_check = False
 
         except Exception:
@@ -407,6 +407,12 @@ class Invoice(ttk.Frame):
     def pre_populate(self):
         """Populates the form with some data"""
 
+        training_name = "Individuelles Berufscoaching"
+        self.training_name.set(training_name)
+        sql = f"SELECT * FROM Massnahmen WHERE Bezeichnung = '{training_name}'"
+        training_cost = self.controller.db.select_single_query(sql)["Kosten_pro_UE"]
+        self.training_cost_per_lesson.set(training_cost)
+
         self.invoice_creation_date.set(datetime.date.today().strftime("%d.%m.%Y"))
         self.invoice_target_date.set(helpers.determine_payment_target_date(datetime.date.today(), 14).
                                      strftime("%d.%m.%Y"))
@@ -424,11 +430,11 @@ class Invoice(ttk.Frame):
         self.invoice_creation_date.set("22.12.2021")
         self.invoice_target_date.set("6.1.2022")
 
-        self.training_name.set("Individuelles Berufscoaching")
+        self.training_name.set("Test Maßnahme")
         self.training_start.set("09.06.2021")
         self.training_end.set("12.09.2021")
         self.training_nr_training_lesseons.set("40")
-        self.training_cost_per_lesson.set("36,35")
+        self.training_cost_per_lesson.set("12,34")
 
         self.jc_name.set("Testjobcenter")
         self.jc_street_and_nr.set("Berlinerstr. 987")
