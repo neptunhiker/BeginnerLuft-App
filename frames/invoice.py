@@ -174,8 +174,8 @@ class Invoice(ttk.Frame):
         btn.bind("<Button-1>", self.create_invoice)
 
         # create random data
-        # self.pre_populate()
-        self.populate_with_random_data()
+        self.pre_populate()
+        # self.populate_with_random_data()
 
     def change_invoice_name(self, var, index, mode):
         """Update the invoice name based on data entries"""
@@ -367,8 +367,9 @@ class Invoice(ttk.Frame):
     def pre_populate(self):
         """Populates the form with some data"""
 
-        self.invoice_creation_date.set(datetime.date.today())
-        self.invoice_target_date.set(helpers.determine_payment_target_date(datetime.date.today(), 14))
+        self.invoice_creation_date.set(datetime.date.today().strftime("%d.%m.%Y"))
+        self.invoice_target_date.set(helpers.determine_payment_target_date(datetime.date.today(), 14).
+                                     strftime("%d.%m.%Y"))
 
     def populate_with_random_data(self):
 
