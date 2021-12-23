@@ -95,7 +95,7 @@ class Invoice(ttk.Frame):
         self.jc_name = tk.StringVar()
         self.jc_street_and_nr = tk.StringVar()
         self.jc_zip_and_city = tk.StringVar()
-        string_variables = [self.jc_name, self.jc_street_and_nr, self.jc_zip_and_city]
+        string_variables = [self.jc_name]
         next_row = self.create_widgets(
             frame=self.data_frame,
             title="Jobcenter",
@@ -104,14 +104,20 @@ class Invoice(ttk.Frame):
             starting_row=next_row + 1,
             func=self.pick_jobcenter_from_db,
         )
+        for item_label, variable in zip(["Straße und Nr", "PLZ und Ort"], [self.jc_street_and_nr, self.jc_zip_and_city]):
+            ttk.Label(self.data_frame, style="Secondary.TLabel", text=item_label).grid(
+                row=next_row, column=1, pady=5, sticky="W")
+            ttk.Label(self.data_frame, style="Secondary.TLabel", textvariable=variable).grid(
+                row=next_row, column=2, pady=5, sticky="W")
+            next_row += 1
 
         # training data (Maßnahme)
         sep = ttk.Separator(self.data_frame)
         sep.grid(row=next_row, column=0, columnspan=3, sticky="EW", pady=sep_pad_y)
-        lbl_texts = ["Maßnahme", "Kosten pro Unterrichtseinheit"]
+        lbl_texts = ["Maßnahme"]
         self.training_name = tk.StringVar()
         self.training_cost_per_lesson = tk.StringVar()
-        string_variables = [self.training_name, self.training_cost_per_lesson]
+        string_variables = [self.training_name]
         next_row = self.create_widgets(
             frame=self.data_frame,
             title="Maßnahme",
@@ -120,6 +126,11 @@ class Invoice(ttk.Frame):
             starting_row=next_row + 1,
             func=self.pick_training_from_db,
         )
+        lbl = ttk.Label(self.data_frame, text="Kosten pro Unterrichtseinheit", style="Secondary.TLabel")
+        lbl.grid(row=next_row, column=1, sticky="W", pady=5)
+        lbl_cost = ttk.Label(self.data_frame, textvariable=self.training_cost_per_lesson, style="Secondary.TLabel")
+        lbl_cost.grid(row=next_row, column=2, sticky="W", pady=5)
+        next_row += 1
 
         # coaching data
         sep = ttk.Separator(self.data_frame)
@@ -250,7 +261,7 @@ class Invoice(ttk.Frame):
         for lbl_text, string_variable in zip(label_texts, string_variables):
             lbl = ttk.Label(frame, text=lbl_text, style="Secondary.TLabel")
             lbl.grid(row=row_counter, column=1, sticky="W", pady=pad_y, padx=(0, 10))
-            entry = ttk.Entry(frame, textvariable=string_variable)
+            entry = ttk.Entry(frame, textvariable=string_variable, width=25)
             entry.grid(row=row_counter, column=2, sticky="W", pady=pad_y)
             # entry.bind("<Button-1>", lambda event, widget=entry: self.turn_entry_red(event, widget=entry))  # only works for the last entry in the loop
             row_counter += 1
