@@ -1,9 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 from databases.database import Database
-from frames.boilerplate import Boilerplate, OneHalfFrame
-from frames.dashboard import Dashboard
-from frames.database_operations import AddParticipant
+from frames.dashboard import Dashboard, DatabaseOperationsDashboard
+from frames.database_operations.adding_data import AddParticipant, AddCoach, AddJobcenter
 from frames.invoice import Invoice
 from frames.login import Login
 from frames.password import Password
@@ -52,6 +51,18 @@ class BeginnerLuftApp(tk.Tk):
         )
         starting_frame.grid(row=0, column=0, sticky="NSEW")
 
+        add_coach_frame = AddCoach(
+            parent=self.container,
+            controller=self,
+        )
+        add_coach_frame.grid(row=0, column=0, sticky="NSEW")
+
+        add_jobcenter_frame = AddJobcenter(
+            parent=self.container,
+            controller=self,
+        )
+        add_jobcenter_frame.grid(row=0, column=0, sticky="NSEW")
+
         add_participant_frame = AddParticipant(
             parent=self.container,
             controller=self,
@@ -63,6 +74,12 @@ class BeginnerLuftApp(tk.Tk):
             controller=self,
         )
         dashboard_frame.grid(row=0, column=0, sticky="NSEW")
+
+        database_operations_dashboard_frame = DatabaseOperationsDashboard(
+            parent=self.container,
+            controller=self,
+        )
+        database_operations_dashboard_frame.grid(row=0, column=0, sticky="NSEW")
 
         invoice_frame = Invoice(
             parent=self.container,
@@ -93,8 +110,11 @@ class BeginnerLuftApp(tk.Tk):
 
         # Allow for switching between frames
         self.frames = {
+            AddCoach: add_coach_frame,
+            AddJobcenter: add_jobcenter_frame,
             AddParticipant: add_participant_frame,
             Dashboard: dashboard_frame,
+            DatabaseOperationsDashboard: database_operations_dashboard_frame,
             Entry: starting_frame,
             Invoice: invoice_frame,
             Login: login_frame,
@@ -102,11 +122,14 @@ class BeginnerLuftApp(tk.Tk):
             TimeTracking: time_tracking_frame,
         }
 
-        self.show_frame(Dashboard)  # change this line to determine the starting screen
+        self.show_frame(Login)  # change this line to determine the starting screen
 
     def show_frame(self, container):
         frame = self.frames[container]
         frame.tkraise()
+
+    def back_to_database_operations(self):
+        self.frames[DatabaseOperationsDashboard].tkraise()
 
     def configure_styles(self):
         self["background"] = bl_colors["bg primary"]

@@ -1,3 +1,4 @@
+from frames.dashboard import Dashboard
 from frames.login import Login
 from frames.password import Password
 from frames.start import Entry

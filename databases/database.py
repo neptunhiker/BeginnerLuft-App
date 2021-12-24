@@ -20,8 +20,35 @@ class Database:
         self.conn = sqlite3.connect(self.database_path)
         self.conn.row_factory = sqlite3.Row
 
+    def add_coach(self, coach):
+        """Insert coach data into the data base"""
+
+        sql = "INSERT INTO Coaches (Anrede, Vorname, Nachname) " \
+              "VALUES (?, ?, ?)"
+
+        self.connect_to_database()
+        with closing(self.conn.cursor()) as cursor:
+            cursor.execute(sql, (coach.title, coach.first_name, coach.last_name))
+            self.conn.commit()
+
+        print(f"{coach} successfully added to the database.")
+
+    def add_jobcenter(self, jobcenter):
+        """Insert jobcenter data into the data base"""
+
+        sql = "INSERT INTO Jobcenter (Name, 'E-Mail', Strasse, Nr, PLZ, Stadt) " \
+              "VALUES (?, ?, ?, ?, ?, ?)"
+
+        street, nr = jobcenter.street_and_nr.split()
+        self.connect_to_database()
+        with closing(self.conn.cursor()) as cursor:
+            cursor.execute(sql, (jobcenter.name, jobcenter.email, street, nr, jobcenter.zip_code, jobcenter.city))
+            self.conn.commit()
+
+        print(f"{jobcenter} successfully added to the database.")
+
     def add_participant(self, participant):
-        """Inser coach data into the data base"""
+        """Insert participant data into the data base"""
 
         sql = "INSERT INTO Teilnehmer (Anrede, Vorname, Nachname, Strasse_und_Nr, PLZ, Stadt, Kundennummer ) " \
               "VALUES (?, ?, ?, ?, ?, ?, ?)"
