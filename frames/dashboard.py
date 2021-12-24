@@ -2,14 +2,15 @@ from tkinter import ttk
 import tkinter as tk
 from PIL import Image, ImageTk
 
+from design.fonts import bl_font_title, bl_font_subtitle
+from frames.database_operations import AddParticipant
 from frames.invoice import Invoice
 from frames.time_tracking import TimeTracking
-from design.colors import bl_colors
-from widgets.buttons import BLButton
+from widgets.buttons import ImageButton
 
 
 class Dashboard(ttk.Frame):
-    """Dashboard frame"""
+    """A frame that displays different little programs available to the user"""
 
     def __init__(self, parent, controller):
         super().__init__(parent)
@@ -17,6 +18,7 @@ class Dashboard(ttk.Frame):
         self.controller = controller
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
+        self.screen_midpoint = self.winfo_screenwidth() / 2
 
         # create background image
         image = Image.open("assets/people.jpg")
@@ -27,42 +29,44 @@ class Dashboard(ttk.Frame):
         bg_image = ImageTk.PhotoImage(image)
 
         # create canvas
-        canvas = tk.Canvas(self)
-        canvas.grid(row=0, column=0, sticky="NSEW")
+        self.canvas = tk.Canvas(self)
+        self.canvas.grid(row=0, column=0, sticky="NSEW")
 
-        # set image in canvas
-        canvas.create_image(0, 0, image=bg_image, anchor="nw")
-        canvas.image = bg_image
+        # set background image in canvas
+        self.canvas.create_image(0, 0, image=bg_image, anchor="nw")
+        self.canvas.image = bg_image
 
-        canvas.columnconfigure(0, weight=1)
-        canvas.rowconfigure(0, weight=1)
+        # create header and buttons
+        self.create_header()
+        self.create_buttons()
 
-        frame = ttk.Frame(canvas, style="Secondary.TFrame")
-        frame.grid()
+    def create_header(self):
+        """Create a header for the canvas"""
 
-        frame.columnconfigure((0, 1), weight=1)
-        frame.rowconfigure(0, weight=1)
+        self.canvas.create_text(self.screen_midpoint, 100, fill="white", font=bl_font_title, text="BeginnerLuft")
+        self.canvas.create_text(self.screen_midpoint, 170, fill="white", font=bl_font_subtitle, text="Dashboard")
 
-        lbl_invoices = ttk.Label(
-            frame,
-            text="Rechnungserstellung",
-            anchor="center",
-            cursor="hand2",
-        )
-        lbl_invoices.grid(row=0, column=0, padx=10, pady=10, sticky="NSEW")
-        lbl_invoices.bind("<Button-1>", self.show_invoice_frame)
+    def create_buttons(self):
+        """Create clickable buttons that lead to other frames"""
 
-        lbl_time_tracking = ttk.Label(
-            frame,
-            text="Zeiterfassung",
-            anchor="center",
-            cursor="hand2",
-        )
-        lbl_time_tracking.grid(row=0, column=1, padx=10, pady=10, sticky="NSEW")
-        lbl_time_tracking.bind("<Button-1>", self.show_time_tracking_frame)
+        picture_file_names = ["databaseoperations", "invoice", "timetracking"]  # without exetension such as _01, _02
+        next_frames = [AddParticipant, Invoice, TimeTracking]
 
-    def show_invoice_frame(self, event):
-        self.controller.show_frame(Invoice)
+        x_start_pos = self.screen_midpoint
+        y_start_pos = 300
+        button_height = 75  # needs to be adjusted if button size changes
+        vert_space = 25
+        y_shift = button_height + vert_space
 
-    def show_time_tracking_frame(self, event):
-        self.controller.show_frame(TimeTracking)
+        y_pos = y_start_pos
+        for file_name, next_frame in zip(picture_file_names, next_frames):
+            ImageButton(parent=self,
+                        canvas=self.canvas,
+                        path_to_image_01=f"assets/buttons/{file_name}_01.png",
+                        path_to_image_02=f"assets/buttons/{file_name}_02.png",
+                        x_coor=x_start_pos,
+                        y_coor=y_pos,
+                        func=self.controller.show_frame,
+                        container=next_frame
+                        )
+            y_pos += y_shift
