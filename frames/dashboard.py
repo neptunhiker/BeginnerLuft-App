@@ -6,7 +6,7 @@ from design.fonts import bl_font_title, bl_font_subtitle
 from frames.database_operations.adding_data import AddParticipant, AddCoach, AddJobcenter
 from frames.invoice import Invoice
 from frames.time_tracking import TimeTracking
-from widgets.buttons import ImageButton
+from widgets.buttons import BLImageButtonCanvas
 
 
 class Dashboard(ttk.Frame):
@@ -60,15 +60,15 @@ class Dashboard(ttk.Frame):
 
         y_pos = y_start_pos
         for file_name, next_frame in zip(picture_file_names, next_frames):
-            ImageButton(parent=self,
-                        canvas=self.canvas,
-                        path_to_image_01=f"assets/buttons/{file_name}_01.png",
-                        path_to_image_02=f"assets/buttons/{file_name}_02.png",
-                        x_coor=x_start_pos,
-                        y_coor=y_pos,
-                        func=self.controller.show_frame,
-                        container=next_frame
-                        )
+            BLImageButtonCanvas(parent=self,
+                                canvas=self.canvas,
+                                path_to_image_01=f"assets/buttons/{file_name}_01.png",
+                                path_to_image_02=f"assets/buttons/{file_name}_02.png",
+                                x_coor=x_start_pos,
+                                y_coor=y_pos,
+                                func=self.controller.show_frame,
+                                container=next_frame
+                                )
             y_pos += y_shift
 
 
@@ -123,13 +123,13 @@ class DatabaseOperationsDashboard(ttk.Frame):
 
         y_pos = y_start_pos
         for file_name, next_frame in zip(picture_file_names, next_frames):
-            ImageButton(parent=self,
-                        canvas=self.canvas,
-                        path_to_image_01=f"assets/buttons/{file_name}_01.png",
-                        path_to_image_02=f"assets/buttons/{file_name}_02.png",
-                        x_coor=x_start_pos,
-                        y_coor=y_pos,
-                        func=self.controller.show_frame,
-                        container=next_frame
-                        )
+            BLImageButtonCanvas(parent=self,
+                                canvas=self.canvas,
+                                path_to_image_01=f"assets/buttons/{file_name}_01.png",
+                                path_to_image_02=f"assets/buttons/{file_name}_02.png",
+                                x_coor=x_start_pos,
+                                y_coor=y_pos,
+                                func=self.controller.show_frame,
+                                container=next_frame
+                                )
             y_pos += y_shift

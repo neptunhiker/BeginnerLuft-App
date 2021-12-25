@@ -1,7 +1,11 @@
 """Customized Buttons"""
 
+from PIL import Image, ImageTk
+import tkinter as tk
 from tkinter import ttk
 from tkinter import PhotoImage
+
+from design.colors import bl_colors
 
 
 class BLButton(ttk.Button):
@@ -10,7 +14,41 @@ class BLButton(ttk.Button):
         super(BLButton, self).__init__(parent, cursor="hand2", **kwargs)
 
 
-class ImageButton:
+class BLImageButtonLabel(tk.Label):
+
+    def __init__(self, parent, func, path_to_file_01, path_to_file_02, *args, **kwargs):
+
+        self.func = func
+        self.image_01 = Image.open(path_to_file_01)
+        self.image_02 = Image.open(path_to_file_02)
+
+        self.button_photo_01 = ImageTk.PhotoImage(self.image_01)
+        self.button_photo_02 = ImageTk.PhotoImage(self.image_02)
+
+        self.button_photo_01 = self.button_photo_01
+        self.button_photo_02 = self.button_photo_02
+
+        super(BLImageButtonLabel, self).__init__(parent, *args, image=self.button_photo_01, cursor="hand2",
+                                                 background=bl_colors["bg secondary"], **kwargs)
+
+        self.bind("<Enter>", self.on_enter)
+        self.bind("<Leave>", self.on_leave)
+        self.bind("<Button-1>", self.on_click)
+
+    def on_leave(self, event):
+        self.configure(image=self.button_photo_01)
+        print("leaving")
+
+    def on_enter(self, event):
+        self.configure(image=self.button_photo_02)
+        print("entering")
+
+    def on_click(self, event):
+        print("clicking")
+        self.func()
+
+
+class BLImageButtonCanvas:
     """Clickable button based on a picture that can be placed on a canvas"""
 
     def __init__(self, parent, canvas, path_to_image_01, path_to_image_02, x_coor, y_coor, func=None, *args, **kwargs):

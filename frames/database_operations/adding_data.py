@@ -7,7 +7,7 @@ from PIL import Image, ImageTk
 from objects.jobcenter import Jobcenter
 from objects.people import Participant, Coach
 from tools.helpers import DatabaseErrorWindow, MessageWindow
-from widgets.buttons import BLButton
+from widgets.buttons import BLButton, BLImageButtonLabel
 
 
 class AddParticipant(ttk.Frame):
@@ -133,7 +133,9 @@ class AddParticipant(ttk.Frame):
         btn.grid()
 
         # back button
-        btn_back = BLButton(buttons_frame, text="<< zurück", command=self.controller.back_to_database_operations)
+        # btn_back = BLButton(buttons_frame, text="<< zurück", command=self.controller.back_to_database_operations)
+        btn_back = BLImageButtonLabel(buttons_frame, self.controller.back_to_database_operations,
+                                      "assets/buttons/back_01.png", "assets/buttons/back_02.png")
         btn_back.grid(pady=(20, 10))
 
         self.cmb_title.focus()

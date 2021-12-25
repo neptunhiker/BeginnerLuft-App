@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from databases.database import Database
+from frames.boilerplate import Boilerplate
 from frames.dashboard import Dashboard, DatabaseOperationsDashboard
 from frames.database_operations.adding_data import AddParticipant, AddCoach, AddJobcenter
 from frames.invoice import Invoice
@@ -69,6 +70,12 @@ class BeginnerLuftApp(tk.Tk):
         )
         add_participant_frame.grid(row=0, column=0, sticky="NSEW")
 
+        boilerplate_frame = Boilerplate(
+            parent=self.container,
+            controller=self,
+        )
+        boilerplate_frame.grid(row=0, column=0, sticky="NSEW")
+
         dashboard_frame = Dashboard(
             parent=self.container,
             controller=self,
@@ -113,6 +120,7 @@ class BeginnerLuftApp(tk.Tk):
             AddCoach: add_coach_frame,
             AddJobcenter: add_jobcenter_frame,
             AddParticipant: add_participant_frame,
+            Boilerplate: boilerplate_frame,
             Dashboard: dashboard_frame,
             DatabaseOperationsDashboard: database_operations_dashboard_frame,
             Entry: starting_frame,

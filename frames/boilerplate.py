@@ -1,13 +1,14 @@
 import datetime
 from tkinter import ttk
 import tkinter as tk
-import tkinter.filedialog
+from tkinter import PhotoImage
 from PIL import Image, ImageTk
 
 from design.colors import bl_colors
+from frames.dashboard import Dashboard
 from reports.invoice import PDFInvoice
 from tools import helpers
-from widgets.buttons import BLButton
+from widgets.buttons import BLButton, BLImageButtonLabel
 
 
 class Boilerplate(ttk.Frame):
@@ -66,11 +67,30 @@ class Boilerplate(ttk.Frame):
         buttons_frame.grid(row=2, column=0, sticky="EW", pady=30)
         buttons_frame.columnconfigure(0, weight=1)
 
-        # go button
-        btn = BLButton(buttons_frame, text="In Datenbank eintragen", command=self.insert_into_db)
-        btn.grid()
+        # # go button
+        # back_image = Image.open("assets/buttons/back_01.png")
+        # button_photo = ImageTk.PhotoImage(back_image)
+        # #
+        # # button_photo = PhotoImage("assets/buttons/back_01.png")
+        #
+        # btn = ttk.Label(buttons_frame, image=button_photo, style="Secondary.TLabel")
+        # btn.image = button_photo
+        # btn.grid()
+
+        btn_img_back = BLImageButtonLabel(
+            parent=buttons_frame,
+            func=self.back_button,
+            path_to_file_01="assets/buttons/back_01.png",
+            path_to_file_02="assets/buttons/back_02.png",
+        )
+        btn_img_back.grid()
 
         # back button
-        btn_back = BLButton(buttons_frame, text="<< zurück", command=self.controller.back_to_database_operations)
+        btn_back = BLButton(buttons_frame, text="<< zurück", command=self.back_button)
         btn_back.grid(pady=(20, 10))
 
+    def go_button(self):
+        print("Testing go button")
+
+    def back_button(self):
+        self.controller.show_frame(Dashboard)
