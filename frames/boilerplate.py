@@ -1,14 +1,12 @@
-import datetime
 from tkinter import ttk
 import tkinter as tk
-from tkinter import PhotoImage
+from tkinter import messagebox
 from PIL import Image, ImageTk
 
 from design.colors import bl_colors
 from frames.dashboard import Dashboard
-from reports.invoice import PDFInvoice
 from tools import helpers
-from widgets.buttons import BLButton, BLImageButtonLabel
+from widgets.buttons import BLImageButtonLabel
 
 
 class Boilerplate(ttk.Frame):
@@ -43,54 +41,59 @@ class Boilerplate(ttk.Frame):
         canvas.create_image(0, 0, image=bg_image, anchor="nw")
         canvas.image = bg_image
 
-        # RIGHT HAND SIDE
+        # RIGHT HAND SIDE ----------------------------------------------------
         frame_right = ttk.Frame(self, style="Secondary.TFrame")
         frame_right.grid(row=0, column=1, sticky="NSEW")
         frame_right.columnconfigure(0, weight=1)
         frame_right.rowconfigure(0, weight=1)
 
-        pos_frame = ttk.Frame(frame_right, style="Secondary.TFrame")
-        pos_frame.grid()
+        # POSITIONING frame ----------------------------------------------------
+        pos_frame = ttk.Frame(frame_right, style="TFrame")
+        pos_frame.grid(row=0, sticky="NSEW")
+        pos_frame.columnconfigure(0, weight=1)
+        pos_frame.rowconfigure(1, weight=1)
 
-        # header frame
-        header_frame = ttk.Frame(pos_frame, style="Secondary.TFrame")
-        header_frame.grid(sticky="EW", padx=20, pady=30)
+        # HEADER frame ----------------------------------------------------
+        header_frame = ttk.Frame(pos_frame, style="Testing.TFrame")
+        header_frame.grid(row=0, sticky="EW", padx=10)
         header_frame.columnconfigure(0, weight=1)
 
+        # header
+        header = ttk.Label(header_frame, text="Boilerplate", style="Secondary.Header.TLabel")
+        header.grid()
 
-        # CONTENT frame
-        content_frame = ttk.Frame(pos_frame, style="Secondary.TFrame")
-        content_frame.grid(padx=20)
+        # CONTENT frame ----------------------------------------------------
+        content_frame = ttk.Frame(pos_frame, style="Testing2.TFrame")
+        content_frame.grid(row=1, sticky="EW", padx=10)
+        content_frame.rowconfigure(0, weight=1)
+        content_frame.columnconfigure(0, weight=1)
 
-        # FRAME buttons
-        buttons_frame = ttk.Frame(pos_frame, style="Secondary.TFrame")
-        buttons_frame.grid(row=2, column=0, sticky="EW", pady=30)
-        buttons_frame.columnconfigure(0, weight=1)
+        lbl = ttk.Label(content_frame, text="Test Label")
+        lbl.grid()
 
-        # # go button
-        # back_image = Image.open("assets/buttons/back_01.png")
-        # button_photo = ImageTk.PhotoImage(back_image)
-        # #
-        # # button_photo = PhotoImage("assets/buttons/back_01.png")
-        #
-        # btn = ttk.Label(buttons_frame, image=button_photo, style="Secondary.TLabel")
-        # btn.image = button_photo
-        # btn.grid()
+        btn_go = BLImageButtonLabel(
+            parent=content_frame,
+            func=self.back_button,
+            path_to_file_01="assets/buttons/go_01.png",
+            path_to_file_02="assets/buttons/go_02.png",
+        )
+        btn_go.grid(pady=10)
+
+        # FRAME navigation ----------------------------------------------------
+        nav_frame = ttk.Frame(frame_right, style="Testing.TFrame")
+        nav_frame.grid(row=1, column=0, sticky="EW", padx=10)
+        nav_frame.columnconfigure(0, weight=1)
 
         btn_img_back = BLImageButtonLabel(
-            parent=buttons_frame,
-            func=self.back_button,
-            path_to_file_01="assets/buttons/back_01.png",
-            path_to_file_02="assets/buttons/back_02.png",
+            parent=nav_frame,
+            func=self.go_button,
+            path_to_file_01="assets/buttons/go_01.png",
+            path_to_file_02="assets/buttons/go_02.png",
         )
-        btn_img_back.grid()
-
-        # back button
-        btn_back = BLButton(buttons_frame, text="<< zurück", command=self.back_button)
-        btn_back.grid(pady=(20, 10))
+        btn_img_back.grid(pady=10)
 
     def go_button(self):
-        print("Testing go button")
+        tk.messagebox.showinfo("Go button pressed", "You pressed the Go button.")
 
     def back_button(self):
         self.controller.show_frame(Dashboard)

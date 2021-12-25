@@ -130,7 +130,7 @@ class BeginnerLuftApp(tk.Tk):
             TimeTracking: time_tracking_frame,
         }
 
-        self.show_frame(Login)  # change this line to determine the starting screen
+        self.show_frame(Boilerplate)  # change this line to determine the starting screen
 
     def show_frame(self, container):
         frame = self.frames[container]
@@ -191,6 +191,11 @@ class BeginnerLuftApp(tk.Tk):
         self.style.configure(
             "Testing.TFrame",
             background=bl_colors["bg testing"],
+        )
+
+        self.style.configure(
+            "Testing2.TFrame",
+            background="red",
         )
 
         self.style.configure(
