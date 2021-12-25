@@ -295,5 +295,6 @@ class PickTraining(tk.Toplevel):
 
         self.parent.training_name.set(self.selected_training.name)
         self.parent.training_cost_per_lesson.set(self.selected_training.cost_per_training_lesson)
+        self.parent.training_id.set(self.selected_training.data_base_id)
 
         self.destroy()

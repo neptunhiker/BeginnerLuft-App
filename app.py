@@ -111,7 +111,6 @@ class BeginnerLuftApp(tk.Tk):
         time_tracking_frame = TimeTracking(
             parent=self.container,
             controller=self,
-            back_function=lambda: self.show_frame(Dashboard)
         )
         time_tracking_frame.grid(row=0, column=0, sticky="NSEW")
 
@@ -130,11 +129,14 @@ class BeginnerLuftApp(tk.Tk):
             TimeTracking: time_tracking_frame,
         }
 
-        self.show_frame(Boilerplate)  # change this line to determine the starting screen
+        self.show_frame(TimeTracking)  # change this line to determine the starting screen
 
     def show_frame(self, container):
         frame = self.frames[container]
         frame.tkraise()
+
+    def back_to_dashboard(self):
+        self.frames[Dashboard].tkraise()
 
     def back_to_database_operations(self):
         self.frames[DatabaseOperationsDashboard].tkraise()

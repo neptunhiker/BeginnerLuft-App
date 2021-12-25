@@ -118,6 +118,7 @@ class Invoice(ttk.Frame):
         lbl_texts = ["Maßnahme"]
         self.training_name = tk.StringVar()
         self.training_cost_per_lesson = tk.StringVar()
+        self.training_id = tk.StringVar()  # not needed here but keep it as it is used by data picker
         string_variables = [self.training_name]
         next_row = self.create_widgets(
             frame=self.data_frame,

@@ -1,190 +1,360 @@
 from tkinter import ttk
 import tkinter as tk
+from tkinter.filedialog import askopenfilename, asksaveasfilename
+from tkinter import messagebox
+import os
 from PIL import Image, ImageTk
 
-from design.colors import bl_colors
-from frames.password import Password
-from frames.start import Entry
-from tools.helpers import verify_password
-from widgets.buttons import BLButton
+from tools import helpers
+from objects.data_picker import PickParticipant, PickTraining
+from reports.time_tracking.time_tracking import TimeReport
+from widgets.buttons import BLImageButtonLabel
+from widgets.labels import BLBoldClickableSecondaryLabel
 
 
 class TimeTracking(ttk.Frame):
-    """A frame for time tracking"""
+    """A frame that allows user to create a pdf for time tracking of coachings"""
 
-    def __init__(self, parent, controller, back_function):
+    def __init__(self, parent, controller):
         super().__init__(parent)
         self["style"] = "Secondary.TFrame"
         self.controller = controller
         self.columnconfigure(0, weight=1)
-        self.rowconfigure(0, weight=0)
-        self.rowconfigure(1, weight=1)
-        self.rowconfigure(2, weight=0)
-
-        # NAV TOP FRAME
-        nav_top_frame = ttk.Frame(self)
-        nav_top_frame.grid(row=0, column=0, sticky="EW")
-        nav_top_frame.columnconfigure(0, weight=1)
-
-        header = ttk.Label(
-            nav_top_frame,
-            text=f"{self.__class__.__name__}",
-            style="Header.TLabel",
-            justify="center",
-            anchor="center"
-        )
-        header.grid(pady=10)
-
-        # CONTENT FRAME
-        content_frame = ttk.Frame(self, style="Secondary.TFrame")
-        content_frame.grid(row=1, column=0, sticky="NSEW")
-        content_frame.columnconfigure(0, weight=1)
-        content_frame.rowconfigure(0, weight=1)
-
-        lbl = ttk.Label(
-            content_frame,
-            text=f"Content for {self.__class__.__name__}",
-            style="Secondary.TLabel")
-        lbl.grid()
-
-        # NAV BOTTOM FRAME
-        nav_bottom_frame = ttk.Frame(self)
-        nav_bottom_frame.grid(row=2, column=0, sticky="NESW")
-        nav_bottom_frame.rowconfigure(0, weight=1)
-
-        back_button = BLButton(
-            nav_bottom_frame,
-            text="<< zurück",
-            command=back_function,
-        )
-        back_button.grid(sticky="SW", pady=10)
-
-
-class BackgroundTest(ttk.Frame):
-    """A test frame for background pictures"""
-
-    def __init__(self, parent, controller, next_function):
-        super().__init__(parent)
-        self["style"] = "Secondary.TFrame"
-        self.controller = controller
-        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1)
-        self.next_function = next_function
-        self.login_users = {}
-        self.error_text = tk.StringVar()
-        self.user_selected = tk.StringVar()
-        self.pw_given = tk.StringVar()
-        self.ent_pw = None
+        self.participant_title = tk.StringVar()
+        self.participant_first_name = tk.StringVar()
+        self.participant_last_name = tk.StringVar()
+        self.participant_jc_id = tk.StringVar()
+        self.training_name = tk.StringVar()
+        self.training_id = tk.StringVar()
+        self.training_cost_per_lesson = tk.StringVar()  # not needed but keep it as it is passed by datapicker
+        self.avgs_coupon_id = tk.StringVar()
+        self.confirmation_period_start = tk.StringVar()
+        self.confirmation_period_end = tk.StringVar()
+        self.file_path_time_sheet_bl = tk.StringVar()
+        self.file_path_time_sheet_coach = tk.StringVar()
+
+        self.variables = [self.participant_title, self.participant_first_name, self.participant_last_name,
+                          self.participant_jc_id, self.training_name, self.training_id, self.avgs_coupon_id,
+                          self.confirmation_period_start, self.confirmation_period_end, self.file_path_time_sheet_bl,
+                          self.file_path_time_sheet_coach]
+
+        # FRAME left
+        frame_left = ttk.Frame(self)
+        frame_left.grid(row=0, column=0, sticky="NSEW")
+        frame_left.rowconfigure(0, weight=1)
+        frame_left.columnconfigure(0, weight=1)
 
         # create background image
-        image = Image.open("assets/people.jpg")
-        desired_width = 1800
+        image = Image.open("assets/office01.jpg")
+        desired_width = 1200
         ratio = image.height / image.width
         calculated_height = int(desired_width * ratio)
         image = image.resize((desired_width, calculated_height), Image.ANTIALIAS)
         bg_image = ImageTk.PhotoImage(image)
 
         # create canvas
-        canvas = tk.Canvas(self)
+        canvas = tk.Canvas(frame_left)
         canvas.grid(row=0, column=0, sticky="NSEW")
 
         # set image in canvas
         canvas.create_image(0, 0, image=bg_image, anchor="nw")
         canvas.image = bg_image
 
-        self.widgets()
+        # RIGHT HAND SIDE ----------------------------------------------------
+        frame_right = ttk.Frame(self, style="Secondary.TFrame")
+        frame_right.grid(row=0, column=1, sticky="NSEW")
+        frame_right.columnconfigure(0, weight=1)
+        frame_right.rowconfigure(0, weight=1)
 
-    def widgets(self):
-        """Create labels and entry widgets"""
+        # POSITIONING frame ----------------------------------------------------
+        pos_frame = ttk.Frame(frame_right, style="Secondary.TFrame")
+        pos_frame.grid(row=0, sticky="NSEW")
+        pos_frame.columnconfigure(0, weight=1)
+        pos_frame.rowconfigure(1, weight=1)
 
-        frame = ttk.Frame(self, style="Border.Secondary.TFrame")
-        frame.grid(row=0, column=0)
-        frame.columnconfigure(0, weight=1)
-        # frame.rowconfigure(0, weight=1)
+        # HEADER frame ----------------------------------------------------
+        header_frame = ttk.Frame(pos_frame, style="Secondary.TFrame")
+        header_frame.grid(row=0, sticky="EW", padx=10)
+        header_frame.columnconfigure(0, weight=1)
 
-        lbl_login = ttk.Label(frame, text="Login", style="Secondary.Header.TLabel")
-        lbl_login.grid(sticky="W", pady=(10, 5))
+        # header
+        header = ttk.Label(header_frame, text="Boilerplate", style="Secondary.Header.TLabel")
+        header.grid()
 
-        lbl_instruction = ttk.Label(frame, text="Zum Fortfahren bitte Einloggen", style="Secondary.TLabel")
-        lbl_instruction.grid(sticky="W")
+        # CONTENT frame ----------------------------------------------------
+        self.content_frame = ttk.Frame(pos_frame, style="Secondary.TFrame")
+        self.content_frame.grid(row=1, padx=10)
+        # self.content_frame.columnconfigure(0, weight=1)
+        self.content_frame.rowconfigure(0, weight=1)
 
-        lbl_user = ttk.Label(frame, text="Benutzer:In", style="Secondary.TLabel")
-        lbl_user.grid(sticky="W", pady=(30, 0))
+        sep_pad_y = 10
+        self.pad_x = 20
+        self.pad_y = 5
+        self.labels = {}
 
-        cmb_user = ttk.Combobox(frame, textvariable=self.user_selected)
-        for employee in self.controller.db.get_employees():
-            self.login_users[f"{employee.first_name} {employee.last_name}"] = employee.data_base_id
-        cmb_user["values"] = [user_name for user_name in self.login_users.keys()]
-        cmb_user.current(0)
-        cmb_user["state"] = "readonly"
-        cmb_user.bind("<<ComboboxSelected>>", self.handle_user_selection)
-        cmb_user.grid()
+        # next_row = self.create_labels_participant(0)
 
-        lbl_pw = ttk.Label(frame, text="Passwort", style="Secondary.TLabel")
-        lbl_pw.grid(sticky="W", pady=(10, 0))
+        descriptions = ["Anrede", "Vorname", "Nachname", "Kundennummer"]
+        variables = [self.participant_title, self.participant_first_name, self.participant_last_name,
+                     self.participant_jc_id]
+        next_row = self.create_header_labels_labels(starting_row=0, header_text="Teilnehmer:In",
+                                                    header_func=self.pick_participant_from_db,
+                                                    descriptions=descriptions, variables=variables, sep=False)
 
-        self.ent_pw = ttk.Entry(frame, show="*", textvariable=self.pw_given)
-        self.ent_pw.grid(sticky="EW")
-        self.ent_pw.bind("<Return>", self.login_check)
-        self.pw_given.trace("w", lambda a, b, c, d=self: self.on_change())
+        # trainings
+        descriptions = ["Bezeichnung", "ID"]
+        variables = [self.training_name, self.training_id]
+        next_row = self.create_header_labels_labels(starting_row=next_row, header_text="Maßnahme",
+                                                    header_func=self.pick_training_from_db, descriptions=descriptions,
+                                                    variables=variables, sep=True)
 
-        lbl_error = ttk.Label(frame, textvariable=self.error_text, style="Secondary.Error.TLabel")
-        lbl_error.grid(sticky="W")
+        # AVGS coupon
+        descriptions = ["Nummer"]
+        variables = [self.avgs_coupon_id]
+        next_row = self.create_header_labels_entries(starting_row=next_row, header_text="AVGS-Gutschein",
+                                                     header_func=None, descriptions=descriptions,
+                                                     variables=variables, sep=True)
 
-        btn_login = BLButton(frame, text="Login -->")
-        btn_login.grid(pady=(20, 10), sticky="E")
-        btn_login.bind("<Button-1>", self.login_check)
+        # Confirmation period (Bewilligungszeitraum)
+        descriptions = ["Beginn", "Ende"]
+        variables = [self.confirmation_period_start, self.confirmation_period_end]
+        next_row = self.create_header_labels_entries(starting_row=next_row, header_text="Bewilligungszeitraum",
+                                                     header_func=None, descriptions=descriptions,
+                                                     variables=variables, sep=True)
 
-        for child in frame.winfo_children():
-            child.grid_configure(padx=20)
+        # Time sheets
+        descriptions = ["Datei BeginnerLuft", "Datei Coach"]
+        variables = [self.file_path_time_sheet_bl, self.file_path_time_sheet_coach]
+        self.create_file_picker(starting_row=next_row, header_text="Zeiterfassung-Sheets", descriptions=descriptions,
+                                variables=variables, sep=True)
 
-        cmb_user.focus()
+        # FRAME action ----------------------------------------------------
+        action_frame = ttk.Frame(frame_right, style="Secondary.TFrame")
+        action_frame.grid(row=1, column=0, sticky="EW", padx=10)
+        action_frame.columnconfigure(0, weight=1)
 
-    def handle_user_selection(self, event):
-        print(self.user_selected.get())
-        self.ent_pw.focus()  # does not seem to have an effect
+        btn_go = BLImageButtonLabel(
+            parent=action_frame,
+            func=self.go_button,
+            path_to_file_01="assets/buttons/go_01.png",
+            path_to_file_02="assets/buttons/go_02.png",
+        )
+        btn_go.grid(pady=10)
 
-    def on_change(self):
-        """Remove error text when user changes the password entry field"""
-        self.error_text.set("")
+        # FRAME navigation ----------------------------------------------------
+        nav_frame = ttk.Frame(frame_right, style="Secondary.TFrame")
+        nav_frame.grid(row=2, column=0, sticky="EW", padx=10)
+        nav_frame.columnconfigure(0, weight=1)
 
-    def login_check(self, event):
-        """Check whether user can login with given information"""
+        btn_img_back = BLImageButtonLabel(
+            parent=nav_frame,
+            func=self.back_button,
+            path_to_file_01="assets/buttons/back_01.png",
+            path_to_file_02="assets/buttons/back_02.png",
+        )
+        btn_img_back.grid(pady=10)
 
-        # get user from frame
-        user = self.user_selected.get()
-        user_database_id = self.login_users[user]
+        self.populate_with_random_data()
 
-        # get target password from data base
-        sql = "SELECT * FROM Passwoerter WHERE ID = ?"
-        row = self.controller.db.select_single_query(query=sql, arguments=[user_database_id])
-        target_pw = row["Passwort"]
+    def populate_with_random_data(self):
+        self.participant_title.set("Herr")
+        self.participant_first_name.set("Jimmy")
+        self.participant_last_name.set("Murt")
+        self.participant_jc_id.set("jcid123")
+        self.avgs_coupon_id.set("lsajfd123")
+        self.training_name.set("fast ind. Coaching")
+        self.training_id.set("123321")
+        self.confirmation_period_start.set("22.01.1984")
+        self.confirmation_period_end.set("29.03.1984")
+        self.file_path_time_sheet_bl.set("/Volumes/GoogleDrive/Meine Ablage/2021-10-03 Operations/Arbeitsordner/Python/Zeiterfassung/BL-Time-Tracking/resources/Zeiterfassung Ahmed Muhadi.xlsx")
+        self.file_path_time_sheet_coach.set("/Volumes/GoogleDrive/Meine Ablage/2021-10-03 Operations/Arbeitsordner/Python/Zeiterfassung/BL-Time-Tracking/resources/Zeiterfassung Ahmed Muhadi.xlsx")
 
-        # compare passwords
-        if verify_password(target_pw, self.pw_given.get()):
-            print(f"login successful for {user}")
-            self.controller.current_user = user
+    def go_button(self):
+        # completeness check
+        if not self.completeness_check():
+            return
 
-            # to be continued
-            # this is a workaround for a refresh function - not good, refactor!
-            self.controller.frames[Password].destroy()
-            new_pw_frame = Password(
-                parent=self.controller.container,
-                controller=self.controller,
-                back_function=lambda: self.controller.show_frame(Entry)
-            )
-            new_pw_frame.grid(row=0, column=0, sticky="NSEW")
-            self.controller.frames[Password] = new_pw_frame
+        if not self.correctness_check():
+            return
 
-            self.next_function()  # change view to next frame
-            self.controller.full_screen_window()
+        print(self.file_path_time_sheet_bl.get())
+        report = TimeReport(
+            file_coach=self.file_path_time_sheet_coach.get(),
+            file_bl=self.file_path_time_sheet_bl.get(),
+            participant_title=self.participant_title.get(),
+            participant_first_name=self.participant_first_name.get(),
+            participant_last_name=self.participant_last_name.get(),
+            avgs_nr=self.avgs_coupon_id.get(),
+            training_name=self.training_name.get(),
+            training_nr=self.training_id.get(),
+            confirmation_period_start=helpers.parse_date_from_string(self.confirmation_period_start.get()),
+            confirmation_period_end=helpers.parse_date_from_string(self.confirmation_period_end.get())
+        )
+
+        # path = asksaveasfilename(initialdir=os.getcwd())
+        path = "/Users/beata/Documents/Basti/Python projects/Output/Zeiterfassung/testreport2.pdf"
+        report.create_report(path=path)
+
+
+
+    def back_button(self):
+        self.controller.back_to_dashboard()
+
+    def completeness_check(self):
+        """Check whether all data have been filled out"""
+
+        completeness_check = True
+        trigger_words = ["", "Bitte auswählen", "Bitte Datei auswählen"]
+
+        # check that all required fields have been filled out except the data file picker fields
+        for lbl_text, item in self.labels.items():
+
+            if lbl_text not in ["Datei Coach", "Datei BeginnerLuft"]:
+
+                if item[1].get() in trigger_words:
+                    item[0].configure(style="Secondary.Emphasize.TLabel")
+                    completeness_check = False
+                else:
+                    item[0].configure(style="Secondary.TLabel")
+
+        # if both data file picker fields are empty fail the completeness check else pass it
+        if self.file_path_time_sheet_coach.get() in trigger_words and self.file_path_time_sheet_bl.get() in trigger_words:
+            self.labels["Datei Coach"][0].configure(style="Secondary.Emphasize.TLabel")
+            self.labels["Datei BeginnerLuft"][0].configure(style="Secondary.Emphasize.TLabel")
+            completeness_check = False
 
         else:
-            self.pw_given.set("")
-            self.error_text.set("Falsches Passwort")
-            self.ent_pw.focus_set()
+            self.labels["Datei Coach"][0].configure(style="Secondary.TLabel")
+            self.labels["Datei BeginnerLuft"][0].configure(style="Secondary.TLabel")
+
+        return completeness_check
+
+    def correctness_check(self):
+        """Check whether data have been entered correctly"""
+
+        # check if entered dates are dates indeed
+        errors = 0
+        for lbl_text in ["Beginn", "Ende"]:
+
+            try:
+                helpers.parse_date_from_string(self.labels[lbl_text][1].get())
+            except:
+                self.labels[lbl_text][0].configure(style="Secondary.Emphasize.TLabel")
+                errors += 1
+            else:
+                self.labels[lbl_text][0].configure(style="Secondary.TLabel")
+
+        if errors == 0:
+            correctness_check = True
+        else:
+            correctness_check = False
+
+        # check if confirmation period end is after confirmation period start
+        if correctness_check:
+
+            start = helpers.parse_date_from_string(self.confirmation_period_start.get())
+            end = helpers.parse_date_from_string(self.confirmation_period_end.get())
+
+            if end < start:
+                correctness_check = False
+                for lbl_text in ["Beginn", "Ende"]:
+                    self.labels[lbl_text][0].configure(style="Secondary.Emphasize.TLabel")
+            else:
+                correctness_check = True
+                for lbl_text in ["Beginn", "Ende"]:
+                    self.labels[lbl_text][0].configure(style="Secondary.TLabel")
+
+        return correctness_check
 
 
+    def pick_participant_from_db(self, event):
+        """Opens a new window that allows the user to pick a participant from the database"""
+        PickParticipant(controller=self.controller, parent=self)
 
+    def pick_training_from_db(self, event):
+        """Opens a new window that allows the user to pick a training (Maßnahme) from the database"""
+        PickTraining(controller=self.controller, parent=self)
 
+    def create_header_labels_entries(self, starting_row, header_text, descriptions, variables, header_func=None, sep=False):
+        """Create a header, static labels and dynamic entry fields"""
+
+        if sep is True:
+            ttk.Separator(self.content_frame).grid(row=starting_row, column=0, columnspan=3,
+                                                   sticky="EW", pady=10)
+            starting_row += 1
+
+        if header_func is not None:
+            lbl = BLBoldClickableSecondaryLabel(self.content_frame, text=header_text)
+            lbl.bind("<Button-1>", header_func)
+        else:
+            lbl = ttk.Label(self.content_frame, text=header_text, style="Bold.Secondary.TLabel")
+
+        lbl.grid(row=starting_row, column=0, sticky="W", pady=self.pad_y)
+
+        for i, item in enumerate(zip(descriptions, variables)):
+            lbl = ttk.Label(self.content_frame, text=item[0], style="Secondary.TLabel")
+            lbl.grid(row=starting_row + i, column=1, padx=self.pad_x, pady=self.pad_y, sticky="W")
+            self.labels[item[0]] = (lbl, item[1])
+
+            ent_var = ttk.Entry(self.content_frame, textvariable=item[1])
+            ent_var.grid(row=starting_row + i, column=2, pady=self.pad_y, sticky="W")
+
+        return starting_row + (i + 1)
+
+    def create_header_labels_labels(self, starting_row, header_text, descriptions, variables, header_func=None, sep=False):
+        """Create a header, static labels and dynamic labels"""
+        if sep is True:
+            ttk.Separator(self.content_frame).grid(row=starting_row, column=0, columnspan=3,
+                                                   sticky="EW", pady=10)
+            starting_row += 1
+
+        if header_func is not None:
+            lbl = BLBoldClickableSecondaryLabel(self.content_frame, text=header_text)
+            lbl.bind("<Button-1>", header_func)
+        else:
+            lbl = ttk.Label(self.content_frame, text=header_text, style="Bold.Secondary.TLabel")
+
+        lbl.grid(row=starting_row, column=0, sticky="W", pady=self.pad_y)
+
+        for i, item in enumerate(zip(descriptions, variables)):
+            lbl = ttk.Label(self.content_frame, text=item[0], style="Secondary.TLabel")
+            lbl.grid(row=starting_row + i, column=1, padx=self.pad_x, pady=self.pad_y, sticky="W")
+            item[1].set("Bitte auswählen")
+            self.labels[item[0]] = (lbl, item[1])
+
+            lbl_var = ttk.Label(self.content_frame, textvariable=item[1], style="Secondary.TLabel")
+            lbl_var.grid(row=starting_row + i, column=2, pady=self.pad_y, sticky="W")
+
+        return starting_row + (i + 1)
+
+    def create_file_picker(self, starting_row, header_text, descriptions, variables, sep=False):
+        if sep is True:
+            ttk.Separator(self.content_frame).grid(row=starting_row, column=0, columnspan=3,
+                                                   sticky="EW", pady=10)
+            starting_row += 1
+
+        lbl = ttk.Label(self.content_frame, text=header_text, style="Bold.Secondary.TLabel")
+        lbl.grid(row=starting_row, column=0, sticky="NW", pady=self.pad_y)
+
+        for i, item in enumerate(zip(descriptions, variables)):
+            lbl = ttk.Label(self.content_frame, text=item[0], style="Secondary.TLabel")
+            lbl.grid(row=starting_row + i, column=1, padx=self.pad_x, pady=self.pad_y, sticky="NW")
+            item[1].set("Bitte Datei auswählen")
+            self.labels[item[0]] = (lbl, item[1])
+
+            lbl_var = ttk.Label(self.content_frame, textvariable=item[1], style="Clickable.Secondary.TLabel",
+                                cursor="hand2", wraplength=250)
+            lbl_var.bind("<Button-1>", lambda event, variable=item[1]: self.choose_file(event, variable))
+            lbl_var.grid(row=starting_row + i, column=2, padx=self.pad_x, pady=self.pad_y, sticky="NW")
+
+    def choose_file(self, event, variable):
+        """Ask user to pick a file that contains time tracking data"""
+        variable.set(askopenfilename(initialdir=os.getcwd(), title="Dateiauswahl"))
+
+        if variable.get() == "":
+            variable.set("Bitte Datei auswählen")
+
+        self.completeness_check()
 
