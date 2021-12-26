@@ -1,5 +1,6 @@
 import datetime
 import os
+import sqlite3
 from tkinter import ttk
 import tkinter as tk
 from tkinter import messagebox
@@ -411,21 +412,25 @@ class Invoice(ttk.Frame):
                     helpers.MessageWindow(message_header="Rechnung erstellt",
                                           message=f"Rechnung für {full_name} erstellt unter: \n\n"
                                                   f"{saving_path}",
-                                          path_to_file=saving_path)
+                                          )
 
                 else:
                     helpers.MessageWindow(message_header="Keine Rechnung erstellt",
                                           message=f"Es wurde keine Rechnung für {self.participant_first_name.get()} "
-                                                  f"{self.participant_last_name.get()} erstellt.")
+                                                  f"{self.participant_last_name.get()} erstellt.",
+                                          alert=True)
 
     def pre_populate(self):
         """Populates the form with some data"""
-
-        training_name = "Individuelles Berufscoaching"
-        self.training_name.set(training_name)
-        sql = f"SELECT * FROM Massnahmen WHERE Bezeichnung = '{training_name}'"
-        training_cost = self.controller.db.select_single_query(sql)["Kosten_pro_UE"]
-        self.training_cost_per_lesson.set(training_cost)
+        try:
+            training_name = "Individuelles Berufscoaching"
+            self.training_name.set(training_name)
+            sql = f"SELECT * FROM Massnahmen WHERE Bezeichnung = '{training_name}'"
+            training_cost = self.controller.db.select_single_query(sql)["Kosten_pro_UE"]
+            self.training_cost_per_lesson.set(training_cost)
+        except sqlite3.OperationalError as err:
+            print(err)
+            print("Cannot pre-populate the invoice form")
 
         self.invoice_creation_date.set(datetime.date.today().strftime("%d.%m.%Y"))
         self.invoice_target_date.set(helpers.determine_payment_target_date(datetime.date.today(), 14).

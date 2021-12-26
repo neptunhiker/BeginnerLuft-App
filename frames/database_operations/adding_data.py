@@ -248,7 +248,7 @@ class AddParticipant(ttk.Frame):
             print(err)
             msg = f"Für {self.first_name.get()} {self.last_name.get()} mit der Kundennummer {self.jc_id.get()} existiert" \
                   f" bereits ein Eintrag in der Datenbank. Ein erneuter Eintrag wurde nicht vorgenommen."
-            MessageWindow(message_header="Dateinbankeintrag bereits vorhanden", message=msg)
+            MessageWindow(message_header="Dateinbankeintrag bereits vorhanden", message=msg, alert=True)
         else:
             return True
 
@@ -261,7 +261,7 @@ class AddParticipant(ttk.Frame):
     def show_abort_message(self):
         header = "Kein Datenbankeintrag"
         message = f"Für {self.first_name.get()} {self.last_name.get()} wurde kein Datenbankeintrag vorgenommen."
-        MessageWindow(message_header=header, message=message)
+        MessageWindow(message_header=header, message=message, alert=True)
 
     @staticmethod
     def show_success_message(name):
@@ -487,7 +487,7 @@ class AddCoach(ttk.Frame):
     def show_abort_message(self):
         header = "Kein Datenbankeintrag"
         message = f"Für {self.first_name.get()} {self.last_name.get()} wurde kein Datenbankeintrag vorgenommen."
-        MessageWindow(message_header=header, message=message)
+        MessageWindow(message_header=header, message=message, alert=True)
 
     @staticmethod
     def show_success_message(name):
@@ -712,7 +712,7 @@ class AddJobcenter(ttk.Frame):
             print(err)
             msg = f"Für das Jobcenter '{self.name.get()}' existiert" \
                   f" bereits ein Eintrag in der Datenbank. Ein erneuter Eintrag wurde nicht vorgenommen."
-            MessageWindow(message_header="Dateinbankeintrag bereits vorhanden", message=msg)
+            MessageWindow(message_header="Dateinbankeintrag bereits vorhanden", message=msg, alert=True)
 
         else:
             return True
@@ -726,7 +726,7 @@ class AddJobcenter(ttk.Frame):
     def show_abort_message(self):
         header = "Kein Datenbankeintrag"
         message = f"Für das Jobcenter '{self.name.get()}' wurde kein Datenbankeintrag vorgenommen."
-        MessageWindow(message_header=header, message=message)
+        MessageWindow(message_header=header, message=message, alert=True)
 
     @staticmethod
     def show_success_message(name):

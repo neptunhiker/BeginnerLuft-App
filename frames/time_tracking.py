@@ -211,7 +211,7 @@ class TimeTracking(ttk.Frame):
                                   f"Leider ist etwas schiefgegangen! Bitte Dateneingaben überprüfen. Ggf. liegen "
                                   f"die ausgewählten Dateien nicht im richtigen Format (excel) vor oder die Excel-"
                                   f"Dateien haben nicht die richtige Struktur (Anzahl der Spalten, Spaltenüberschriften"
-                                  f" o.ä.)", height=300)
+                                  f" o.ä.)", height=300, alert=True)
             return
 
         # ask user where to save the file
@@ -226,7 +226,7 @@ class TimeTracking(ttk.Frame):
             except Exception as err:
                 print(err)
                 helpers.MessageWindow("Kein Zeiterfassungs-Sheet erstellt!", f"Leider ist etwas schiefgegangen! Bitte "
-                                                                       f"Dateneingaben überprüfen.")
+                                                                       f"Dateneingaben überprüfen.", alert=True)
                 return
             else:
                 full_name = f"{self.participant_first_name.get()} {self.participant_last_name.get()}"

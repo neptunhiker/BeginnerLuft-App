@@ -11,20 +11,6 @@ from design.colors import bl_colors
 from tools.custom_exceptions import DateFormatException
 
 
-def format_to_german_date(date):
-    """Converts a date into a German string date format"""
-
-    if isinstance(date, datetime.date):
-        month = date.month
-        german_months = {1: "Januar", 2: "Februar", 3: "März", 4: "April", 5: "Mai", 6: "Juni", 7: "Juli", 8: "August",
-                         9: "September", 10: "Oktober", 11: "November", 12: "Dezember"}
-
-        return f"{date.strftime('%d.')} {german_months[month]} {date.strftime('%Y')}"
-
-    else:
-        return f"Cannot format date {date}"
-
-
 def check_if_file_exists(path_to_file):
     """Check if a file exists"""
 
@@ -62,6 +48,7 @@ def create_invoice_name(creation_date, participant_first_name, participant_last_
 
     return invoice_nr
 
+
 def determine_payment_target_date(date, payment_horizon_in_days):
     """Determines a target date for payment"""
 
@@ -77,13 +64,33 @@ def determine_payment_target_date(date, payment_horizon_in_days):
         raise Exception
 
 
+def format_to_german_date(date):
+    """Converts a date into a German string date format"""
+
+    if isinstance(date, datetime.date):
+        month = date.month
+        german_months = {1: "Januar", 2: "Februar", 3: "März", 4: "April", 5: "Mai", 6: "Juni", 7: "Juli", 8: "August",
+                         9: "September", 10: "Oktober", 11: "November", 12: "Dezember"}
+
+        return f"{date.strftime('%d.')} {german_months[month]} {date.strftime('%Y')}"
+
+    else:
+        return f"Cannot format date {date}"
+
+
 def hash_password(password):
     """Hash a password for storing"""
     salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
     pwdhash = hashlib.pbkdf2_hmac('sha512', password.encode('utf-8'), salt, 100000)
     pwdhash = binascii.hexlify(pwdhash)
-    pwd = (salt+pwdhash).decode('ascii')
+    pwd = (salt + pwdhash).decode('ascii')
     return pwd
+
+
+def open_directory(path):
+    """Opens the given directory"""
+    # does not work
+    pass
 
 
 def parse_date_from_string(datestring):
@@ -140,8 +147,9 @@ def string_to_float(string):
             return float(string.replace(".", "X").replace(",", ".").replace("X", ""))
 
 
-def verify_password(stored_password, provided_password):
-    """Verify a stored password against one provided by a user"""
+def verify_password(stored_password: str, provided_password: str) -> bool:
+    """Return whether a stored password is equivalent to a provided password"""
+
     salt = stored_password[:64]
     stored_password = stored_password[64:]
     pwdhash = hashlib.pbkdf2_hmac('sha512', provided_password.encode('utf-8'), salt.encode('ascii'), 100000)
@@ -160,9 +168,20 @@ class NewWindow(tk.Toplevel):
 
 
 class MessageWindow(tk.Toplevel):
-    """Pops up a window with a header and a message"""
+    """A separate message window"""
 
-    def __init__(self, message_header, message, path_to_file=None, width=600, height=200):
+    def __init__(self, message_header: str, message: str, width: int = 600, height: int = 200,
+                 alert: bool = False):
+        """
+        Pops up a window with a header and a message
+
+        message_header -- The header displayed at the top of the window
+        message -- The message displayed underneath the header
+        width -- The widht of the window (default 600)
+        height -- The height of the window (default 200)
+        alert -- The color of the left hand side of the window (default False = yellow; True = red)
+        """
+
         super(MessageWindow, self).__init__()
         self.title("BeginnerLuft")
         self.geometry(f"{width}x{height}")
@@ -186,6 +205,10 @@ class MessageWindow(tk.Toplevel):
         lbl.image = logo_image
         lbl.grid(padx=20)
 
+        if alert:
+            frame_left.configure(style="Alert.TFrame")
+            lbl.configure(style="Alert.TLabel")
+
         # RIGHT HAND SIDE
         frame_right = ttk.Frame(self, style="Secondary.TFrame")
         frame_right.grid(row=0, column=1, sticky="NSEW")
@@ -200,17 +223,7 @@ class MessageWindow(tk.Toplevel):
         lbl_message = ttk.Label(frame_right, text=message, style="Secondary.TLabel", wraplength=180, anchor="center")
         lbl_message.grid()
 
-        if path_to_file is not None:
-            self.path_to_file = path_to_file
-            lbl_message.configure(cursor="hand2")
-            lbl_message.bind("<Button-1>", self.open_url)
-
         self.mainloop()
-
-    def open_url(self, event):
-        """Opens a file"""
-        # subprocess.Popen([f"'{self.path_to_file}'"], shell=True)  # does not work
-        pass
 
 
 class DatabaseErrorWindow(MessageWindow):
@@ -218,7 +231,8 @@ class DatabaseErrorWindow(MessageWindow):
 
     def __init__(self):
         super(DatabaseErrorWindow, self).__init__(message_header="Datenbankfehler",
-                                                  message="Auf die Datenbank kann nicht zugegriffen werden.")
+                                                  message="Auf die Datenbank kann nicht zugegriffen werden.",
+                                                  alert=True)
 
 
 if __name__ == '__main__':
