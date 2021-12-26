@@ -276,6 +276,40 @@ class ParseDateFromString(unittest.TestCase):
         self.assertRaises(DateFormatException, helpers.parse_date_from_string, datestring)
 
 
+class PasswordMinRequirements(unittest.TestCase):
+
+    def test_happy_path(self):
+
+        password = "lasdflKJn23"
+        target_output = True
+        output = helpers.password_min_requirements(password)
+        self.assertEqual(target_output, output)
+
+        password = "dja"
+        target_output = False
+        output = helpers.password_min_requirements(password)
+        self.assertEqual(target_output, output)
+
+        password = "jd klsd"
+        target_output = False
+        output = helpers.password_min_requirements(password)
+        self.assertEqual(target_output, output)
+
+        password = "sda "
+        target_output = False
+        output = helpers.password_min_requirements(password)
+        self.assertEqual(target_output, output)
+
+        password = " d d"
+        target_output = False
+        output = helpers.password_min_requirements(password)
+        self.assertEqual(target_output, output)
+
+    def test_non_happy_path(self):
+
+        password = 13423
+        self.assertRaises(TypeError, helpers.password_min_requirements, password)
+
 class StringToFloat(unittest.TestCase):
 
     def test_simple_cases(self):

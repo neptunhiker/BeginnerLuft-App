@@ -4,7 +4,7 @@ from PIL import Image, ImageTk
 
 from frames.start import Entry
 from frames.password import Password
-from tools.helpers import verify_password, MessageWindow, hash_password
+from tools.helpers import verify_password, MessageWindow, hash_password, password_min_requirements
 from widgets.buttons import BLButton, BLImageButtonLabel
 
 
@@ -76,17 +76,14 @@ class ChangePassword(ttk.Frame):
         lbl_login = ttk.Label(frame, text="Passwort ändern", style="Secondary.Header.TLabel")
         lbl_login.grid(sticky="W", pady=(20, 5))
 
-        lbl_user = ttk.Label(frame, text="Benutzer:In", style="Secondary.TLabel")
+        lbl_user = ttk.Label(frame, text="Benutzer:In", style="Bold.Secondary.TLabel")
         lbl_user.grid(sticky="W", pady=(30, 0))
 
-        cmb_user = ttk.Combobox(frame, textvariable=self.user_selected)
+        lbl_logged_in_user = ttk.Label(frame, textvariable=self.user_selected, style="Secondary.TLabel")
         for employee in self.controller.db.get_employees():
             self.login_users[f"{employee.first_name} {employee.last_name}"] = employee.data_base_id
-        cmb_user["values"] = [user_name for user_name in self.login_users.keys()]
-        cmb_user.current(0)
-        cmb_user["state"] = "readonly"
-        cmb_user.bind("<<ComboboxSelected>>", self.handle_user_selection)
-        cmb_user.grid()
+        self.user_selected.set(self.controller.current_user)
+        lbl_logged_in_user.grid(sticky="W")
 
         lbl_pw = ttk.Label(frame, text="Altes Passwort", style="Secondary.TLabel")
         lbl_pw.grid(sticky="W", pady=(10, 0))
@@ -121,7 +118,8 @@ class ChangePassword(ttk.Frame):
         for child in frame.winfo_children():
             child.grid_configure(padx=20)
 
-        cmb_user.focus()
+        self.bind("<Enter>", lambda event: self.change_pw())
+        self.ent_pw.focus()
 
     def handle_user_selection(self, event):
         print(self.user_selected.get())
@@ -130,6 +128,10 @@ class ChangePassword(ttk.Frame):
     def on_change(self):
         """Remove error text when user changes the password entry field"""
         self.error_text.set("")
+
+    def refresh(self):
+        """Refreshes the frame to allow for the current user to be displayed correctly"""
+        self.user_selected.set(self.controller.current_user)
 
     def change_pw(self):
         """Check whether user can login with given information"""
@@ -150,21 +152,22 @@ class ChangePassword(ttk.Frame):
                 self.error_text.set("Neues Passwort bitte korrekt wiederholen.")
                 return
 
+            if not password_min_requirements(self.new_pw.get()):
+                self.error_text.set("Passwort erfüllt nicht die Mindestvoraussetzungen.")
+                return
+
             # hash password
             hashed_pw = hash_password(password=self.new_pw.get())
 
             # change password
             self.controller.db.update_password(user_id=user_database_id, password=hashed_pw)
-            # self.clear_all()
-            # self.controller.back_to_login()
-            # self.controller.logged_in = False
             self.controller.logout()
 
-
         else:
-            self.old_pw.set("")
-            self.error_text.set("Falsches Passwort")
-            self.ent_pw.focus_set()
+            if self.old_pw.get() != "":
+                self.old_pw.set("")
+                self.error_text.set("Falsches Passwort")
+                self.ent_pw.focus_set()
 
     def clear_all(self):
         self.old_pw.set("")

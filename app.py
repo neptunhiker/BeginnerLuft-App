@@ -7,8 +7,6 @@ from frames.dashboard import Dashboard, DatabaseOperationsDashboard
 from frames.database_operations.adding_data import AddParticipant, AddCoach, AddJobcenter
 from frames.invoice import Invoice
 from frames.login import Login
-from frames.password import Password
-from frames.start import Entry
 from frames.time_tracking import TimeTracking
 from frames.windows import set_dpi_awareness
 from design.colors import bl_colors
@@ -50,13 +48,6 @@ class BeginnerLuftApp(tk.Tk):
         self.container.grid(sticky="NSEW")
         self.container.grid_columnconfigure(0, weight=1)
         self.container.rowconfigure(0, weight=1)
-
-        starting_frame = Entry(
-            parent=self.container,
-            controller=self,
-            next_screen=lambda event: self.show_frame(Dashboard),
-        )
-        starting_frame.grid(row=0, column=0, sticky="NSEW")
 
         add_coach_frame = AddCoach(
             parent=self.container,
@@ -109,16 +100,9 @@ class BeginnerLuftApp(tk.Tk):
         login_frame = Login(
             parent=self.container,
             controller=self,
-            next_function=lambda: self.show_frame(Entry)
+            next_function=lambda: self.show_frame(Dashboard)
         )
         login_frame.grid(row=0, column=0, sticky="NSEW")
-
-        password_frame = Password(
-            parent=self.container,
-            controller=self,
-            back_function=lambda: self.show_frame(Entry)
-        )
-        password_frame.grid(row=0, column=0, sticky="NSEW")
 
         time_tracking_frame = TimeTracking(
             parent=self.container,
@@ -135,10 +119,8 @@ class BeginnerLuftApp(tk.Tk):
             ChangePassword: change_pw_frame,
             Dashboard: dashboard_frame,
             DatabaseOperationsDashboard: database_operations_dashboard_frame,
-            Entry: starting_frame,
             Invoice: invoice_frame,
             Login: login_frame,
-            Password: password_frame,
             TimeTracking: time_tracking_frame,
         }
 
@@ -160,14 +142,18 @@ class BeginnerLuftApp(tk.Tk):
                 alert=True
             )
 
-    def back_to_login(self):
+    def nav_to_login(self):
         self.show_frame(Login)
 
-    def back_to_dashboard(self):
+    def nav_to_dashboard(self):
         self.show_frame(Dashboard)
 
-    def back_to_database_operations(self):
+    def nav_to_database_operations(self):
         self.show_frame(DatabaseOperationsDashboard)
+        
+    def nav_to_password_change(self):
+        self.frames[ChangePassword].refresh()
+        self.show_frame(ChangePassword)
 
     def configure_styles(self):
         self["background"] = bl_colors["bg primary"]
@@ -243,24 +229,25 @@ class BeginnerLuftApp(tk.Tk):
     def menu(self):
         """Create a menu"""
 
+        if self.current_user is None:
+            return
+
         menubar = tk.Menu(self)
 
         # Navigation menu
         nav_menu = tk.Menu(menubar)
-        nav_menu.add_command(label="Dashboard", command=self.back_to_dashboard)
+        nav_menu.add_command(label="Dashboard", command=self.nav_to_dashboard)
         nav_menu.add_separator()
-        nav_menu.add_command(label="Datenbankoperationen", command=self.back_to_database_operations)
+        nav_menu.add_command(label="Datenbankoperationen", command=self.nav_to_database_operations)
         nav_menu.add_command(label="Zeiterfassung", command=lambda container=TimeTracking: self.show_frame(container))
         nav_menu.add_command(label="Rechnungserstellung", command=lambda container=Invoice: self.show_frame(container))
-
-        # Settings menu
-        settings_menu = tk.Menu(menubar)
-        settings_menu.add_command(label="Passwort ändern", command=lambda container=ChangePassword: self.show_frame(container))
-        settings_menu.add_command(label="Logout", command=self.logout)
-
-        # cascading
         menubar.add_cascade(label="Navigation", menu=nav_menu)
-        menubar.add_cascade(label="Einstellungen", menu=settings_menu)
+
+        # User menu
+        user_menu = tk.Menu(menubar)
+        user_menu.add_command(label="Passwort ändern", command=self.nav_to_password_change)
+        user_menu.add_command(label="Logout", command=self.logout)
+        menubar.add_cascade(label=self.current_user, menu=user_menu)
 
         self.config(menu=menubar)
 

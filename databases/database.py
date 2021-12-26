@@ -211,9 +211,5 @@ class Database:
 
 if __name__ == '__main__':
     test_db = Database.test_database()
-    print(test_db)
-
-    employees = test_db.get_employees()
-
-    for employee in employees:
-        print(employee)
+    import tools.helpers
+    test_db.update_password(1, tools.helpers.hash_password("hello"))

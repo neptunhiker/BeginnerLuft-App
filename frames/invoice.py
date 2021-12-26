@@ -188,7 +188,7 @@ class Invoice(ttk.Frame):
         btn.grid()
 
         # back button
-        btn = BLImageButtonLabel(parent=button_frame, func=self.controller.back_to_dashboard,
+        btn = BLImageButtonLabel(parent=button_frame, func=self.controller.nav_to_dashboard,
                                  path_to_file_01="assets/buttons/back_01.png",
                                  path_to_file_02="assets/buttons/back_02.png")
         btn.grid(pady=(10, 5))

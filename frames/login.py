@@ -108,7 +108,7 @@ class Login(ttk.Frame):
         for child in frame.winfo_children():
             child.grid_configure(padx=20)
 
-        cmb_user.focus()
+        self.ent_pw.focus()
 
     def handle_user_selection(self, event):
         print(self.user_selected.get())
@@ -136,17 +136,7 @@ class Login(ttk.Frame):
             self.controller.current_user = user
             self.controller.logged_in = True
             self.pw_given.set("")
-
-            # to be continued
-            # this is a workaround for a refresh function - not good, refactor!
-            self.controller.frames[Password].destroy()
-            new_pw_frame = Password(
-                parent=self.controller.container,
-                controller=self.controller,
-                back_function=lambda: self.controller.show_frame(Entry)
-            )
-            new_pw_frame.grid(row=0, column=0, sticky="NSEW")
-            self.controller.frames[Password] = new_pw_frame
+            self.controller.menu()
 
             self.next_function()  # change view to next frame
             self.controller.full_screen_window()

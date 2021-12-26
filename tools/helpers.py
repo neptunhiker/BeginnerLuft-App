@@ -128,6 +128,20 @@ def parse_date_from_string(datestring: str) -> datetime.date:
             raise DateFormatException
 
 
+def password_min_requirements(password: str) -> bool:
+    """Check whether a password fulfills the minimum requirements"""
+
+    min_length = 4
+    spaces_allowed = False
+
+    if len(password) < min_length:
+        return False
+
+    if " " in password:
+        return False
+
+    return True
+
 def string_to_float(string: str) -> float:
     """Convert a string to a float"""
 

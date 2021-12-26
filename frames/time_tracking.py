@@ -237,7 +237,7 @@ class TimeTracking(ttk.Frame):
                                       height=300)
 
     def back_button(self):
-        self.controller.back_to_dashboard()
+        self.controller.nav_to_dashboard()
 
     def completeness_check(self):
         """Check whether all data have been filled out"""

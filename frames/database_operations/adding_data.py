@@ -135,7 +135,7 @@ class AddParticipant(ttk.Frame):
         btn.grid()
 
         # back button
-        btn = BLImageButtonLabel(parent=buttons_frame, func=self.controller.back_to_database_operations,
+        btn = BLImageButtonLabel(parent=buttons_frame, func=self.controller.nav_to_database_operations,
                                  path_to_file_01="assets/buttons/back_01.png",
                                  path_to_file_02="assets/buttons/back_02.png")
         btn.grid(pady=(20, 10))
@@ -246,8 +246,8 @@ class AddParticipant(ttk.Frame):
             return False
         except sqlite3.IntegrityError as err:
             print(err)
-            msg = f"Für {self.first_name.get()} {self.last_name.get()} mit der Kundennummer {self.jc_id.get()} existiert" \
-                  f" bereits ein Eintrag in der Datenbank. Ein erneuter Eintrag wurde nicht vorgenommen."
+            msg = f"Es existiert bereits ein Eintrag mit der Kundennummer {self.jc_id.get()} in der Datenbank." \
+                  f" Ein erneuter Eintrag wurde nicht vorgenommen."
             MessageWindow(message_header="Dateinbankeintrag bereits vorhanden", message=msg, alert=True)
         else:
             return True
@@ -366,7 +366,7 @@ class AddCoach(ttk.Frame):
         btn.grid()
 
         # back button
-        btn = BLImageButtonLabel(parent=buttons_frame, func=self.controller.back_to_database_operations,
+        btn = BLImageButtonLabel(parent=buttons_frame, func=self.controller.nav_to_database_operations,
                                  path_to_file_01="assets/buttons/back_01.png",
                                  path_to_file_02="assets/buttons/back_02.png")
         btn.grid(pady=(20, 10))
@@ -611,7 +611,7 @@ class AddJobcenter(ttk.Frame):
         btn.grid()
 
         # back button
-        btn = BLImageButtonLabel(parent=buttons_frame, func=self.controller.back_to_database_operations,
+        btn = BLImageButtonLabel(parent=buttons_frame, func=self.controller.nav_to_database_operations,
                                  path_to_file_01="assets/buttons/back_01.png",
                                  path_to_file_02="assets/buttons/back_02.png")
         btn.grid(pady=(20, 10))
