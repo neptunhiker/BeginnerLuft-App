@@ -28,7 +28,7 @@ class ChangePassword(ttk.Frame):
         self.ent_new_pw_repeat = None
 
         # create background image
-        image = Image.open("assets/people.jpg")
+        image = Image.open("assets/birches_01.jpg")
         desired_width = 1800
         ratio = image.height / image.width
         calculated_height = int(desired_width * ratio)
