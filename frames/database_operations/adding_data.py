@@ -155,6 +155,13 @@ class AddParticipant(ttk.Frame):
             self.show_abort_message()
             return
 
+        # Check if a user with a given jobcenter id already exists in database
+        if self.controller.db.check_for_participant_jc_id(jobcenter_id=self.jc_id.get()):
+            msg = f"Es existiert bereits ein Eintrag mit der Kundennummer {self.jc_id.get()} in der Datenbank." \
+                  f" Ein erneuter Eintrag wurde nicht vorgenommen."
+            MessageWindow(message_header="Dateinbankeintrag bereits vorhanden", message=msg, alert=True)
+            return
+
         # write to data base
         if self.write_to_db():
             first_name = self.first_name.get()
@@ -244,11 +251,6 @@ class AddParticipant(ttk.Frame):
             print(err)
             DatabaseErrorWindow()
             return False
-        except sqlite3.IntegrityError as err:
-            print(err)
-            msg = f"Es existiert bereits ein Eintrag mit der Kundennummer {self.jc_id.get()} in der Datenbank." \
-                  f" Ein erneuter Eintrag wurde nicht vorgenommen."
-            MessageWindow(message_header="Dateinbankeintrag bereits vorhanden", message=msg, alert=True)
         else:
             return True
 
@@ -387,7 +389,8 @@ class AddCoach(ttk.Frame):
             return
 
         # check if a coach already exists with that name in database
-        if self.duplicate_check():
+        if self.controller.db.check_for_coach_full_name(coach_first_name=self.first_name.get(),
+                                                        coach_last_name=self.last_name.get()):
             if self.abort_duplicate_entry():
                 self.show_abort_message()
                 return
@@ -433,17 +436,6 @@ class AddCoach(ttk.Frame):
         ans = tk.messagebox.askyesno(title=title, message=msg, default="no")
 
         return ans
-
-    def duplicate_check(self):
-        """Check whether a coach with a given first and last name already exists in database"""
-
-        sql = "SELECT * FROM Coaches WHERE Vorname = ? AND Nachname = ?"
-        arguments = (self.first_name.get(), self.last_name.get())
-        row = self.controller.db.select_single_query(query=sql, arguments=arguments)
-        if row is not None:
-            return True
-        else:
-            return False
 
     def abort_duplicate_entry(self):
         """Ask user to whether they want to abort a duplicate entry to the database"""
@@ -640,6 +632,12 @@ class AddJobcenter(ttk.Frame):
             self.show_abort_message()
             return
 
+        # Check if a jobcenter with a given name already exists in database
+        if self.controller.db.check_for_jobcenter_name(jobcenter_name=self.name.get()):
+            msg = f"Für das Jobcenter '{self.name.get()}' existiert" \
+                  f" bereits ein Eintrag in der Datenbank. Ein erneuter Eintrag wurde nicht vorgenommen."
+            MessageWindow(message_header="Dateinbankeintrag bereits vorhanden", message=msg, alert=True)
+
         # write to data base
         if self.write_to_db():
             name = self.name.get()
@@ -708,12 +706,6 @@ class AddJobcenter(ttk.Frame):
             print(err)
             DatabaseErrorWindow()
             return False
-        except sqlite3.IntegrityError as err:
-            print(err)
-            msg = f"Für das Jobcenter '{self.name.get()}' existiert" \
-                  f" bereits ein Eintrag in der Datenbank. Ein erneuter Eintrag wurde nicht vorgenommen."
-            MessageWindow(message_header="Dateinbankeintrag bereits vorhanden", message=msg, alert=True)
-
         else:
             return True
 

@@ -62,6 +62,48 @@ class Database:
 
         print(f"{participant} successfully added to the database.")
 
+    def check_for_coach_full_name(self, coach_first_name: str, coach_last_name: str) -> bool:
+        """Check whether an entry for a coach with a given first and last name"""
+
+        sql = "SELECT * FROM Coaches WHERE Vorname = ? AND Nachname = ?"
+        self.connect_to_database()
+        with closing(self.conn.cursor()) as cursor:
+            cursor.execute(sql, [coach_first_name, coach_last_name])
+            row = cursor.fetchone()
+
+        if row is None:
+            return False
+        else:
+            return True
+
+    def check_for_jobcenter_name(self, jobcenter_name: str) -> bool:
+        """Check whether a Jobcenter with a given name exists in database"""
+
+        sql = "SELECT * FROM Jobcenter WHERE Name = ?"
+        self.connect_to_database()
+        with closing(self.conn.cursor()) as cursor:
+            cursor.execute(sql, [jobcenter_name])
+            row = cursor.fetchone()
+
+        if row is None:
+            return False
+        else:
+            return True
+
+    def check_for_participant_jc_id(self, jobcenter_id: str) -> bool:
+        """Check whether an entry for a participant with a given jobcenter ID (Kundennummer) exists"""
+
+        sql = "SELECT * FROM Teilnehmer WHERE Kundennummer = ?"
+        self.connect_to_database()
+        with closing(self.conn.cursor()) as cursor:
+            cursor.execute(sql, [jobcenter_id])
+            row = cursor.fetchone()
+
+        if row is None:
+            return False
+        else:
+            return True
+
     def get_employees(self):
         """Return a list of all employees found in the database"""
         sql = "SELECT * FROM Mitarbeiter"
@@ -211,5 +253,4 @@ class Database:
 
 if __name__ == '__main__':
     test_db = Database.test_database()
-    import tools.helpers
-    test_db.update_password(1, tools.helpers.hash_password("hello"))
+    print(test_db.check_for_coach_full_name(coach_first_name="Erika", coach_last_name="Musterfrau"))
