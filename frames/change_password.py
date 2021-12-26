@@ -155,13 +155,10 @@ class ChangePassword(ttk.Frame):
 
             # change password
             self.controller.db.update_password(user_id=user_database_id, password=hashed_pw)
-            self.clear_all()
-            self.controller.back_to_login()
-            MessageWindow(
-                message_header="Passwort erfolgreich geändert",
-                message=f"Das neue Passwort für {user} wurde in die Datenbank eingetragen und kann ab sofort "
-                        f"zum login verwendet werden."
-            )
+            # self.clear_all()
+            # self.controller.back_to_login()
+            # self.controller.logged_in = False
+            self.controller.logout()
 
 
         else:

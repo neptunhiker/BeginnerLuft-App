@@ -134,6 +134,8 @@ class Login(ttk.Frame):
         if verify_password(target_pw, self.pw_given.get()):
             print(f"login successful for {user}")
             self.controller.current_user = user
+            self.controller.logged_in = True
+            self.pw_given.set("")
 
             # to be continued
             # this is a workaround for a refresh function - not good, refactor!

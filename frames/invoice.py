@@ -238,6 +238,8 @@ class Invoice(ttk.Frame):
             self.invoice_nr.set("")
         except IndexError:
             self.invoice_nr.set("")
+        except AttributeError:
+            self.invoice_nr.set("")
 
     def pick_jobcenter_from_db(self, event):
         """Opens a new window that allows the user to pick a jobcenter from the database"""

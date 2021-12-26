@@ -13,11 +13,12 @@ from frames.time_tracking import TimeTracking
 from frames.windows import set_dpi_awareness
 from design.colors import bl_colors
 import design.fonts as bl_fonts
+from tools.helpers import MessageWindow
 
 
 class BeginnerLuftApp(tk.Tk):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, starting_frame=Login, *args, **kwargs):
         super(BeginnerLuftApp, self).__init__(*args, **kwargs)
 
         self.title("BeginnerLuft APP")
@@ -26,8 +27,12 @@ class BeginnerLuftApp(tk.Tk):
         # initialize data base
         self.db = Database(database_path="../Database/test_database.db")
 
-        # to be continued: login screen and adding current user here
-        self.current_user = "Erika Musterfrau"
+        # login information
+        self.current_user = None
+        self.logged_in = False
+
+        # starting frame
+        self.starting_frame = starting_frame
 
         # set the style to clam to have more styling flexibility
         self.style = ttk.Style(self)
@@ -137,20 +142,32 @@ class BeginnerLuftApp(tk.Tk):
             TimeTracking: time_tracking_frame,
         }
 
-        self.show_frame(ChangePassword)  # change this line to determine the starting screen
+        if self.starting_frame != Login:
+            self.logged_in = True  # automatic log-in for testing purposes only, remove later
+
+        self.show_frame(self.starting_frame)
+
+        self.menu()
 
     def show_frame(self, container):
-        frame = self.frames[container]
-        frame.tkraise()
+        if self.logged_in or container == Login:
+            frame = self.frames[container]
+            frame.tkraise()
+        else:
+            MessageWindow(
+                message_header="Login erforderlich",
+                message="Bitte einloggen, um die APP zu nutzen.",
+                alert=True
+            )
 
     def back_to_login(self):
-        self.frames[Login].tkraise()
+        self.show_frame(Login)
 
     def back_to_dashboard(self):
-        self.frames[Dashboard].tkraise()
+        self.show_frame(Dashboard)
 
     def back_to_database_operations(self):
-        self.frames[DatabaseOperationsDashboard].tkraise()
+        self.show_frame(DatabaseOperationsDashboard)
 
     def configure_styles(self):
         self["background"] = bl_colors["bg primary"]
@@ -222,6 +239,36 @@ class BeginnerLuftApp(tk.Tk):
         )
 
         self.style.configure("Error.TEntry", foreground="red")
+
+    def menu(self):
+        """Create a menu"""
+
+        menubar = tk.Menu(self)
+
+        # Navigation menu
+        nav_menu = tk.Menu(menubar)
+        nav_menu.add_command(label="Dashboard", command=self.back_to_dashboard)
+        nav_menu.add_separator()
+        nav_menu.add_command(label="Datenbankoperationen", command=self.back_to_database_operations)
+        nav_menu.add_command(label="Zeiterfassung", command=lambda container=TimeTracking: self.show_frame(container))
+        nav_menu.add_command(label="Rechnungserstellung", command=lambda container=Invoice: self.show_frame(container))
+
+        # Settings menu
+        settings_menu = tk.Menu(menubar)
+        settings_menu.add_command(label="Passwort ändern", command=lambda container=ChangePassword: self.show_frame(container))
+        settings_menu.add_command(label="Logout", command=self.logout)
+
+        # cascading
+        menubar.add_cascade(label="Navigation", menu=nav_menu)
+        menubar.add_cascade(label="Einstellungen", menu=settings_menu)
+
+        self.config(menu=menubar)
+
+    def logout(self):
+        """Log the current user out and return to Login screen"""
+        self.destroy()
+        self.__init__(starting_frame=Login)
+        self.mainloop()
 
     def full_screen_window(self):
         w, h = self.winfo_screenwidth(), self.winfo_screenheight()
