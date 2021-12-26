@@ -1,3 +1,4 @@
+import random
 from tkinter import ttk
 import tkinter as tk
 from PIL import Image, ImageTk
@@ -28,7 +29,8 @@ class ChangePassword(ttk.Frame):
         self.ent_new_pw_repeat = None
 
         # create background image
-        image = Image.open("assets/birches_01.jpg")
+        image_path = random.choice(["people", "birches_01", "birches_bw_01", "birches_bw_02", "fences_bw_01"])
+        image = Image.open(f"assets/{image_path}.jpg")
         desired_width = 1800
         ratio = image.height / image.width
         calculated_height = int(desired_width * ratio)
