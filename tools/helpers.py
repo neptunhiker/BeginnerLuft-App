@@ -2,84 +2,81 @@ import datetime
 import hashlib, binascii, os
 from pathlib import Path
 from PIL import Image, ImageTk
-import subprocess
+from typing import Union
 import tkinter as tk
 from tkinter import ttk
-import webbrowser
 
-from design.colors import bl_colors
 from tools.custom_exceptions import DateFormatException
 
 
-def check_if_file_exists(path_to_file):
+def check_if_file_exists(path_to_file: str) -> bool:
     """Check if a file exists"""
 
     path = Path(path_to_file)
-
     return path.is_file()
 
 
-def create_invoice_nr(creation_date, participant_first_name, participant_last_name):
-    """Create an invoice number based on input arguments"""
-    try:
-        creation_date = parse_date_from_string(creation_date)
-    except AttributeError as err:
-        print(err)
-        pass
-    else:
-        creation_date = creation_date.strftime("%Y-%m-%d")
-    invoice_nr = f"{creation_date}-{participant_first_name[0]}{participant_last_name[0]}"
-
-    return invoice_nr
-
-
-def create_invoice_name(creation_date, participant_first_name, participant_last_name):
-    """Create an invoice name based on input arguments"""
+def create_invoice_nr(creation_date: Union[str, datetime.datetime], participant_first_name: str,
+                      participant_last_name: str) -> str:
+    """Return an invoice number based on a date and participant first and last name"""
 
     try:
         creation_date = parse_date_from_string(creation_date)
-    except Exception:
+    except AttributeError:
         creation_date = creation_date.strftime("%Y-%m-%d")
 
     if participant_first_name == "" or participant_last_name == "":
         raise AttributeError
 
-    invoice_nr = f"{creation_date} Rechnung {participant_first_name} {participant_last_name}"
-
-    return invoice_nr
+    return f"{creation_date}-{participant_first_name[0]}{participant_last_name[0]}"
 
 
-def determine_payment_target_date(date, payment_horizon_in_days):
-    """Determines a target date for payment"""
+def create_invoice_name(creation_date: Union[str, datetime.date], participant_first_name: str,
+                        participant_last_name: str) -> str:
+    """Return an invoice name based on a date and first and last name of a participant"""
 
-    if isinstance(date, datetime.date) and isinstance(payment_horizon_in_days, int):
+    try:
+        creation_date = parse_date_from_string(creation_date)
+    except AttributeError:
+        creation_date = creation_date.strftime("%Y-%m-%d")
 
-        target_date = date + datetime.timedelta(days=payment_horizon_in_days)
+    if participant_first_name == "" or participant_last_name == "":
+        raise AttributeError
+
+    return f"{creation_date} Rechnung {participant_first_name} {participant_last_name}"
+
+
+def determine_payment_target_date(starting_date: datetime.date, payment_horizon_in_days: int,
+                                  weekend_adjustment: bool = True) -> datetime.date:
+    """
+    Return a target date based on a starting date and a payment horizon
+
+    starting_date -- date at which payment horizon begins
+    payment_horizon_in_days -- duration of the payment horizon
+    weekend_adjustment  -- payment horizon cannot end on a weekend
+    """
+
+    target_date = starting_date + datetime.timedelta(days=payment_horizon_in_days)
+    if weekend_adjustment:
         while target_date.weekday() in [5, 6]:
             target_date += datetime.timedelta(days=1)
 
-        return target_date
-
-    else:
-        raise Exception
+    return target_date
 
 
-def format_to_german_date(date):
-    """Converts a date into a German string date format"""
+def format_to_german_date(date: datetime.date) -> str:
+    """Converts a date into a German string date format with long German month name"""
 
-    if isinstance(date, datetime.date):
-        month = date.month
-        german_months = {1: "Januar", 2: "Februar", 3: "März", 4: "April", 5: "Mai", 6: "Juni", 7: "Juli", 8: "August",
-                         9: "September", 10: "Oktober", 11: "November", 12: "Dezember"}
+    month = date.month
+    german_months = {1: "Januar", 2: "Februar", 3: "März", 4: "April", 5: "Mai", 6: "Juni", 7: "Juli", 8: "August",
+                     9: "September", 10: "Oktober", 11: "November", 12: "Dezember"}
 
-        return f"{date.strftime('%d.')} {german_months[month]} {date.strftime('%Y')}"
-
-    else:
-        return f"Cannot format date {date}"
+    return f"{date.strftime('%d.')} {german_months[month]} {date.strftime('%Y')}"
 
 
-def hash_password(password):
-    """Hash a password for storing"""
+def hash_password(password: str) -> str:
+    """Convert a string to a hashed password"""
+
     salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
     pwdhash = hashlib.pbkdf2_hmac('sha512', password.encode('utf-8'), salt, 100000)
     pwdhash = binascii.hexlify(pwdhash)
@@ -93,17 +90,15 @@ def open_directory(path):
     pass
 
 
-def parse_date_from_string(datestring):
-    """Parses dates in various formats to datetime.date object"""
+def parse_date_from_string(datestring: str) -> datetime.date:
+    """Parse date in various formats to datetime.date object"""
 
     datestring = datestring.strip()  # remove leading and trailing whitespace
 
     try:
-
         return datetime.datetime.fromisoformat(datestring).date()
 
     except ValueError:
-
         if "-" in datestring:
             year, month, day = datestring.split("-")
             sep = "-"
@@ -133,7 +128,7 @@ def parse_date_from_string(datestring):
             raise DateFormatException
 
 
-def string_to_float(string):
+def string_to_float(string: str) -> float:
     """Convert a string to a float"""
 
     try:
