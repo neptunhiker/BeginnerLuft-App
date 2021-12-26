@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from databases.database import Database
 from frames.boilerplate import Boilerplate
+from frames.change_password import ChangePassword
 from frames.dashboard import Dashboard, DatabaseOperationsDashboard
 from frames.database_operations.adding_data import AddParticipant, AddCoach, AddJobcenter
 from frames.invoice import Invoice
@@ -76,6 +77,12 @@ class BeginnerLuftApp(tk.Tk):
         )
         boilerplate_frame.grid(row=0, column=0, sticky="NSEW")
 
+        change_pw_frame = ChangePassword(
+            parent=self.container,
+            controller=self,
+        )
+        change_pw_frame.grid(row=0, column=0, sticky="NSEW")
+
         dashboard_frame = Dashboard(
             parent=self.container,
             controller=self,
@@ -120,6 +127,7 @@ class BeginnerLuftApp(tk.Tk):
             AddJobcenter: add_jobcenter_frame,
             AddParticipant: add_participant_frame,
             Boilerplate: boilerplate_frame,
+            ChangePassword: change_pw_frame,
             Dashboard: dashboard_frame,
             DatabaseOperationsDashboard: database_operations_dashboard_frame,
             Entry: starting_frame,
@@ -129,11 +137,14 @@ class BeginnerLuftApp(tk.Tk):
             TimeTracking: time_tracking_frame,
         }
 
-        self.show_frame(Dashboard)  # change this line to determine the starting screen
+        self.show_frame(ChangePassword)  # change this line to determine the starting screen
 
     def show_frame(self, container):
         frame = self.frames[container]
         frame.tkraise()
+
+    def back_to_login(self):
+        self.frames[Login].tkraise()
 
     def back_to_dashboard(self):
         self.frames[Dashboard].tkraise()

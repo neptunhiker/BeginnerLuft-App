@@ -136,6 +136,27 @@ class Database:
                 cursor.execute(query)
             return cursor.fetchone()
 
+    def update_password(self, user_id, password):
+        """Updates a password for an existing user"""
+
+        # check if user exists
+        sql = "SELECT * FROM Passwoerter WHERE ID = ?"
+        row = self.select_single_query(sql, arguments=[user_id])
+        if row is None:
+            print(f"The database does not contain a user with the ID {user_id}.")
+            print("Password cannot be updated.")
+            return False
+
+        # update password
+        print("Ok, lets update the password.")
+
+        self.connect_to_database()
+        with closing(self.conn.cursor()) as cursor:
+            sql = "UPDATE Passwoerter SET Passwort = ? WHERE ID = ?"
+            cursor.execute(sql, (password, user_id))
+            self.conn.commit()
+        print(f"Password for user with the ID {user_id} successfully updated.")
+
     @staticmethod
     def create_employee(row):
         return Employee(title=row["Anrede"],

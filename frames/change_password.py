@@ -4,25 +4,28 @@ from PIL import Image, ImageTk
 
 from frames.start import Entry
 from frames.password import Password
-from tools.helpers import verify_password
+from tools.helpers import verify_password, MessageWindow, hash_password
 from widgets.buttons import BLButton, BLImageButtonLabel
 
 
-class Login(ttk.Frame):
-    """A Login frame"""
+class ChangePassword(ttk.Frame):
+    """A frame to change the password"""
 
-    def __init__(self, parent, controller, next_function):
+    def __init__(self, parent, controller):
         super().__init__(parent)
         self["style"] = "Secondary.TFrame"
         self.controller = controller
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
-        self.next_function = next_function
         self.login_users = {}
         self.error_text = tk.StringVar()
         self.user_selected = tk.StringVar()
-        self.pw_given = tk.StringVar()
+        self.old_pw = tk.StringVar()
         self.ent_pw = None
+        self.new_pw = tk.StringVar()
+        self.ent_new_pw = None
+        self.new_pw_repeat = tk.StringVar()
+        self.ent_new_pw_repeat = None
 
         # create background image
         image = Image.open("assets/people.jpg")
@@ -70,11 +73,8 @@ class Login(ttk.Frame):
         frame.columnconfigure(0, weight=1)
         frame.rowconfigure(0, weight=1)
 
-        lbl_login = ttk.Label(frame, text="Login", style="Secondary.Header.TLabel")
+        lbl_login = ttk.Label(frame, text="Passwort ändern", style="Secondary.Header.TLabel")
         lbl_login.grid(sticky="W", pady=(20, 5))
-
-        lbl_instruction = ttk.Label(frame, text="Zum Fortfahren bitte Einloggen", style="Secondary.TLabel")
-        lbl_instruction.grid(sticky="W")
 
         lbl_user = ttk.Label(frame, text="Benutzer:In", style="Secondary.TLabel")
         lbl_user.grid(sticky="W", pady=(30, 0))
@@ -88,22 +88,35 @@ class Login(ttk.Frame):
         cmb_user.bind("<<ComboboxSelected>>", self.handle_user_selection)
         cmb_user.grid()
 
-        lbl_pw = ttk.Label(frame, text="Passwort", style="Secondary.TLabel")
+        lbl_pw = ttk.Label(frame, text="Altes Passwort", style="Secondary.TLabel")
         lbl_pw.grid(sticky="W", pady=(10, 0))
 
-        self.ent_pw = ttk.Entry(frame, show="*", textvariable=self.pw_given)
+        self.ent_pw = ttk.Entry(frame, show="*", textvariable=self.old_pw)
         self.ent_pw.grid(sticky="EW")
-        self.ent_pw.bind("<Return>", lambda event: self.login_check())
-        self.pw_given.trace("w", lambda a, b, c, d=self: self.on_change())
+        self.old_pw.trace("w", lambda a, b, c, d=self: self.on_change())
+
+        lbl_pw_new = ttk.Label(frame, text="Neues Passwort", style="Secondary.TLabel")
+        lbl_pw_new.grid(sticky="W", pady=(10, 0))
+
+        self.ent_new_pw = ttk.Entry(frame, show="*", textvariable=self.new_pw)
+        self.ent_new_pw.grid(sticky="EW")
+        self.new_pw.trace("w", lambda a, b, c, d=self: self.on_change())
+
+        lbl_pw_new_repeat = ttk.Label(frame, text="Neues Passwort wiederholen", style="Secondary.TLabel")
+        lbl_pw_new_repeat.grid(sticky="W", pady=(10, 0))
+
+        self.ent_new_pw_repeat = ttk.Entry(frame, show="*", textvariable=self.new_pw_repeat)
+        self.ent_new_pw_repeat.grid(sticky="EW")
+        self.new_pw_repeat.trace("w", lambda a, b, c, d=self: self.on_change())
 
         lbl_error = ttk.Label(frame, textvariable=self.error_text, style="Secondary.Error.TLabel")
         lbl_error.grid(sticky="W")
 
-        btn_login = BLImageButtonLabel(frame,
-                                       self.login_check,
-                                       "assets/buttons/login_01.png",
-                                       "assets/buttons/login_02.png")
-        btn_login.grid(pady=(20, 20), sticky="E")
+        btn_change_pw = BLImageButtonLabel(frame,
+                                           self.change_pw,
+                                           "assets/buttons/change_pw_01.png",
+                                           "assets/buttons/change_pw_02.png")
+        btn_change_pw.grid(pady=(20, 20), sticky="E")
 
         for child in frame.winfo_children():
             child.grid_configure(padx=20)
@@ -118,7 +131,7 @@ class Login(ttk.Frame):
         """Remove error text when user changes the password entry field"""
         self.error_text.set("")
 
-    def login_check(self):
+    def change_pw(self):
         """Check whether user can login with given information"""
 
         # get user from frame
@@ -131,30 +144,32 @@ class Login(ttk.Frame):
         target_pw = row["Passwort"]
 
         # compare passwords
-        if verify_password(target_pw, self.pw_given.get()):
-            print(f"login successful for {user}")
-            self.controller.current_user = user
+        if verify_password(target_pw, self.old_pw.get()):
 
-            # to be continued
-            # this is a workaround for a refresh function - not good, refactor!
-            self.controller.frames[Password].destroy()
-            new_pw_frame = Password(
-                parent=self.controller.container,
-                controller=self.controller,
-                back_function=lambda: self.controller.show_frame(Entry)
+            if self.new_pw.get() != self.new_pw_repeat.get():
+                self.error_text.set("Neues Passwort bitte korrekt wiederholen.")
+                return
+
+            # hash password
+            hashed_pw = hash_password(password=self.new_pw.get())
+
+            # change password
+            self.controller.db.update_password(user_id=user_database_id, password=hashed_pw)
+            self.clear_all()
+            self.controller.back_to_login()
+            MessageWindow(
+                message_header="Passwort erfolgreich geändert",
+                message=f"Das neue Passwort für {user} wurde in die Datenbank eingetragen und kann ab sofort "
+                        f"zum login verwendet werden."
             )
-            new_pw_frame.grid(row=0, column=0, sticky="NSEW")
-            self.controller.frames[Password] = new_pw_frame
 
-            self.next_function()  # change view to next frame
-            self.controller.full_screen_window()
 
         else:
-            self.pw_given.set("")
+            self.old_pw.set("")
             self.error_text.set("Falsches Passwort")
             self.ent_pw.focus_set()
 
-
-
-
-
+    def clear_all(self):
+        self.old_pw.set("")
+        self.new_pw.set("")
+        self.new_pw_repeat.set("")
