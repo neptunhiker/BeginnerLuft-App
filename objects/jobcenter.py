@@ -1,4 +1,4 @@
-class Jobcenter():
+class Jobcenter:
 
     def __init__(self, name, street_and_nr, zip_code, city, email=None, data_base_id=None):
         self.name = name

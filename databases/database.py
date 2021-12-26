@@ -178,7 +178,7 @@ class Database:
                 cursor.execute(query)
             return cursor.fetchone()
 
-    def update_password(self, user_id, password):
+    def update_password(self, user_id: str, password: str) -> bool:
         """Updates a password for an existing user"""
 
         # check if user exists
@@ -198,6 +198,7 @@ class Database:
             cursor.execute(sql, (password, user_id))
             self.conn.commit()
         print(f"Password for user with the ID {user_id} successfully updated.")
+        return True
 
     @staticmethod
     def create_employee(row):
