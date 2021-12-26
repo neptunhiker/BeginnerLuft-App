@@ -129,7 +129,7 @@ class BeginnerLuftApp(tk.Tk):
             TimeTracking: time_tracking_frame,
         }
 
-        self.show_frame(TimeTracking)  # change this line to determine the starting screen
+        self.show_frame(Login)  # change this line to determine the starting screen
 
     def show_frame(self, container):
         frame = self.frames[container]

@@ -12,7 +12,7 @@ from reports.invoice import PDFInvoice
 from tools import helpers
 from tools import custom_exceptions
 
-from widgets.buttons import BLButton
+from widgets.buttons import BLButton, BLImageButtonLabel
 
 
 class Invoice(ttk.Frame):
@@ -61,7 +61,7 @@ class Invoice(ttk.Frame):
 
         lbl_test = ttk.Label(
             header_frame,
-            text="Rechnungserstellung - Datenübersicht",
+            text="Rechnungserstellung",
             style="Secondary.Header.TLabel",
             anchor="center",
         )
@@ -182,10 +182,21 @@ class Invoice(ttk.Frame):
         lbl_error.grid(pady=(0, 10))
 
         # Go button
-        btn = BLButton(button_frame, text="Rechnung erstellen!")
+        btn = BLImageButtonLabel(parent=button_frame, func=self.create_invoice, path_to_file_01="assets/buttons/invoice_01.png",
+                                 path_to_file_02="assets/buttons/invoice_02.png")
         btn.grid()
-        btn.bind("<Button-1>", self.create_invoice)
 
+        # back button
+        btn = BLImageButtonLabel(parent=button_frame, func=self.controller.back_to_dashboard,
+                                 path_to_file_01="assets/buttons/back_01.png",
+                                 path_to_file_02="assets/buttons/back_02.png")
+        btn.grid(pady=(10, 5))
+
+        self.variables = [self.participant_title, self.participant_first_name, self.participant_last_name,
+                          self.participant_jc_id, self.jc_name, self.jc_street_and_nr, self.jc_zip_and_city,
+                          self.training_name, self.training_nr_training_lesseons, self.training_start,
+                          self.training_end, self.training_cost_per_lesson, self.invoice_name, self.invoice_nr,
+                          self.invoice_creation_date, self.invoice_target_date]
         # create random data
         self.pre_populate()
         # self.populate_with_random_data()
@@ -339,7 +350,7 @@ class Invoice(ttk.Frame):
 
         return correctness_check
 
-    def create_invoice(self, event):
+    def create_invoice(self):
         """Creates a PDF invoice and saves it on file"""
 
         if self.check_correctness() and self.check_completeness():
@@ -394,9 +405,11 @@ class Invoice(ttk.Frame):
                         jc_city=self.jc_zip_and_city.get().split()[1],
                         path=path
                     )
+                    full_name = f"{self.participant_first_name.get()} {self.participant_last_name.get()}"
+                    self.clear_all()
+
                     helpers.MessageWindow(message_header="Rechnung erstellt",
-                                          message=f"Rechnung für {self.participant_first_name.get()} "
-                                                  f"{self.participant_last_name.get()} erstellt unter: \n\n"
+                                          message=f"Rechnung für {full_name} erstellt unter: \n\n"
                                                   f"{saving_path}",
                                           path_to_file=saving_path)
 
@@ -444,3 +457,9 @@ class Invoice(ttk.Frame):
     def turn_entry_red(self, event, widget):
         """Turns the value of an Entry field to red"""
         widget.configure(style="Error.TEntry")
+
+    def clear_all(self):
+        """Clears fields and fills based on pre-fill settings"""
+        for variable in self.variables:
+            variable.set("")
+        self.pre_populate()

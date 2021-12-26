@@ -129,14 +129,16 @@ class AddParticipant(ttk.Frame):
         buttons_frame.columnconfigure(0, weight=1)
 
         # go button
-        btn = BLButton(buttons_frame, text="In Datenbank eintragen", command=self.insert_into_db)
+        btn = BLImageButtonLabel(parent=buttons_frame, func=self.insert_into_db,
+                                 path_to_file_01="assets/buttons/enter_into_database_01.png",
+                                 path_to_file_02="assets/buttons/enter_into_database_02.png")
         btn.grid()
 
         # back button
-        # btn_back = BLButton(buttons_frame, text="<< zurück", command=self.controller.back_to_database_operations)
-        btn_back = BLImageButtonLabel(buttons_frame, self.controller.back_to_database_operations,
-                                      "assets/buttons/back_01.png", "assets/buttons/back_02.png")
-        btn_back.grid(pady=(20, 10))
+        btn = BLImageButtonLabel(parent=buttons_frame, func=self.controller.back_to_database_operations,
+                                 path_to_file_01="assets/buttons/back_01.png",
+                                 path_to_file_02="assets/buttons/back_02.png")
+        btn.grid(pady=(20, 10))
 
         self.cmb_title.focus()
 
@@ -358,12 +360,16 @@ class AddCoach(ttk.Frame):
         buttons_frame.columnconfigure(0, weight=1)
 
         # go button
-        btn = BLButton(buttons_frame, text="In Datenbank eintragen", command=self.insert_into_db)
+        btn = BLImageButtonLabel(parent=buttons_frame, func=self.insert_into_db,
+                                 path_to_file_01="assets/buttons/enter_into_database_01.png",
+                                 path_to_file_02="assets/buttons/enter_into_database_02.png")
         btn.grid()
 
         # back button
-        btn_back = BLButton(buttons_frame, text="<< zurück", command=self.controller.back_to_database_operations)
-        btn_back.grid(pady=(20, 10))
+        btn = BLImageButtonLabel(parent=buttons_frame, func=self.controller.back_to_database_operations,
+                                 path_to_file_01="assets/buttons/back_01.png",
+                                 path_to_file_02="assets/buttons/back_02.png")
+        btn.grid(pady=(20, 10))
 
         self.cmb_title.focus()
 
@@ -599,14 +605,18 @@ class AddJobcenter(ttk.Frame):
         buttons_frame.columnconfigure(0, weight=1)
 
         # go button
-        btn = BLButton(buttons_frame, text="In Datenbank eintragen", command=self.insert_into_db)
+        btn = BLImageButtonLabel(parent=buttons_frame, func=self.insert_into_db,
+                                 path_to_file_01="assets/buttons/enter_into_database_01.png",
+                                 path_to_file_02="assets/buttons/enter_into_database_02.png")
         btn.grid()
 
-        self.ent_name.focus()
-
         # back button
-        btn_back = BLButton(buttons_frame, text="<< zurück", command=self.controller.back_to_database_operations)
-        btn_back.grid(pady=(20, 10))
+        btn = BLImageButtonLabel(parent=buttons_frame, func=self.controller.back_to_database_operations,
+                                 path_to_file_01="assets/buttons/back_01.png",
+                                 path_to_file_02="assets/buttons/back_02.png")
+        btn.grid(pady=(20, 10))
+
+        self.ent_name.focus()
 
         # self.populate_with_test_data()
 

@@ -49,7 +49,7 @@ class Dashboard(ttk.Frame):
     def create_buttons(self):
         """Create clickable buttons that lead to other frames"""
 
-        picture_file_names = ["databaseoperations", "invoice", "timetracking"]  # without exetension such as _01, _02
+        picture_file_names = ["databaseoperations", "dashboard_invoice", "timetracking"]  # without exetension such as _01, _02
         next_frames = [DatabaseOperationsDashboard, Invoice, TimeTracking]
 
         x_start_pos = self.screen_midpoint
@@ -112,7 +112,7 @@ class DatabaseOperationsDashboard(ttk.Frame):
     def create_buttons(self):
         """Create clickable buttons that lead to other frames"""
 
-        picture_file_names = ["add_participant", "add_coach", "add_jobcenter", "back_to_dashboard"]  # without exetension such as _01, _02
+        picture_file_names = ["add_participant", "add_coach", "add_jobcenter", "back"]  # without exetension such as _01, _02
         next_frames = [AddParticipant, AddCoach, AddJobcenter, Dashboard]
 
         x_start_pos = self.screen_midpoint

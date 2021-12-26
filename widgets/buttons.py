@@ -37,14 +37,11 @@ class BLImageButtonLabel(tk.Label):
 
     def on_leave(self, event):
         self.configure(image=self.button_photo_01)
-        print("leaving")
 
     def on_enter(self, event):
         self.configure(image=self.button_photo_02)
-        print("entering")
 
     def on_click(self, event):
-        print("clicking")
         self.func()
 
 

@@ -99,11 +99,11 @@ class Login(ttk.Frame):
         lbl_error = ttk.Label(frame, textvariable=self.error_text, style="Secondary.Error.TLabel")
         lbl_error.grid(sticky="W")
 
-        # btn_login = BLButton(frame, text="Login -->")
-        btn_login = BLImageButtonLabel(frame, self.login_check, "assets/buttons/login_01.png",
+        btn_login = BLImageButtonLabel(frame,
+                                       self.login_check,
+                                       "assets/buttons/login_01.png",
                                        "assets/buttons/login_02.png")
         btn_login.grid(pady=(20, 20), sticky="E")
-        # btn_login.bind("<Button-1>", self.login_check)
 
         for child in frame.winfo_children():
             child.grid_configure(padx=20)

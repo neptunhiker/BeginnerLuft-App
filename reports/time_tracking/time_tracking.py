@@ -23,7 +23,7 @@ from reportlab.lib.styles import ParagraphStyle
 class TimeReport():
 
     def __init__(self, file_coach, file_bl, training_name, training_nr, participant_first_name, participant_last_name,
-                 participant_title, avgs_nr, confirmation_period_start, confirmation_period_end):
+                 participant_title, participant_jc_id, confirmation_period_start, confirmation_period_end):
         self.file_coach = file_coach
         self.file_bl = file_bl
         self.training_name = training_name
@@ -32,7 +32,7 @@ class TimeReport():
         self.participant_first_name = participant_first_name
         self.participant_last_name = participant_last_name
         self.participant_full_name = f"{self.participant_first_name} {self.participant_last_name}"
-        self.avgs_nr = avgs_nr
+        self.participant_jc_id = participant_jc_id
         self.confirmation_period_start = confirmation_period_start
         self.confirmation_period_end = confirmation_period_end
         self.time_period = f"{self.confirmation_period_start.strftime('%d.%m.%Y')} bis " \
@@ -170,9 +170,10 @@ class TimeReport():
             main_table = Table([
                 [self.gen_header_table(width=width, height=height_list[0])],
                 [self.gen_body_table(width=width, height=height_list[1], data=self.output_matrix,
-                                training_name=self.training_name, training_nr=self.training_nr,
-                                participant_name=self.participant_full_name, avgs_nr=self.avgs_nr,
-                                time_period=self.time_period, date_ranges=self.date_ranges)],
+                                     training_name=self.training_name, training_nr=self.training_nr,
+                                     participant_name=self.participant_full_name,
+                                     participant_jc_id=self.participant_jc_id, time_period=self.time_period,
+                                     date_ranges=self.date_ranges)],
                 [self.gen_footer_table(width=width, height=height_list[2])]
             ],
                 colWidths=width,
@@ -235,8 +236,8 @@ class TimeReport():
 
         return res
 
-    def gen_body_table(self, width, height, data, training_name, training_nr, participant_name, avgs_nr, time_period,
-                       date_ranges):
+    def gen_body_table(self, width, height, data, training_name, training_nr, participant_name, participant_jc_id,
+                       time_period, date_ranges):
 
         participant_name = participant_name
         width_list = [
@@ -253,8 +254,8 @@ class TimeReport():
         ]
         res = Table([
             ["", self._gen_meta_data(width=width_list[1], height=height_list[3],
-                                participant_name=participant_name, training_name=training_name, training_nr=training_nr,
-                                avgs_nr=avgs_nr, time_period=time_period, date_ranges=date_ranges), ""],
+                                     participant_name=participant_name, training_name=training_name, training_nr=training_nr,
+                                     participants_jc_id=participant_jc_id, time_period=time_period, date_ranges=date_ranges), ""],
             ["", self._gen_times_table(width=width_list[1], height=height_list[1], data=data), ""],
             ["", self._gen_confirmation_text(training_name=training_name, participant_name=participant_name,
                                         date_ranges=date_ranges), ""],
@@ -286,7 +287,8 @@ class TimeReport():
 
         return res
 
-    def _gen_meta_data(self, width, height, participant_name, training_name, training_nr, avgs_nr, time_period, date_ranges):
+    def _gen_meta_data(self, width, height, participant_name, training_name, training_nr, participants_jc_id,
+                       time_period, date_ranges):
 
         # month_names = {}
         # month_names[1] = "Januar"
@@ -331,7 +333,7 @@ class TimeReport():
         res = Table([
             [header, ""],
             [f"Teilnehmer:in {participant_name}", f"Maßnahme: {training_name}", ""],
-            [f"AVGS-Gutscheinnummer: {avgs_nr}", f"Maßnahmennummer: {training_nr}", ""],
+            [f"Kundennummer: {participants_jc_id}", f"Maßnahmennummer: {training_nr}", ""],
             [f"Bewilligungszeitraum: {time_period}", "", ""]
         ],
             rowHeights=height / 3,
@@ -467,25 +469,4 @@ class TimeReport():
 
 
 if __name__ == '__main__':
-    file_bl = "/Volumes/GoogleDrive/Meine Ablage/2021-10-03 Operations/Arbeitsordner/Python/Zeiterfassung/BL-Time-Tracking/resources/Zeiterfassung Ahmed Muhadi.xlsx"
-
-    report = TimeReport(
-        file_bl=file_bl,
-        file_coach="",
-        training_name="individuelles Berufscoaching2",
-        training_nr="123455",
-        participant_first_name="Jimmy",
-        participant_last_name="Doe",
-        participant_title="Herr",
-        avgs_nr="q2343-fdaHj",
-        confirmation_period_start=datetime.date(2021, 10, 12),
-        confirmation_period_end=datetime.date(2021, 12, 23)
-    )
-
-    # target_path = filedialog.askdirectory(initialdir=os.getcwd())
-    # path = filedialog.asksaveasfilename(title="BeginnerLuft Zeiterfassung", initialdir=os.getcwd(),
-    #                          initialfile="testreport", filetypes=(("pdf", "*.pdf"),))
-
-    path = "/Users/beata/Documents/Basti/Python projects/Output/Zeiterfassung/testreport.pdf"
-    print(path)
-    report.create_report(path=path)
+    pass
