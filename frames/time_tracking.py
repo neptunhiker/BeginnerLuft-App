@@ -207,6 +207,8 @@ class TimeTracking(ttk.Frame):
             )
         except Exception as err:
             print(err)
+            msg_logging = f"Time tracking sheet could not be created."
+            self.controller.bl_logger.exception(msg_logging)
             helpers.MessageWindow("Zeiterfassung nicht erstellt!",
                                   f"Leider ist etwas schiefgegangen! Bitte Dateneingaben überprüfen. Ggf. liegen "
                                   f"die ausgewählten Dateien nicht im richtigen Format (excel) vor oder die Excel-"
@@ -225,6 +227,8 @@ class TimeTracking(ttk.Frame):
                 report.create_report(path=path)
             except Exception as err:
                 print(err)
+                msg_logging = f"Time tracking sheet could not be created."
+                self.controller.bl_logger.exception(msg_logging)
                 helpers.MessageWindow("Kein Zeiterfassungs-Sheet erstellt!", f"Leider ist etwas schiefgegangen! Bitte "
                                                                        f"Dateneingaben überprüfen.", alert=True)
                 return
