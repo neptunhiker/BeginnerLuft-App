@@ -1,6 +1,7 @@
 import logging
 import tkinter as tk
 from tkinter import ttk
+from databases.backups import Backup
 from databases.database import Database
 from frames.boilerplate import Boilerplate
 from frames.change_password import ChangePassword
@@ -31,7 +32,11 @@ class BeginnerLuftApp(tk.Tk):
         self.bl_logger = BLLogger()
         self.add_logging_handlers()
 
-        # login information
+        # initialize a Backup class that allows for creating backups of the database
+        self.backup_machine = Backup(self.bl_logger, original_file_path=self.db.database_path)
+        self.backup_machine.create_backup()
+
+        # login tracking
         self.current_user = None
         self.logged_in = False
 

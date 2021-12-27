@@ -1,5 +1,4 @@
 import logging
-from typing import Union
 
 
 class BLLogger(logging.Logger):
