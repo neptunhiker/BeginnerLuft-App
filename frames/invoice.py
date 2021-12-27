@@ -286,8 +286,6 @@ class Invoice(ttk.Frame):
 
     def check_completeness(self):
 
-        print("checking completeness")
-
         completeness_check = True
 
         # participants
@@ -332,8 +330,7 @@ class Invoice(ttk.Frame):
             coaching_end = helpers.parse_date_from_string(self.training_end.get())
             creation_date = helpers.parse_date_from_string(self.invoice_creation_date.get())
             target_date = helpers.parse_date_from_string(self.invoice_target_date.get())
-            print(creation_date)
-            print(target_date)
+
             if target_date <= creation_date:
                 error_text = "Das Zahlungsziel muss zeitlich nach dem Rechnungsdatum liegen."
                 correctness_check = False
@@ -415,6 +412,9 @@ class Invoice(ttk.Frame):
                                           message=f"Rechnung für {full_name} erstellt unter: \n\n"
                                                   f"{saving_path}",
                                           )
+                    logging_msg = f"{self.controller.current_user} successfully created an invoice document for " \
+                                  f"{full_name}."
+                    self.controller.bl_logger.info(logging_msg)
 
                 else:
                     helpers.MessageWindow(message_header="Keine Rechnung erstellt",

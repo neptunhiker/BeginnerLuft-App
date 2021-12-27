@@ -138,7 +138,7 @@ class TimeTracking(ttk.Frame):
 
         btn_go = BLImageButtonLabel(
             parent=action_frame,
-            func=self.go_button,
+            func=self.create_time_tracking_sheet,
             path_to_file_01="assets/buttons/timetracking_sheet_01.png",
             path_to_file_02="assets/buttons/timetracking_sheet_02.png",
         )
@@ -182,7 +182,7 @@ class TimeTracking(ttk.Frame):
         self.file_path_time_sheet_bl.set("/Volumes/GoogleDrive/Meine Ablage/2021-10-03 Operations/Arbeitsordner/Python/Zeiterfassung/BL-Time-Tracking/resources/Zeiterfassung Ahmed Muhadi.xlsx")
         self.file_path_time_sheet_coach.set("/Volumes/GoogleDrive/Meine Ablage/2021-10-03 Operations/Arbeitsordner/Python/Zeiterfassung/BL-Time-Tracking/resources/Zeiterfassung Ahmed Muhadi.xlsx")
 
-    def go_button(self):
+    def create_time_tracking_sheet(self):
 
         # completeness check
         if not self.completeness_check():
@@ -235,6 +235,10 @@ class TimeTracking(ttk.Frame):
                                       f"Ein Zeiterfassungs-Sheet für {full_name} wurde "
                                       f"unter \n\n'{path}' \n\n erstellt.",
                                       height=300)
+
+                logging_msg = f"{self.controller.current_user} successfully created a time tracking report for " \
+                              f"{full_name}."
+                self.controller.bl_logger.info(logging_msg)
 
     def back_button(self):
         self.controller.nav_to_dashboard()
@@ -398,7 +402,6 @@ class TimeTracking(ttk.Frame):
     def clear_all(self):
         """Clears all data on the form"""
         for label_text, item in self.labels.items():
-            print(label_text)
             if label_text in ["Nummer"]:
                 item[1].set("")
             elif label_text in ["Datei BeginnerLuft", "Datei Coach"]:
