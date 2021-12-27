@@ -5,7 +5,7 @@ from objects.jobcenter import Jobcenter
 from objects.people import Participant
 from objects.training import Training
 
-from tools import helpers
+from utils import helpers
 
 
 class Invoice:

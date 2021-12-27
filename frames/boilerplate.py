@@ -5,7 +5,7 @@ from PIL import Image, ImageTk
 
 from design.colors import bl_colors
 from frames.dashboard import Dashboard
-from tools import helpers
+from utils import helpers
 from widgets.buttons import BLImageButtonLabel
 
 

@@ -5,7 +5,7 @@ from PIL import Image, ImageTk
 
 from frames.start import Entry
 from frames.password import Password
-from tools.helpers import verify_password, MessageWindow, hash_password, password_min_requirements
+from utils.helpers import verify_password, MessageWindow, hash_password, password_min_requirements
 from widgets.buttons import BLButton, BLImageButtonLabel
 
 

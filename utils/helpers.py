@@ -6,7 +6,7 @@ from typing import Union
 import tkinter as tk
 from tkinter import ttk
 
-from tools.custom_exceptions import DateFormatException
+from utils.custom_exceptions import DateFormatException
 
 
 def check_if_file_exists(path_to_file: str) -> bool:

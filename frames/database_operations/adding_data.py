@@ -6,7 +6,7 @@ from PIL import Image, ImageTk
 
 from objects.jobcenter import Jobcenter
 from objects.people import Participant, Coach
-from tools.helpers import DatabaseErrorWindow, MessageWindow
+from utils.helpers import DatabaseErrorWindow, MessageWindow
 from widgets.buttons import BLButton, BLImageButtonLabel
 
 

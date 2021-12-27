@@ -6,7 +6,7 @@ from tkinter import messagebox
 import os
 from PIL import Image, ImageTk
 
-from tools import helpers
+from utils import helpers
 from objects.data_picker import PickParticipant, PickTraining
 from reports.time_tracking.time_tracking import TimeReport
 from widgets.buttons import BLImageButtonLabel

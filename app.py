@@ -13,7 +13,7 @@ from frames.windows import set_dpi_awareness
 from logging_bl.logs import BLLogger
 from design.colors import bl_colors
 import design.fonts as bl_fonts
-from tools.helpers import MessageWindow
+from utils.helpers import MessageWindow
 
 
 class BeginnerLuftApp(tk.Tk):

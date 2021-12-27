@@ -3,7 +3,7 @@ import sqlite3
 import unittest
 
 from databases.database import Database
-import tools.helpers as helpers
+import utils.helpers as helpers
 from objects import jobcenter, training
 from objects import people as people
 

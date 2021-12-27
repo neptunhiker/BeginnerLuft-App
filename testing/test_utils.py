@@ -1,12 +1,12 @@
 """
-Tests that cover the helper functions in tools.helpers
+Tests that cover the helper functions in utils.helpers
 """
 
 import datetime
 import unittest
 
-from tools.custom_exceptions import DateFormatException
-from tools import helpers
+from utils.custom_exceptions import DateFormatException
+from utils import helpers
 
 
 class CheckIfFileExists(unittest.TestCase):
