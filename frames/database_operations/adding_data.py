@@ -247,6 +247,8 @@ class AddParticipant(ttk.Frame):
 
         try:
             self.controller.db.add_participant(participant)
+            self.controller.bl_logger.info(f"{self.controller.current_user} added participant {participant.first_name} "
+                                           f"{participant.last_name} to the data base.")
         except sqlite3.OperationalError as err:
             print(err)
             DatabaseErrorWindow()
@@ -256,9 +258,7 @@ class AddParticipant(ttk.Frame):
 
     def clear_all_fields(self):
         for variable in self.variables:
-            print(variable.get())
             variable.set("")
-            print(variable.get())
 
     def show_abort_message(self):
         header = "Kein Datenbankeintrag"
@@ -463,6 +463,8 @@ class AddCoach(ttk.Frame):
 
         try:
             self.controller.db.add_coach(coach)
+            self.controller.bl_logger.info(f"{self.controller.current_user} added coach {coach.first_name} "
+                                           f"{coach.last_name} to the data base.")
         except sqlite3.OperationalError as err:
             print(err)
             DatabaseErrorWindow()
@@ -472,9 +474,7 @@ class AddCoach(ttk.Frame):
 
     def clear_all_fields(self):
         for variable in self.variables:
-            print(variable.get())
             variable.set("")
-            print(variable.get())
 
     def show_abort_message(self):
         header = "Kein Datenbankeintrag"
@@ -702,6 +702,8 @@ class AddJobcenter(ttk.Frame):
 
         try:
             self.controller.db.add_jobcenter(jobcenter)
+            self.controller.bl_logger.info(f"{self.controller.current_user} added jobcenter {jobcenter.name} "
+                                           f"to the data base.")
         except sqlite3.OperationalError as err:
             print(err)
             DatabaseErrorWindow()
@@ -711,9 +713,7 @@ class AddJobcenter(ttk.Frame):
 
     def clear_all_fields(self):
         for variable in self.variables:
-            print(variable.get())
             variable.set("")
-            print(variable.get())
 
     def show_abort_message(self):
         header = "Kein Datenbankeintrag"

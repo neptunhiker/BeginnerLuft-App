@@ -1,3 +1,4 @@
+import logging
 import tkinter as tk
 from tkinter import ttk
 from databases.database import Database
@@ -9,6 +10,7 @@ from frames.invoice import Invoice
 from frames.login import Login
 from frames.time_tracking import TimeTracking
 from frames.windows import set_dpi_awareness
+from logging_bl.logs import BLLogger
 from design.colors import bl_colors
 import design.fonts as bl_fonts
 from tools.helpers import MessageWindow
@@ -24,6 +26,10 @@ class BeginnerLuftApp(tk.Tk):
 
         # initialize data base
         self.db = Database(database_path="../Database/test_database.db")
+
+        # create a logging object
+        self.bl_logger = BLLogger()
+        self.add_logging_handlers()
 
         # login information
         self.current_user = None
@@ -246,16 +252,37 @@ class BeginnerLuftApp(tk.Tk):
         # User menu
         user_menu = tk.Menu(menubar)
         user_menu.add_command(label="Passwort ändern", command=self.nav_to_password_change)
-        user_menu.add_command(label="Logout", command=self.logout)
+        user_menu.add_command(label="Logout", command=lambda reopen=False: self.logout(reopen))
         menubar.add_cascade(label=self.current_user, menu=user_menu)
 
         self.config(menu=menubar)
 
-    def logout(self):
+    def logout(self, reopen: bool = True):
         """Log the current user out and return to Login screen"""
+        self.bl_logger.info(f"Successful logout of {self.current_user}")
         self.destroy()
-        self.__init__(starting_frame=Login)
-        self.mainloop()
+
+        if reopen:
+            # re-open the application
+            self.__init__(starting_frame=Login)
+            self.mainloop()
+
+    def add_logging_handlers(self):
+        """Add handlers that will allow logging functionality"""
+
+        self.bl_logger.add_file_handler(
+            log_file="../Output/Log files/BL_log.log",
+            log_format="%(levelname)s: %(msg)s\n"
+                       "%(filename)s - %(funcName)s - line nr %(lineno)s - %(asctime)s\n",
+            level=logging.INFO,
+            mode="a"
+        )
+
+        self.bl_logger.add_console_handler(
+            log_format="%(levelname)s: %(msg)s\n"
+                       "%(filename)s - %(funcName)s - line nr %(lineno)s - %(asctime)s - logger defined in: %(name)s\n",
+            level=logging.DEBUG
+        )
 
     def full_screen_window(self):
         w, h = self.winfo_screenwidth(), self.winfo_screenheight()

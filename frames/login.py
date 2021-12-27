@@ -142,11 +142,13 @@ class Login(ttk.Frame):
 
             self.next_function()  # change view to next frame
             self.controller.full_screen_window()
+            self.controller.bl_logger.info(f"Passed login attempt for {self.controller.current_user}.")
 
         else:
             self.pw_given.set("")
             self.error_text.set("Falsches Passwort")
             self.ent_pw.focus_set()
+            self.controller.bl_logger.warning(f"Failed login attempt for {user}.")
 
 
 

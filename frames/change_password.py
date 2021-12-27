@@ -163,6 +163,7 @@ class ChangePassword(ttk.Frame):
 
             # change password
             self.controller.db.update_password(user_id=user_database_id, password=hashed_pw)
+            self.controller.bl_logger.info(f"{self.controller.current_user} changed the password.")
             self.controller.logout()
 
         else:
