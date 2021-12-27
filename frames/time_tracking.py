@@ -179,8 +179,10 @@ class TimeTracking(ttk.Frame):
         self.training_id.set("123321")
         self.confirmation_period_start.set("22.01.1984")
         self.confirmation_period_end.set("29.03.1984")
-        self.file_path_time_sheet_bl.set("/Volumes/GoogleDrive/Meine Ablage/2021-10-03 Operations/Arbeitsordner/Python/Zeiterfassung/BL-Time-Tracking/resources/Zeiterfassung Ahmed Muhadi.xlsx")
-        self.file_path_time_sheet_coach.set("/Volumes/GoogleDrive/Meine Ablage/2021-10-03 Operations/Arbeitsordner/Python/Zeiterfassung/BL-Time-Tracking/resources/Zeiterfassung Ahmed Muhadi.xlsx")
+        self.file_path_time_sheet_bl.set(
+            "/Volumes/GoogleDrive/Meine Ablage/2021-10-03 Operations/Arbeitsordner/Python/Zeiterfassung/BL-Time-Tracking/resources/Zeiterfassung Ahmed Muhadi.xlsx")
+        self.file_path_time_sheet_coach.set(
+            "/Volumes/GoogleDrive/Meine Ablage/2021-10-03 Operations/Arbeitsordner/Python/Zeiterfassung/BL-Time-Tracking/resources/Zeiterfassung Ahmed Muhadi.xlsx")
 
     def create_time_tracking_sheet(self):
 
@@ -209,11 +211,14 @@ class TimeTracking(ttk.Frame):
             print(err)
             msg_logging = f"Time tracking sheet could not be created."
             self.controller.bl_logger.exception(msg_logging)
-            helpers.MessageWindow("Zeiterfassung nicht erstellt!",
-                                  f"Leider ist etwas schiefgegangen! Bitte Dateneingaben überprüfen. Ggf. liegen "
-                                  f"die ausgewählten Dateien nicht im richtigen Format (excel) vor oder die Excel-"
-                                  f"Dateien haben nicht die richtige Struktur (Anzahl der Spalten, Spaltenüberschriften"
-                                  f" o.ä.)", height=300, alert=True)
+            helpers.MessageWindow(controller=self.controller,
+                                  message_header="Zeiterfassung nicht erstellt!",
+                                  message=f"Leider ist etwas schiefgegangen! Bitte Dateneingaben überprüfen. Ggf. "
+                                          f"liegen die ausgewählten Dateien nicht im richtigen Format (excel) vor oder "
+                                          f"die Excel-Dateien haben nicht die richtige Struktur (Anzahl der Spalten, "
+                                          f"Spaltenüberschriften o.ä.)",
+                                  height=300,
+                                  alert=True)
             return
 
         # ask user where to save the file
@@ -229,8 +234,13 @@ class TimeTracking(ttk.Frame):
                 print(err)
                 msg_logging = f"Time tracking sheet could not be created."
                 self.controller.bl_logger.exception(msg_logging)
-                helpers.MessageWindow("Kein Zeiterfassungs-Sheet erstellt!", f"Leider ist etwas schiefgegangen! Bitte "
-                                                                       f"Dateneingaben überprüfen.", alert=True)
+                helpers.MessageWindow(
+                    controller=self.controller,
+                    message_header="Kein Zeiterfassungs-Sheet erstellt!",
+                    message=f"Leider ist etwas schiefgegangen! Bitte Dateneingaben überprüfen.",
+                    alert=True
+                )
+
                 return
             else:
                 full_name = f"{self.participant_first_name.get()} {self.participant_last_name.get()}"
@@ -238,10 +248,12 @@ class TimeTracking(ttk.Frame):
                               f"{full_name}."
                 self.controller.bl_logger.info(logging_msg)
                 self.clear_all()
-                helpers.MessageWindow("Zeiterfassungs-Sheet erstellt!",
-                                      f"Ein Zeiterfassungs-Sheet für {full_name} wurde "
-                                      f"unter \n\n'{path}' \n\n erstellt.",
-                                      height=300)
+                helpers.MessageWindow(
+                    controller=self.controller,
+                    message_header="Zeiterfassungs-Sheet erstellt!",
+                    message=f"Ein Zeiterfassungs-Sheet für {full_name} wurde unter \n\n'{path}' \n\n erstellt.",
+                    height=300
+                )
 
     def back_button(self):
         self.controller.nav_to_dashboard()
@@ -312,7 +324,6 @@ class TimeTracking(ttk.Frame):
 
         return correctness_check
 
-
     def pick_participant_from_db(self, event):
         """Opens a new window that allows the user to pick a participant from the database"""
         PickParticipant(controller=self.controller, parent=self)
@@ -321,7 +332,8 @@ class TimeTracking(ttk.Frame):
         """Opens a new window that allows the user to pick a training (Maßnahme) from the database"""
         PickTraining(controller=self.controller, parent=self)
 
-    def create_header_labels_entries(self, starting_row, header_text, descriptions, variables, header_func=None, sep=False):
+    def create_header_labels_entries(self, starting_row, header_text, descriptions, variables, header_func=None,
+                                     sep=False):
         """Create a header, static labels and dynamic entry fields"""
 
         if sep is True:
@@ -347,7 +359,8 @@ class TimeTracking(ttk.Frame):
 
         return starting_row + (i + 1)
 
-    def create_header_labels_labels(self, starting_row, header_text, descriptions, variables, header_func=None, sep=False):
+    def create_header_labels_labels(self, starting_row, header_text, descriptions, variables, header_func=None,
+                                    sep=False):
         """Create a header, static labels and dynamic labels"""
         if sep is True:
             ttk.Separator(self.content_frame).grid(row=starting_row, column=0, columnspan=3,
@@ -413,4 +426,3 @@ class TimeTracking(ttk.Frame):
                 item[1].set("Bitte auswählen")
         self.update()
         self.update_idletasks()
-

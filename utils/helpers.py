@@ -2,7 +2,7 @@ import datetime
 import hashlib, binascii, os
 from pathlib import Path
 from PIL import Image, ImageTk
-from typing import Union
+from typing import Type, Union
 import tkinter as tk
 from tkinter import ttk
 
@@ -179,7 +179,7 @@ class NewWindow(tk.Toplevel):
 class MessageWindow(tk.Toplevel):
     """A separate message window"""
 
-    def __init__(self, message_header: str, message: str, width: int = 600, height: int = 200,
+    def __init__(self, controller: Type[tk.Tk], message_header: str, message: str, width: int = 600, height: int = 200,
                  alert: bool = False):
         """
         Pops up a window with a header and a message
@@ -193,6 +193,7 @@ class MessageWindow(tk.Toplevel):
 
         super(MessageWindow, self).__init__()
         self.title("BeginnerLuft")
+        self.controller = controller
         self.geometry(f"{width}x{height}")
         self.columnconfigure((0, 1), weight=1)
         self.rowconfigure(0, weight=1)

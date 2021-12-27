@@ -263,13 +263,12 @@ class AddParticipant(ttk.Frame):
     def show_abort_message(self):
         header = "Kein Datenbankeintrag"
         message = f"Für {self.first_name.get()} {self.last_name.get()} wurde kein Datenbankeintrag vorgenommen."
-        MessageWindow(message_header=header, message=message, alert=True)
+        MessageWindow(controller=self.controller, message_header=header, message=message, alert=True)
 
-    @staticmethod
-    def show_success_message(name):
+    def show_success_message(self, name):
         header = "Datenbankeintrag erfolgreich"
         message = f"{name} wurde erfolgreich in die Datenbank eingetragen."
-        MessageWindow(message_header=header, message=message)
+        MessageWindow(controller=self.controller, message_header=header, message=message)
 
 
 class AddCoach(ttk.Frame):
@@ -479,13 +478,12 @@ class AddCoach(ttk.Frame):
     def show_abort_message(self):
         header = "Kein Datenbankeintrag"
         message = f"Für {self.first_name.get()} {self.last_name.get()} wurde kein Datenbankeintrag vorgenommen."
-        MessageWindow(message_header=header, message=message, alert=True)
+        MessageWindow(controller=self.controller, message_header=header, message=message, alert=True)
 
-    @staticmethod
-    def show_success_message(name):
+    def show_success_message(self, name):
         header = "Datenbankeintrag erfolgreich"
         message = f"{name} wurde erfolgreich in die Datenbank eingetragen."
-        MessageWindow(message_header=header, message=message)
+        MessageWindow(controller=self.controller, message_header=header, message=message)
 
 
 class AddJobcenter(ttk.Frame):
@@ -636,7 +634,12 @@ class AddJobcenter(ttk.Frame):
         if self.controller.db.check_for_jobcenter_name(jobcenter_name=self.name.get()):
             msg = f"Für das Jobcenter '{self.name.get()}' existiert" \
                   f" bereits ein Eintrag in der Datenbank. Ein erneuter Eintrag wurde nicht vorgenommen."
-            MessageWindow(message_header="Dateinbankeintrag bereits vorhanden", message=msg, alert=True)
+            MessageWindow(
+                controller=self.controller,
+                message_header="Dateinbankeintrag bereits vorhanden",
+                message=msg,
+                alert=True
+            )
 
         # write to data base
         if self.write_to_db():
@@ -718,12 +721,9 @@ class AddJobcenter(ttk.Frame):
     def show_abort_message(self):
         header = "Kein Datenbankeintrag"
         message = f"Für das Jobcenter '{self.name.get()}' wurde kein Datenbankeintrag vorgenommen."
-        MessageWindow(message_header=header, message=message, alert=True)
+        MessageWindow(controller=self.controller, message_header=header, message=message, alert=True)
 
-    @staticmethod
-    def show_success_message(name):
+    def show_success_message(self, name):
         header = "Datenbankeintrag erfolgreich"
         message = f"{name} wurde erfolgreich in die Datenbank eingetragen."
-        MessageWindow(message_header=header, message=message)
-
-
+        MessageWindow(controller=self.controller, message_header=header, message=message)

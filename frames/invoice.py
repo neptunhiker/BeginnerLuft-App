@@ -106,7 +106,8 @@ class Invoice(ttk.Frame):
             starting_row=next_row + 1,
             func=self.pick_jobcenter_from_db,
         )
-        for item_label, variable in zip(["Straße und Nr", "PLZ und Ort"], [self.jc_street_and_nr, self.jc_zip_and_city]):
+        for item_label, variable in zip(["Straße und Nr", "PLZ und Ort"],
+                                        [self.jc_street_and_nr, self.jc_zip_and_city]):
             ttk.Label(self.data_frame, style="Secondary.TLabel", text=item_label).grid(
                 row=next_row, column=1, pady=5, sticky="W")
             ttk.Label(self.data_frame, style="Secondary.TLabel", textvariable=variable).grid(
@@ -375,7 +376,6 @@ class Invoice(ttk.Frame):
                 # if file does not exist yet, create it
                 overwrite = True
                 if helpers.check_if_file_exists(saving_path):
-
                     overwrite = messagebox.askyesno(
                         "Rechnung existiert bereits",
                         f"Es existiert bereits eine Rechnung für {self.participant_first_name.get()} "
@@ -412,16 +412,20 @@ class Invoice(ttk.Frame):
                     self.controller.bl_logger.info(logging_msg)
                     self.clear_all()
 
-                    helpers.MessageWindow(message_header="Rechnung erstellt",
-                                          message=f"Rechnung für {full_name} erstellt unter: \n\n"
-                                                  f"{saving_path}",
-                                          )
+                    helpers.MessageWindow(
+                        controller=self.controller,
+                        message_header="Rechnung erstellt",
+                        message=f"Rechnung für {full_name} erstellt unter: \n\n{saving_path}",
+                    )
 
                 else:
-                    helpers.MessageWindow(message_header="Keine Rechnung erstellt",
-                                          message=f"Es wurde keine Rechnung für {self.participant_first_name.get()} "
-                                                  f"{self.participant_last_name.get()} erstellt.",
-                                          alert=True)
+                    helpers.MessageWindow(
+                        controller=self.controller,
+                        message_header="Keine Rechnung erstellt",
+                        message=f"Es wurde keine Rechnung für {self.participant_first_name.get()} "
+                                f"{self.participant_last_name.get()} erstellt.",
+                        alert=True
+                    )
 
     def pre_populate(self):
         """Populates the form with some data"""
