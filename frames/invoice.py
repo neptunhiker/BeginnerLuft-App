@@ -406,15 +406,15 @@ class Invoice(ttk.Frame):
                         path=path
                     )
                     full_name = f"{self.participant_first_name.get()} {self.participant_last_name.get()}"
+                    logging_msg = f"{self.controller.current_user} successfully created an invoice document for " \
+                                  f"{full_name}."
+                    self.controller.bl_logger.info(logging_msg)
                     self.clear_all()
 
                     helpers.MessageWindow(message_header="Rechnung erstellt",
                                           message=f"Rechnung für {full_name} erstellt unter: \n\n"
                                                   f"{saving_path}",
                                           )
-                    logging_msg = f"{self.controller.current_user} successfully created an invoice document for " \
-                                  f"{full_name}."
-                    self.controller.bl_logger.info(logging_msg)
 
                 else:
                     helpers.MessageWindow(message_header="Keine Rechnung erstellt",

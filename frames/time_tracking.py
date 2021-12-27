@@ -230,15 +230,14 @@ class TimeTracking(ttk.Frame):
                 return
             else:
                 full_name = f"{self.participant_first_name.get()} {self.participant_last_name.get()}"
+                logging_msg = f"{self.controller.current_user} successfully created a time tracking report for " \
+                              f"{full_name}."
+                self.controller.bl_logger.info(logging_msg)
                 self.clear_all()
                 helpers.MessageWindow("Zeiterfassungs-Sheet erstellt!",
                                       f"Ein Zeiterfassungs-Sheet für {full_name} wurde "
                                       f"unter \n\n'{path}' \n\n erstellt.",
                                       height=300)
-
-                logging_msg = f"{self.controller.current_user} successfully created a time tracking report for " \
-                              f"{full_name}."
-                self.controller.bl_logger.info(logging_msg)
 
     def back_button(self):
         self.controller.nav_to_dashboard()
