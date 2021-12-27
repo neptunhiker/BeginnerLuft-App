@@ -1,19 +1,20 @@
+from PIL import Image, ImageTk
 import sqlite3
 from tkinter import ttk
 import tkinter as tk
 import tkinter.messagebox
-from PIL import Image, ImageTk
+from typing import Type, Union
 
 from objects.jobcenter import Jobcenter
 from objects.people import Participant, Coach
 from utils.helpers import DatabaseErrorWindow, MessageWindow
-from widgets.buttons import BLButton, BLImageButtonLabel
+from widgets.buttons import BLImageButtonLabel
 
 
 class AddParticipant(ttk.Frame):
     """A frame that allows to add a participant to the database"""
 
-    def __init__(self, parent, controller):
+    def __init__(self, parent: Type[Union[tk.Tk, ttk.Frame]], controller: Type[tk.Tk]) -> None:
         super().__init__(parent)
         self["style"] = "Secondary.TFrame"
         self.controller = controller
@@ -142,7 +143,7 @@ class AddParticipant(ttk.Frame):
 
         self.cmb_title.focus()
 
-    def insert_into_db(self):
+    def insert_into_db(self) -> None:
         """Insert data into data base"""
 
         # check if all fields have been entered that have an asterix
@@ -170,7 +171,7 @@ class AddParticipant(ttk.Frame):
             self.clear_all_fields()
             self.show_success_message(name=full_name)
 
-    def completeness_check(self):
+    def completeness_check(self) -> bool:
         """Check if all mandatory fields have been filled out"""
         completeness_check = True
 
@@ -200,7 +201,7 @@ class AddParticipant(ttk.Frame):
 
         return completeness_check
 
-    def correctness_check(self):
+    def correctness_check(self) -> bool:
         """Check whether fields have been filled in correctly"""
 
         if len(self.zip.get()) != 0:
@@ -222,7 +223,7 @@ class AddParticipant(ttk.Frame):
         else:
             return True
 
-    def confirm_message(self, participant_first_name, participant_last_name):
+    def confirm_message(self, participant_first_name: str, participant_last_name: str) -> bool:
         """Ask user to confirm whether participant should be added to database"""
 
         title = "Teilnehmer:In in Datenbank eintragen"
@@ -232,7 +233,7 @@ class AddParticipant(ttk.Frame):
 
         return ans
 
-    def write_to_db(self):
+    def write_to_db(self) -> bool:
         """Write participant to data base"""
 
         participant = Participant(
@@ -256,16 +257,16 @@ class AddParticipant(ttk.Frame):
         else:
             return True
 
-    def clear_all_fields(self):
+    def clear_all_fields(self) -> None:
         for variable in self.variables:
             variable.set("")
 
-    def show_abort_message(self):
+    def show_abort_message(self) -> None:
         header = "Kein Datenbankeintrag"
         message = f"Für {self.first_name.get()} {self.last_name.get()} wurde kein Datenbankeintrag vorgenommen."
         MessageWindow(controller=self.controller, message_header=header, message=message, alert=True)
 
-    def show_success_message(self, name):
+    def show_success_message(self, name: str) -> None:
         header = "Datenbankeintrag erfolgreich"
         message = f"{name} wurde erfolgreich in die Datenbank eingetragen."
         MessageWindow(controller=self.controller, message_header=header, message=message)
@@ -274,7 +275,7 @@ class AddParticipant(ttk.Frame):
 class AddCoach(ttk.Frame):
     """A frame that allows to add a coach to the database"""
 
-    def __init__(self, parent, controller):
+    def __init__(self, parent: Type[Union[tk.Tk, ttk.Frame]], controller: Type[tk.Tk]) -> None:
         super().__init__(parent)
         self["style"] = "Secondary.TFrame"
         self.controller = controller
@@ -374,7 +375,7 @@ class AddCoach(ttk.Frame):
 
         self.cmb_title.focus()
 
-    def insert_into_db(self):
+    def insert_into_db(self) -> None:
         """Insert data into data base"""
 
         # check if all fields have been entered that have an asterix
@@ -402,8 +403,9 @@ class AddCoach(ttk.Frame):
             self.clear_all_fields()
             self.show_success_message(name=full_name)
 
-    def completeness_check(self):
+    def completeness_check(self) -> bool:
         """Check if all mandatory fields have been filled out"""
+
         completeness_check = True
 
         if self.title.get() == "":
@@ -426,7 +428,7 @@ class AddCoach(ttk.Frame):
 
         return completeness_check
 
-    def confirm_message(self, coach_first_name, coach_last_name):
+    def confirm_message(self, coach_first_name: str, coach_last_name: str) -> bool:
         """Ask user to confirm whether the coach should be added to database"""
 
         title = "Teilnehmer:In in Datenbank eintragen"
@@ -436,7 +438,7 @@ class AddCoach(ttk.Frame):
 
         return ans
 
-    def abort_duplicate_entry(self):
+    def abort_duplicate_entry(self) -> bool:
         """Ask user to whether they want to abort a duplicate entry to the database"""
 
         title = "Achtung: Duplikat in Datenbank"
@@ -451,7 +453,7 @@ class AddCoach(ttk.Frame):
 
         return ans
 
-    def write_to_db(self):
+    def write_to_db(self) -> bool:
         """Write coach to data base"""
 
         coach = Coach(
@@ -471,16 +473,16 @@ class AddCoach(ttk.Frame):
         else:
             return True
 
-    def clear_all_fields(self):
+    def clear_all_fields(self) -> None:
         for variable in self.variables:
             variable.set("")
 
-    def show_abort_message(self):
+    def show_abort_message(self) -> None:
         header = "Kein Datenbankeintrag"
         message = f"Für {self.first_name.get()} {self.last_name.get()} wurde kein Datenbankeintrag vorgenommen."
         MessageWindow(controller=self.controller, message_header=header, message=message, alert=True)
 
-    def show_success_message(self, name):
+    def show_success_message(self, name: str) -> None:
         header = "Datenbankeintrag erfolgreich"
         message = f"{name} wurde erfolgreich in die Datenbank eingetragen."
         MessageWindow(controller=self.controller, message_header=header, message=message)
@@ -489,7 +491,7 @@ class AddCoach(ttk.Frame):
 class AddJobcenter(ttk.Frame):
     """A frame that allows to add a jobcenter to the database"""
 
-    def __init__(self, parent, controller):
+    def __init__(self, parent: Type[Union[tk.Tk, ttk.Frame]], controller: Type[tk.Tk]) -> None:
         super().__init__(parent)
         self["style"] = "Secondary.TFrame"
         self.controller = controller
@@ -610,14 +612,14 @@ class AddJobcenter(ttk.Frame):
 
         # self.populate_with_test_data()
 
-    def populate_with_test_data(self):
+    def populate_with_test_data(self) -> None:
         self.name.set("Testcenter")
         self.street.set("Berlinerstr.")
         self.nr.set("12")
         self.zip.set("12345")
         self.city.set("Berlin")
 
-    def insert_into_db(self):
+    def insert_into_db(self) -> None:
         """Insert data into data base"""
 
         # check if all fields have been entered that have an asterix
@@ -647,7 +649,7 @@ class AddJobcenter(ttk.Frame):
             self.clear_all_fields()
             self.show_success_message(name)
 
-    def completeness_check(self):
+    def completeness_check(self) -> bool:
         """Check if all mandatory fields have been filled out"""
         completeness_check = True
 
@@ -683,7 +685,7 @@ class AddJobcenter(ttk.Frame):
 
         return completeness_check
 
-    def confirm_message(self, name):
+    def confirm_message(self, name: str) -> bool:
         """Ask user to confirm whether jobcenter should be added to database"""
 
         title = "Jobcenter in Datenbank eintragen"
@@ -692,7 +694,7 @@ class AddJobcenter(ttk.Frame):
 
         return ans
 
-    def write_to_db(self):
+    def write_to_db(self) -> bool:
         """Write jobcenter to data base"""
 
         jobcenter = Jobcenter(
@@ -714,16 +716,16 @@ class AddJobcenter(ttk.Frame):
         else:
             return True
 
-    def clear_all_fields(self):
+    def clear_all_fields(self) -> None:
         for variable in self.variables:
             variable.set("")
 
-    def show_abort_message(self):
+    def show_abort_message(self) -> None:
         header = "Kein Datenbankeintrag"
         message = f"Für das Jobcenter '{self.name.get()}' wurde kein Datenbankeintrag vorgenommen."
         MessageWindow(controller=self.controller, message_header=header, message=message, alert=True)
 
-    def show_success_message(self, name):
+    def show_success_message(self, name: str) -> None:
         header = "Datenbankeintrag erfolgreich"
         message = f"{name} wurde erfolgreich in die Datenbank eingetragen."
         MessageWindow(controller=self.controller, message_header=header, message=message)
