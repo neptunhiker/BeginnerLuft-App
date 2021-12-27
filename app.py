@@ -35,6 +35,9 @@ class BeginnerLuftApp(tk.Tk):
         self.current_user = None
         self.logged_in = False
 
+        # patch to picture gallery
+        self.pic_gallery_path = "../Assets"
+
         # starting frame
         self.starting_frame = starting_frame
 

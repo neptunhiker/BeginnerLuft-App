@@ -27,7 +27,7 @@ class AddParticipant(ttk.Frame):
         frame_left.columnconfigure(0, weight=1)
 
         # create background image
-        image = Image.open("assets/office01.jpg")
+        image = Image.open(f"{self.controller.pic_gallery_path}/backgrounds/office01.jpg")
         desired_width = 1200
         ratio = image.height / image.width
         calculated_height = int(desired_width * ratio)
@@ -130,14 +130,14 @@ class AddParticipant(ttk.Frame):
 
         # go button
         btn = BLImageButtonLabel(parent=buttons_frame, func=self.insert_into_db,
-                                 path_to_file_01="assets/buttons/enter_into_database_01.png",
-                                 path_to_file_02="assets/buttons/enter_into_database_02.png")
+                                 path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/enter_into_database_01.png",
+                                 path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/enter_into_database_02.png")
         btn.grid()
 
         # back button
         btn = BLImageButtonLabel(parent=buttons_frame, func=self.controller.nav_to_database_operations,
-                                 path_to_file_01="assets/buttons/back_01.png",
-                                 path_to_file_02="assets/buttons/back_02.png")
+                                 path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/back_01.png",
+                                 path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/back_02.png")
         btn.grid(pady=(20, 10))
 
         self.cmb_title.focus()
@@ -289,7 +289,7 @@ class AddCoach(ttk.Frame):
         frame_left.columnconfigure(0, weight=1)
 
         # create background image
-        image = Image.open("assets/office01.jpg")
+        image = Image.open("../Assets/backgrounds/office01.jpg")
         desired_width = 1200
         ratio = image.height / image.width
         calculated_height = int(desired_width * ratio)
@@ -363,14 +363,14 @@ class AddCoach(ttk.Frame):
 
         # go button
         btn = BLImageButtonLabel(parent=buttons_frame, func=self.insert_into_db,
-                                 path_to_file_01="assets/buttons/enter_into_database_01.png",
-                                 path_to_file_02="assets/buttons/enter_into_database_02.png")
+                                 path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/enter_into_database_01.png",
+                                 path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/enter_into_database_02.png")
         btn.grid()
 
         # back button
         btn = BLImageButtonLabel(parent=buttons_frame, func=self.controller.nav_to_database_operations,
-                                 path_to_file_01="assets/buttons/back_01.png",
-                                 path_to_file_02="assets/buttons/back_02.png")
+                                 path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/back_01.png",
+                                 path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/back_02.png")
         btn.grid(pady=(20, 10))
 
         self.cmb_title.focus()
@@ -505,7 +505,7 @@ class AddJobcenter(ttk.Frame):
         frame_left.columnconfigure(0, weight=1)
 
         # create background image
-        image = Image.open("assets/office01.jpg")
+        image = Image.open(f"{self.controller.pic_gallery_path}/backgrounds/office01.jpg")
         desired_width = 1200
         ratio = image.height / image.width
         calculated_height = int(desired_width * ratio)
@@ -598,14 +598,14 @@ class AddJobcenter(ttk.Frame):
 
         # go button
         btn = BLImageButtonLabel(parent=buttons_frame, func=self.insert_into_db,
-                                 path_to_file_01="assets/buttons/enter_into_database_01.png",
-                                 path_to_file_02="assets/buttons/enter_into_database_02.png")
+                                 path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/enter_into_database_01.png",
+                                 path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/enter_into_database_02.png")
         btn.grid()
 
         # back button
         btn = BLImageButtonLabel(parent=buttons_frame, func=self.controller.nav_to_database_operations,
-                                 path_to_file_01="assets/buttons/back_01.png",
-                                 path_to_file_02="assets/buttons/back_02.png")
+                                 path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/back_01.png",
+                                 path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/back_02.png")
         btn.grid(pady=(20, 10))
 
         self.ent_name.focus()

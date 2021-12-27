@@ -34,7 +34,7 @@ class Invoice(ttk.Frame):
         frame_left.columnconfigure(0, weight=1)
 
         # create background image
-        image = Image.open("assets/office02.jpg")
+        image = Image.open(f"{self.controller.pic_gallery_path}/backgrounds/office02.jpg")
         desired_width = 800
         ratio = image.height / image.width
         calculated_height = int(desired_width * ratio)
@@ -183,14 +183,15 @@ class Invoice(ttk.Frame):
         lbl_error.grid(pady=(0, 10))
 
         # Go button
-        btn = BLImageButtonLabel(parent=button_frame, func=self.create_invoice, path_to_file_01="assets/buttons/invoice_01.png",
-                                 path_to_file_02="assets/buttons/invoice_02.png")
+        btn = BLImageButtonLabel(parent=button_frame, func=self.create_invoice,
+                                 path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/invoice_01.png",
+                                 path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/invoice_02.png")
         btn.grid()
 
         # back button
         btn = BLImageButtonLabel(parent=button_frame, func=self.controller.nav_to_dashboard,
-                                 path_to_file_01="assets/buttons/back_01.png",
-                                 path_to_file_02="assets/buttons/back_02.png")
+                                 path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/back_01.png",
+                                 path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/back_02.png")
         btn.grid(pady=(10, 5))
 
         self.variables = [self.participant_title, self.participant_first_name, self.participant_last_name,

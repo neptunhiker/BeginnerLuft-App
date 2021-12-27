@@ -27,7 +27,7 @@ class Login(ttk.Frame):
 
         # create background image
         image_path = random.choice(["people", "birches_bw_01", "birches_bw_02", "fences_bw_01"])
-        image = Image.open(f"assets/{image_path}.jpg")
+        image = Image.open(f"{self.controller.pic_gallery_path}/backgrounds/{image_path}.jpg")
         desired_width = 1800
         ratio = image.height / image.width
         calculated_height = int(desired_width * ratio)
@@ -55,7 +55,7 @@ class Login(ttk.Frame):
         logo_frame = ttk.Frame(self.container, style="Secondary.TFrame")
         logo_frame.grid(row=0, column=0)
 
-        logo = Image.open("assets/bl_logo.png")
+        logo = Image.open(f"{self.controller.pic_gallery_path}/logos/bl_logo.png")
         desired_width = 180
         ratio = logo.height / logo.width
         calculated_height = int(desired_width * ratio)
@@ -103,8 +103,8 @@ class Login(ttk.Frame):
 
         btn_login = BLImageButtonLabel(frame,
                                        self.login_check,
-                                       "assets/buttons/login_01.png",
-                                       "assets/buttons/login_02.png")
+                                       f"{self.controller.pic_gallery_path}/buttons/login_01.png",
+                                       f"{self.controller.pic_gallery_path}/buttons/login_02.png")
         btn_login.grid(pady=(20, 20), sticky="E")
 
         for child in frame.winfo_children():

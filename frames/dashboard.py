@@ -21,7 +21,7 @@ class Dashboard(ttk.Frame):
         self.screen_midpoint = self.winfo_screenwidth() / 2
 
         # create background image
-        image = Image.open("assets/people.jpg")
+        image = Image.open(f"{self.controller.pic_gallery_path}/backgrounds/people.jpg")
         desired_width = 1800
         ratio = image.height / image.width
         calculated_height = int(desired_width * ratio)
@@ -62,8 +62,8 @@ class Dashboard(ttk.Frame):
         for file_name, next_frame in zip(picture_file_names, next_frames):
             BLImageButtonCanvas(parent=self,
                                 canvas=self.canvas,
-                                path_to_image_01=f"assets/buttons/{file_name}_01.png",
-                                path_to_image_02=f"assets/buttons/{file_name}_02.png",
+                                path_to_image_01=f"{self.controller.pic_gallery_path}/buttons/{file_name}_01.png",
+                                path_to_image_02=f"{self.controller.pic_gallery_path}/buttons/{file_name}_02.png",
                                 x_coor=x_start_pos,
                                 y_coor=y_pos,
                                 func=self.controller.show_frame,
@@ -84,7 +84,7 @@ class DatabaseOperationsDashboard(ttk.Frame):
         self.screen_midpoint = self.winfo_screenwidth() / 2
 
         # create background image
-        image = Image.open("assets/people.jpg")
+        image = Image.open(f"{self.controller.pic_gallery_path}/backgrounds/people.jpg")
         desired_width = 1800
         ratio = image.height / image.width
         calculated_height = int(desired_width * ratio)
@@ -125,8 +125,8 @@ class DatabaseOperationsDashboard(ttk.Frame):
         for file_name, next_frame in zip(picture_file_names, next_frames):
             BLImageButtonCanvas(parent=self,
                                 canvas=self.canvas,
-                                path_to_image_01=f"assets/buttons/{file_name}_01.png",
-                                path_to_image_02=f"assets/buttons/{file_name}_02.png",
+                                path_to_image_01=f"{self.controller.pic_gallery_path}/buttons/{file_name}_01.png",
+                                path_to_image_02=f"{self.controller.pic_gallery_path}/buttons/{file_name}_02.png",
                                 x_coor=x_start_pos,
                                 y_coor=y_pos,
                                 func=self.controller.show_frame,

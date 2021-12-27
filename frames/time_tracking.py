@@ -48,7 +48,7 @@ class TimeTracking(ttk.Frame):
         frame_left.columnconfigure(0, weight=1)
 
         # create background image
-        image = Image.open("assets/office01.jpg")
+        image = Image.open(f"{self.controller.pic_gallery_path}/backgrounds/office01.jpg")
         desired_width = 1200
         ratio = image.height / image.width
         calculated_height = int(desired_width * ratio)
@@ -139,8 +139,8 @@ class TimeTracking(ttk.Frame):
         btn_go = BLImageButtonLabel(
             parent=action_frame,
             func=self.create_time_tracking_sheet,
-            path_to_file_01="assets/buttons/timetracking_sheet_01.png",
-            path_to_file_02="assets/buttons/timetracking_sheet_02.png",
+            path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/timetracking_sheet_01.png",
+            path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/timetracking_sheet_02.png",
         )
         btn_go.grid(pady=10)
 
@@ -152,8 +152,8 @@ class TimeTracking(ttk.Frame):
         btn_img_back = BLImageButtonLabel(
             parent=nav_frame,
             func=self.back_button,
-            path_to_file_01="assets/buttons/back_01.png",
-            path_to_file_02="assets/buttons/back_02.png",
+            path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/back_01.png",
+            path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/back_02.png",
         )
         btn_img_back.grid(pady=10)
 

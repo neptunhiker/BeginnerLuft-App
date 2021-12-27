@@ -26,7 +26,7 @@ class Boilerplate(ttk.Frame):
         frame_left.columnconfigure(0, weight=1)
 
         # create background image
-        image = Image.open("assets/office01.jpg")
+        image = Image.open(f"{self.controller.pic_gallery_path}/backgrounds/office01.jpg")
         desired_width = 1200
         ratio = image.height / image.width
         calculated_height = int(desired_width * ratio)
@@ -74,8 +74,8 @@ class Boilerplate(ttk.Frame):
         btn_go = BLImageButtonLabel(
             parent=content_frame,
             func=self.back_button,
-            path_to_file_01="assets/buttons/go_01.png",
-            path_to_file_02="assets/buttons/go_02.png",
+            path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/go_01.png",
+            path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/go_02.png",
         )
         btn_go.grid(pady=10)
 
@@ -87,8 +87,8 @@ class Boilerplate(ttk.Frame):
         btn_img_back = BLImageButtonLabel(
             parent=nav_frame,
             func=self.go_button,
-            path_to_file_01="assets/buttons/go_01.png",
-            path_to_file_02="assets/buttons/go_02.png",
+            path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/go_01.png",
+            path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/go_02.png",
         )
         btn_img_back.grid(pady=10)
 

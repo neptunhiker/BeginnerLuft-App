@@ -203,7 +203,7 @@ class MessageWindow(tk.Toplevel):
         frame_left.columnconfigure(0, weight=1)
         frame_left.rowconfigure(0, weight=1)
 
-        logo = Image.open("assets/bl_logo.png")
+        logo = Image.open(f"{self.controller.pic_gallery_path}/logos/bl_logo.png")
         desired_width = 200
         ratio = logo.height / logo.width
         calculated_height = int(desired_width * ratio)
