@@ -16,7 +16,7 @@ from widgets.labels import BLBoldClickableSecondaryLabel
 class TimeTracking(ttk.Frame):
     """A frame that allows user to create a pdf for time tracking of coachings"""
 
-    def __init__(self, parent, controller):
+    def __init__(self, parent: ttk.Frame, controller: tk.Tk):
         super().__init__(parent)
         self["style"] = "Secondary.TFrame"
         self.controller = controller

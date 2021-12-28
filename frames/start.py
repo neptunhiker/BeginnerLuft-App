@@ -1,11 +1,12 @@
 from PIL import Image, ImageTk
 from tkinter import ttk
+import tkinter as tk
 
 
 class Entry(ttk.Frame):
     """A Frame for a starting screen"""
 
-    def __init__(self, parent, controller, next_screen):
+    def __init__(self, parent: ttk.Frame, controller: tk.Tk, next_screen):
         super(Entry, self).__init__(parent)
 
         # self["style"] = "TFrame"

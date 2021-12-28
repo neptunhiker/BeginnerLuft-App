@@ -12,7 +12,7 @@ from widgets.buttons import BLButton, BLImageButtonLabel
 class ChangePassword(ttk.Frame):
     """A frame to change the password"""
 
-    def __init__(self, parent, controller):
+    def __init__(self, parent: ttk.Frame, controller: tk.Tk) -> None:
         super().__init__(parent)
         self["style"] = "Secondary.TFrame"
         self.controller = controller
@@ -51,7 +51,7 @@ class ChangePassword(ttk.Frame):
 
         self.widgets()
 
-    def widgets(self):
+    def widgets(self) -> None:
         """Create labels and entry widgets"""
 
         # LEFT-HAND FRAME
@@ -123,19 +123,18 @@ class ChangePassword(ttk.Frame):
         self.bind("<Enter>", lambda event: self.change_pw())
         self.ent_pw.focus()
 
-    def handle_user_selection(self, event):
-        print(self.user_selected.get())
+    def handle_user_selection(self, event) -> None:
         self.ent_pw.focus()  # does not seem to have an effect
 
-    def on_change(self):
+    def on_change(self) -> None:
         """Remove error text when user changes the password entry field"""
         self.error_text.set("")
 
-    def refresh(self):
+    def refresh(self) -> None:
         """Refreshes the frame to allow for the current user to be displayed correctly"""
         self.user_selected.set(self.controller.current_user)
 
-    def change_pw(self):
+    def change_pw(self) -> None:
         """Check whether user can login with given information"""
 
         # get user from frame
@@ -172,7 +171,7 @@ class ChangePassword(ttk.Frame):
                 self.error_text.set("Falsches Passwort")
                 self.ent_pw.focus_set()
 
-    def clear_all(self):
+    def clear_all(self) -> None:
         self.old_pw.set("")
         self.new_pw.set("")
         self.new_pw_repeat.set("")

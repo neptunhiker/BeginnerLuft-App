@@ -179,7 +179,7 @@ class NewWindow(tk.Toplevel):
 class MessageWindow(tk.Toplevel):
     """A separate message window"""
 
-    def __init__(self, controller: Type[tk.Tk], message_header: str, message: str, width: int = 600, height: int = 200,
+    def __init__(self, controller: tk.Tk, message_header: str, message: str, width: int = 600, height: int = 200,
                  alert: bool = False):
         """
         Pops up a window with a header and a message

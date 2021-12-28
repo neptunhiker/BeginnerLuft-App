@@ -1,18 +1,17 @@
+from PIL import Image, ImageTk
 import random
 from tkinter import ttk
 import tkinter as tk
-from PIL import Image, ImageTk
+from typing import Callable
 
-from frames.start import Entry
-from frames.password import Password
 from utils.helpers import verify_password
-from widgets.buttons import BLButton, BLImageButtonLabel
+from widgets.buttons import BLImageButtonLabel
 
 
 class Login(ttk.Frame):
     """A Login frame"""
 
-    def __init__(self, parent, controller, next_function):
+    def __init__(self, parent: ttk.Frame, controller: tk.Tk, next_function: Callable):
         super().__init__(parent)
         self["style"] = "Secondary.TFrame"
         self.controller = controller
@@ -48,7 +47,7 @@ class Login(ttk.Frame):
 
         self.widgets()
 
-    def widgets(self):
+    def widgets(self) -> None:
         """Create labels and entry widgets"""
 
         # LEFT-HAND FRAME
@@ -95,14 +94,14 @@ class Login(ttk.Frame):
 
         self.ent_pw = ttk.Entry(frame, show="*", textvariable=self.pw_given)
         self.ent_pw.grid(sticky="EW")
-        self.ent_pw.bind("<Return>", lambda event: self.login_check())
+        self.ent_pw.bind("<Return>", lambda event: self.execute_login_attempt())
         self.pw_given.trace("w", lambda a, b, c, d=self: self.on_change())
 
         lbl_error = ttk.Label(frame, textvariable=self.error_text, style="Secondary.Error.TLabel")
         lbl_error.grid(sticky="W")
 
         btn_login = BLImageButtonLabel(frame,
-                                       self.login_check,
+                                       self.execute_login_attempt,
                                        f"{self.controller.pic_gallery_path}/buttons/login_01.png",
                                        f"{self.controller.pic_gallery_path}/buttons/login_02.png")
         btn_login.grid(pady=(20, 20), sticky="E")
@@ -112,15 +111,14 @@ class Login(ttk.Frame):
 
         self.ent_pw.focus()
 
-    def handle_user_selection(self, event):
-        print(self.user_selected.get())
+    def handle_user_selection(self, event: tk.Event) -> None:
         self.ent_pw.focus()  # does not seem to have an effect
 
-    def on_change(self):
+    def on_change(self) -> None:
         """Remove error text when user changes the password entry field"""
         self.error_text.set("")
 
-    def login_check(self):
+    def execute_login_attempt(self) -> bool:
         """Check whether user can login with given information"""
 
         # get user from frame
@@ -143,13 +141,14 @@ class Login(ttk.Frame):
             self.next_function()  # change view to next frame
             self.controller.full_screen_window()
             self.controller.bl_logger.info(f"Passed login attempt for {self.controller.current_user}.")
+            return True
 
         else:
             self.pw_given.set("")
             self.error_text.set("Falsches Passwort")
             self.ent_pw.focus_set()
             self.controller.bl_logger.warning(f"Failed login attempt for {user}.")
-
+            return False
 
 
 

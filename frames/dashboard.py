@@ -12,7 +12,7 @@ from widgets.buttons import BLImageButtonCanvas
 class Dashboard(ttk.Frame):
     """A frame that displays different little programs available to the user"""
 
-    def __init__(self, parent, controller):
+    def __init__(self, parent: ttk.Frame, controller: tk.Tk) -> None:
         super().__init__(parent)
         self["style"] = "Secondary.TFrame"
         self.controller = controller
@@ -75,7 +75,7 @@ class Dashboard(ttk.Frame):
 class DatabaseOperationsDashboard(ttk.Frame):
     """A frame that displays different little programs available to the user for interacting with the database"""
 
-    def __init__(self, parent, controller):
+    def __init__(self, parent: ttk.Frame, controller: tk.Tk) -> None:
         super().__init__(parent)
         self["style"] = "Secondary.TFrame"
         self.controller = controller
@@ -103,13 +103,13 @@ class DatabaseOperationsDashboard(ttk.Frame):
         self.create_header()
         self.create_buttons()
 
-    def create_header(self):
+    def create_header(self) -> None:
         """Create a header for the canvas"""
 
         self.canvas.create_text(self.screen_midpoint, 100, fill="white", font=bl_font_title, text="BeginnerLuft")
         self.canvas.create_text(self.screen_midpoint, 170, fill="white", font=bl_font_subtitle, text="Datenbankoperationen")
 
-    def create_buttons(self):
+    def create_buttons(self) -> None:
         """Create clickable buttons that lead to other frames"""
 
         picture_file_names = ["add_participant", "add_coach", "add_jobcenter", "back"]  # without exetension such as _01, _02

@@ -12,7 +12,7 @@ from widgets.buttons import BLImageButtonLabel
 class Boilerplate(ttk.Frame):
     """A boilerplate frame"""
 
-    def __init__(self, parent, controller):
+    def __init__(self, parent: ttk.Frame, controller: tk.Tk) -> None:
         super().__init__(parent)
         self["style"] = "Secondary.TFrame"
         self.controller = controller
@@ -92,8 +92,8 @@ class Boilerplate(ttk.Frame):
         )
         btn_img_back.grid(pady=10)
 
-    def go_button(self):
+    def go_button(self) -> None:
         tk.messagebox.showinfo("Go button pressed", "You pressed the Go button.")
 
-    def back_button(self):
+    def back_button(self) -> None:
         self.controller.show_frame(Dashboard)

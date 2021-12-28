@@ -32,7 +32,7 @@ class PickParticipant(tk.Toplevel):
         frame_left.columnconfigure(0, weight=1)
         frame_left.rowconfigure(0, weight=1)
 
-        logo = Image.open(f"{self.controller.pic_gallary_path}/logos/bl_logo.png")
+        logo = Image.open(f"{self.controller.pic_gallery_path}/logos/bl_logo.png")
         desired_width = 200
         ratio = logo.height / logo.width
         calculated_height = int(desired_width * ratio)
@@ -78,7 +78,7 @@ class PickParticipant(tk.Toplevel):
                          command=self.send_data)
         btn.grid()
 
-    def handle_user_selection(self, event):
+    def handle_user_selection(self, event: tk.Event):
         """Get data from frame when user changes a selection"""
 
         # get ID
@@ -130,7 +130,7 @@ class PickJobcenter(tk.Toplevel):
         frame_left.columnconfigure(0, weight=1)
         frame_left.rowconfigure(0, weight=1)
 
-        logo = Image.open(f"{self.controller.pic_gallary_path}/logos/bl_logo.png")
+        logo = Image.open(f"{self.controller.pic_gallery_path}/logos/bl_logo.png")
         desired_width = 200
         ratio = logo.height / logo.width
         calculated_height = int(desired_width * ratio)
@@ -176,7 +176,7 @@ class PickJobcenter(tk.Toplevel):
                          command=self.send_data)
         btn.grid()
 
-    def handle_user_selection(self, event):
+    def handle_user_selection(self, event: tk.Event) -> None:
         """Get data from frame when user changes a selection"""
 
         # get ID
@@ -189,7 +189,7 @@ class PickJobcenter(tk.Toplevel):
 
         self.error_message.set("")
 
-    def send_data(self):
+    def send_data(self) -> None:
         """Send the data to the parent frame"""
 
         if self.selected_jc is None:
@@ -206,7 +206,7 @@ class PickJobcenter(tk.Toplevel):
 class PickTraining(tk.Toplevel):
     """A data picker window for picking a training (Maßnahme) from a data base"""
 
-    def __init__(self, controller, parent):
+    def __init__(self, controller: tk.Tk, parent: ttk.Frame) -> None:
         super(PickTraining, self).__init__()
         self.controller = controller
         self.parent = parent
@@ -228,7 +228,7 @@ class PickTraining(tk.Toplevel):
         frame_left.columnconfigure(0, weight=1)
         frame_left.rowconfigure(0, weight=1)
 
-        logo = Image.open(f"{self.controller.pic_gallary_path}/logos/bl_logo.png")
+        logo = Image.open(f"{self.controller.pic_gallery_path}/logos/bl_logo.png")
         desired_width = 200
         ratio = logo.height / logo.width
         calculated_height = int(desired_width * ratio)
@@ -273,7 +273,7 @@ class PickTraining(tk.Toplevel):
                          command=self.send_data)
         btn.grid()
 
-    def handle_user_selection(self, event):
+    def handle_user_selection(self, event: tk.Event) -> None:
         """Get data from frame when user changes a selection"""
 
         # get ID
@@ -286,7 +286,7 @@ class PickTraining(tk.Toplevel):
 
         self.error_message.set("")
 
-    def send_data(self):
+    def send_data(self) -> None:
         """Send the data to the parent frame"""
 
         if self.selected_training is None:

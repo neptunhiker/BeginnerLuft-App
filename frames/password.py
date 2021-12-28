@@ -7,7 +7,7 @@ from widgets.buttons import BLButton
 class Password(ttk.Frame):
     """A Frame for password settings"""
 
-    def __init__(self, parent, controller, back_function):
+    def __init__(self, parent: ttk.Frame, controller: tk.Tk, back_function):
         super(Password, self).__init__(parent)
         self["style"] = "Secondary.TFrame"
         self.controller = controller

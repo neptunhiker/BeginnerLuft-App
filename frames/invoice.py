@@ -1,25 +1,25 @@
 import datetime
 import os
+from PIL import Image, ImageTk
 import sqlite3
 from tkinter import ttk
 import tkinter as tk
 from tkinter import messagebox
-from PIL import Image, ImageTk
+from typing import Callable, List
 
 from objects.data_picker import PickJobcenter, PickParticipant, PickTraining
-from objects.invoice import Invoice
 from widgets.labels import BLBoldClickableSecondaryLabel
 from reports.invoice import PDFInvoice
 from utils import helpers
 from utils import custom_exceptions
 
-from widgets.buttons import BLButton, BLImageButtonLabel
+from widgets.buttons import BLImageButtonLabel
 
 
 class Invoice(ttk.Frame):
     """A test frame for a frame with a picture on the left hand side"""
 
-    def __init__(self, parent, controller):
+    def __init__(self, parent: ttk.Frame, controller: tk.Tk) -> None:
         super().__init__(parent)
         self["style"] = "Secondary.TFrame"
         self.controller = controller
@@ -171,8 +171,8 @@ class Invoice(ttk.Frame):
 
         # change invoice name and nr when participant data and invoice creation date changes
         for variable in [self.participant_first_name, self.participant_last_name, self.invoice_creation_date]:
-            variable.trace("w", self.change_invoice_nr)
-            variable.trace("w", self.change_invoice_name)
+            variable.trace("w", lambda var, index, mode: self.change_invoice_nr())
+            variable.trace("w", lambda var, index, mode: self.change_invoice_name())
 
         # LOWER FRAME
         button_frame = ttk.Frame(frame_right, style="Secondary.TFrame")
@@ -204,7 +204,7 @@ class Invoice(ttk.Frame):
         self.pre_populate()
         # self.populate_with_random_data()
 
-    def change_invoice_name(self, var, index, mode):
+    def change_invoice_name(self) -> None:
         """Update the invoice name based on data entries"""
 
         try:
@@ -226,7 +226,7 @@ class Invoice(ttk.Frame):
             print(err)
             self.invoice_name.set("")
 
-    def change_invoice_nr(self, var, index, mode):
+    def change_invoice_nr(self) -> None:
         """Update the invoice nr based on data entries"""
         try:
             self.invoice_nr.set(helpers.create_invoice_nr(
@@ -243,19 +243,20 @@ class Invoice(ttk.Frame):
         except AttributeError:
             self.invoice_nr.set("")
 
-    def pick_jobcenter_from_db(self, event):
+    def pick_jobcenter_from_db(self, event: tk.Event) -> None:
         """Opens a new window that allows the user to pick a jobcenter from the database"""
         PickJobcenter(controller=self.controller, parent=self)
 
-    def pick_participant_from_db(self, event):
+    def pick_participant_from_db(self, event: tk.Event) -> None:
         """Opens a new window that allows the user to pick a participant from the database"""
         PickParticipant(controller=self.controller, parent=self)
 
-    def pick_training_from_db(self, event):
+    def pick_training_from_db(self, event: tk.Event) -> None:
         """Opens a new window that allows the user to pick a training (Maßnahme) from the database"""
         PickTraining(controller=self.controller, parent=self)
 
-    def create_widgets(self, frame, title, label_texts, string_variables, starting_row=0, func=None):
+    def create_widgets(self, frame: ttk.Frame, title: str, label_texts: List[str], string_variables: List[tk.StringVar],
+                       starting_row: int = 0, func: Callable = None) -> int:
         """Create title, label, and entry widgets"""
 
         pad_y = 5
@@ -286,7 +287,7 @@ class Invoice(ttk.Frame):
 
         return row_counter
 
-    def check_completeness(self):
+    def check_completeness(self) -> bool:
 
         completeness_check = True
 
@@ -320,7 +321,7 @@ class Invoice(ttk.Frame):
 
         return completeness_check
 
-    def check_correctness(self):
+    def check_correctness(self) -> bool:
         """Check correctness of data"""
 
         correctness_check = True
@@ -352,7 +353,7 @@ class Invoice(ttk.Frame):
 
         return correctness_check
 
-    def create_invoice(self):
+    def create_invoice(self) -> None:
         """Creates a PDF invoice and saves it on file"""
 
         if self.check_correctness() and self.check_completeness():
@@ -427,7 +428,7 @@ class Invoice(ttk.Frame):
                         alert=True
                     )
 
-    def pre_populate(self):
+    def pre_populate(self) -> None:
         """Populates the form with some data"""
         try:
             training_name = "Individuelles Berufscoaching"
@@ -443,7 +444,7 @@ class Invoice(ttk.Frame):
         self.invoice_target_date.set(helpers.determine_payment_target_date(datetime.date.today(), 14).
                                      strftime("%d.%m.%Y"))
 
-    def populate_with_random_data(self):
+    def populate_with_random_data(self) -> None:
 
         self.participant_title.set("Herr")
         self.participant_first_name.set("Juri")
@@ -466,11 +467,11 @@ class Invoice(ttk.Frame):
         self.jc_street_and_nr.set("Berlinerstr. 987")
         self.jc_zip_and_city.set("12321 Berlin")
 
-    def turn_entry_red(self, event, widget):
+    def turn_entry_red(self, event: tk.Event, widget: ttk.Entry) -> None:
         """Turns the value of an Entry field to red"""
         widget.configure(style="Error.TEntry")
 
-    def clear_all(self):
+    def clear_all(self) -> None:
         """Clears fields and fills based on pre-fill settings"""
         for variable in self.variables:
             variable.set("")
