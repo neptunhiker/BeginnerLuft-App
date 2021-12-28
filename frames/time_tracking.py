@@ -1,14 +1,14 @@
 import datetime
+import os
+from PIL import Image, ImageTk
 from tkinter import ttk
 import tkinter as tk
 from tkinter.filedialog import askopenfilename, asksaveasfilename
-from tkinter import messagebox
-import os
-from PIL import Image, ImageTk
+from typing import Callable, List
 
-from utils import helpers
 from objects.data_picker import PickParticipant, PickTraining
 from reports.time_tracking.time_tracking import TimeReport
+from utils import helpers
 from widgets.buttons import BLImageButtonLabel
 from widgets.labels import BLBoldClickableSecondaryLabel
 
@@ -16,7 +16,7 @@ from widgets.labels import BLBoldClickableSecondaryLabel
 class TimeTracking(ttk.Frame):
     """A frame that allows user to create a pdf for time tracking of coachings"""
 
-    def __init__(self, parent: ttk.Frame, controller: tk.Tk):
+    def __init__(self, parent: ttk.Frame, controller: tk.Tk) -> None:
         super().__init__(parent)
         self["style"] = "Secondary.TFrame"
         self.controller = controller
@@ -160,7 +160,7 @@ class TimeTracking(ttk.Frame):
         self.pre_populate()
         # self.populate_with_test_data()
 
-    def pre_populate(self):
+    def pre_populate(self) -> None:
         """Populates the form with some data"""
 
         training_name = "Individuelles Berufscoaching"
@@ -169,7 +169,7 @@ class TimeTracking(ttk.Frame):
         training_id = self.controller.db.select_single_query(sql)["ID"]
         self.training_id.set(training_id)
 
-    def populate_with_test_data(self):
+    def populate_with_test_data(self) -> None:
         self.participant_title.set("Herr")
         self.participant_first_name.set("Jimmy")
         self.participant_last_name.set("Murt")
@@ -184,7 +184,7 @@ class TimeTracking(ttk.Frame):
         self.file_path_time_sheet_coach.set(
             "/Volumes/GoogleDrive/Meine Ablage/2021-10-03 Operations/Arbeitsordner/Python/Zeiterfassung/BL-Time-Tracking/resources/Zeiterfassung Ahmed Muhadi.xlsx")
 
-    def create_time_tracking_sheet(self):
+    def create_time_tracking_sheet(self) -> None:
 
         # completeness check
         if not self.completeness_check():
@@ -255,10 +255,11 @@ class TimeTracking(ttk.Frame):
                     height=300
                 )
 
-    def back_button(self):
+    def back_button(self) -> None:
+        """Navigate to the dashboard"""
         self.controller.nav_to_dashboard()
 
-    def completeness_check(self):
+    def completeness_check(self) -> bool:
         """Check whether all data have been filled out"""
 
         completeness_check = True
@@ -287,7 +288,7 @@ class TimeTracking(ttk.Frame):
 
         return completeness_check
 
-    def correctness_check(self):
+    def correctness_check(self) -> bool:
         """Check whether data have been entered correctly"""
 
         # check if entered dates are dates indeed
@@ -324,16 +325,17 @@ class TimeTracking(ttk.Frame):
 
         return correctness_check
 
-    def pick_participant_from_db(self, event):
+    def pick_participant_from_db(self, event: tk.Event) -> None:
         """Opens a new window that allows the user to pick a participant from the database"""
         PickParticipant(controller=self.controller, parent=self)
 
-    def pick_training_from_db(self, event):
+    def pick_training_from_db(self, event: tk.Event) -> None:
         """Opens a new window that allows the user to pick a training (Maßnahme) from the database"""
         PickTraining(controller=self.controller, parent=self)
 
-    def create_header_labels_entries(self, starting_row, header_text, descriptions, variables, header_func=None,
-                                     sep=False):
+    def create_header_labels_entries(self, starting_row: int, header_text: str, descriptions: List[str],
+                                     variables: List[tk.StringVar], header_func: Callable = None,
+                                     sep: bool = False) -> int:
         """Create a header, static labels and dynamic entry fields"""
 
         if sep is True:
@@ -359,8 +361,8 @@ class TimeTracking(ttk.Frame):
 
         return starting_row + (i + 1)
 
-    def create_header_labels_labels(self, starting_row, header_text, descriptions, variables, header_func=None,
-                                    sep=False):
+    def create_header_labels_labels(self, starting_row: int, header_text: str, descriptions: List[str],
+                                    variables: List[tk.StringVar], header_func: Callable = None, sep=False) -> int:
         """Create a header, static labels and dynamic labels"""
         if sep is True:
             ttk.Separator(self.content_frame).grid(row=starting_row, column=0, columnspan=3,
@@ -386,7 +388,9 @@ class TimeTracking(ttk.Frame):
 
         return starting_row + (i + 1)
 
-    def create_file_picker(self, starting_row, header_text, descriptions, variables, sep=False):
+    def create_file_picker(self, starting_row: int, header_text: str, descriptions: List[str],
+                           variables: List[tk.StringVar], sep=False) -> None:
+        """"Create a header, labels, and labels that allow for picking files from a directory when clicked on"""
         if sep is True:
             ttk.Separator(self.content_frame).grid(row=starting_row, column=0, columnspan=3,
                                                    sticky="EW", pady=10)
@@ -406,7 +410,7 @@ class TimeTracking(ttk.Frame):
             lbl_var.bind("<Button-1>", lambda event, variable=item[1]: self.choose_file(event, variable))
             lbl_var.grid(row=starting_row + i, column=2, pady=self.pad_y, sticky="NW")
 
-    def choose_file(self, event, variable):
+    def choose_file(self, event: tk.Event, variable: tk.StringVar) -> None:
         """Ask user to pick a file that contains time tracking data"""
         variable.set(askopenfilename(initialdir=os.getcwd(), title="Dateiauswahl"))
 
@@ -415,7 +419,7 @@ class TimeTracking(ttk.Frame):
 
         self.completeness_check()
 
-    def clear_all(self):
+    def clear_all(self) -> None:
         """Clears all data on the form"""
         for label_text, item in self.labels.items():
             if label_text in ["Nummer"]:
