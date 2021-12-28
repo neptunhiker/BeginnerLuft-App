@@ -38,8 +38,9 @@ class PDFInvoice(PDFReport):
     """An invoice in pdf format"""
 
     def __init__(self, invoice_name, invoice, time_period_start, time_period_end, nr_of_training_lessons,
+                 image_gallery_path="../Assets",
                  path="../../Output/PDF Rechnungen", save_file=True, show_success_message=True):
-
+        self.image_gallery_path = image_gallery_path
         self.invoice = invoice
         self.participant = invoice.participant
         self.training = invoice.training
@@ -110,7 +111,7 @@ class PDFInvoice(PDFReport):
     def create_header(self):
         """Create a header for the report"""
 
-        img_path = "assets/beginnerluft.png"
+        img_path = f"{self.image_gallery_path}/logos/beginnerluft.png"
         img_width = self.col_widths[1] * 0.3
         img_height = self.row_heights[0] * 0.5
         img = Image(filename=img_path, width=img_width, height=img_height, kind="proportional")
@@ -160,11 +161,12 @@ class PDFInvoice(PDFReport):
     def _body_create_address_for_recipient(self):
         """Create the adress field for the job center"""
 
+        street_and_nr = f"{self.jobcenter.street} {self.jobcenter.street_nr}"
         para_list = []
         para_01 = Paragraph(f"""
                 An das <br/>
                 <b>{self.jobcenter.name}</b><br/>
-                <b>{self.jobcenter.street_and_nr}</b><br/>
+                <b>{street_and_nr}</b><br/>
                 <b>{self.jobcenter.zip_code} {self.jobcenter.city}</b>
                 """)
         para_list.append(para_01)
@@ -348,24 +350,25 @@ class PDFInvoice(PDFReport):
 
     def show_success_message(self):
         msg = f"Rechnung für {self.participant_name} erstellt und gespeichert unter\n\n{self.full_path}"
-        helpers.MessageWindow(message_header="Rechnung erstellt!", message=msg, path_to_file=self.full_path)
+        helpers.MessageWindow(message_header="Rechnung erstellt!", message=msg)
 
     @classmethod
     def from_data(cls, participant_title, participant_first_name, participant_last_name, participant_id,
                   invoice_name, invoice_total_amount, invoice_nr, invoice_creation_date, invoice_target_date,
                   training_name, training_cost_per_lesson,
                   coaching_start, coaching_end, coaching_nr_lessons,
-                  jc_name, jc_street_and_nr, jc_zip, jc_city, path):
+                  jc_name, jc_street, jc_street_nr, jc_zip, jc_city, path):
         """Create instance of class only based on necessary data"""
 
-        jc = Jobcenter(name=jc_name, street_and_nr=jc_street_and_nr, zip_code=jc_zip, city=jc_city)
+        jc = Jobcenter(name=jc_name, street=jc_street, street_nr=jc_street_nr, zip_code=jc_zip, city=jc_city)
         participant = Participant(title=participant_title, first_name=participant_first_name,
                                   last_name=participant_last_name, client_id_with_jc=participant_id)
         training = Training(name=training_name, cost_per_training_lesson=training_cost_per_lesson)
         invoice = Invoice(invoice_nr=invoice_nr, total_amount=invoice_total_amount, creation_date=invoice_creation_date,
                           target_date=invoice_target_date, jobcenter=jc, nr_training_lessons=coaching_nr_lessons,
                           participant=participant, training=training)
-        return cls(invoice_name=invoice_name, invoice=invoice, time_period_start=coaching_start, time_period_end=coaching_end,
+        return cls(invoice_name=invoice_name, invoice=invoice, time_period_start=coaching_start,
+                   time_period_end=coaching_end,
                    nr_of_training_lessons=coaching_nr_lessons, path=path, show_success_message=False)
 
 

@@ -196,7 +196,8 @@ class PickJobcenter(tk.Toplevel):
             return
 
         self.parent.jc_name.set(self.selected_jc.name)
-        self.parent.jc_street_and_nr.set(self.selected_jc.street_and_nr)
+        self.parent.jc_street.set(self.selected_jc.street)
+        self.parent.jc_street_nr.set(self.selected_jc.street_nr)
         self.parent.jc_zip_and_city.set(f"{self.selected_jc.zip_code} {self.selected_jc.city}")
 
         self.destroy()

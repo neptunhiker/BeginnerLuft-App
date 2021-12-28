@@ -15,7 +15,7 @@ class TimeReport():
     def __init__(self, file_coach: str, file_bl: str, training_name: str, training_nr: str, participant_first_name: str,
                  participant_last_name: str, participant_title: str, participant_jc_id: str,
                  confirmation_period_start: Union[datetime.date, str],
-                 confirmation_period_end: Union[datetime.date, str]) -> None:
+                 confirmation_period_end: Union[datetime.date, str], image_gallery_path: str = "../Assets") -> None:
 
         self.file_coach = file_coach
         self.file_bl = file_bl
@@ -28,6 +28,7 @@ class TimeReport():
         self.participant_jc_id = participant_jc_id
         self.confirmation_period_start = confirmation_period_start
         self.confirmation_period_end = confirmation_period_end
+        self.image_gallery_path = image_gallery_path
         self.time_period = f"{self.confirmation_period_start.strftime('%d.%m.%Y')} bis " \
                            f"{self.confirmation_period_end.strftime('%d.%m.%Y')}"
 
@@ -202,7 +203,7 @@ class TimeReport():
             0.45 * width,
         ]
 
-        img_path = "assets/beginnerluft.png"
+        img_path = f"{self.image_gallery_path}/logos/beginnerluft.png"
         img_width = width_list[1] * 0.3
         img_height = height * 0.5
         img = Image(filename=img_path, width=img_width, height=img_height, kind="proportional")
@@ -231,7 +232,7 @@ class TimeReport():
 
     def gen_body_table(self, width: float, height: float, data: list, training_name: str, training_nr: str,
                        participant_name: str, participant_jc_id: str, time_period: str,
-                       date_ranges: List[str, str]) -> reportlab.platypus.Table:
+                       date_ranges: List[str]) -> reportlab.platypus.Table:
 
         participant_name = participant_name
         width_list = [
@@ -300,7 +301,7 @@ class TimeReport():
 
     def _gen_meta_data(self, width: float, height: float, participant_name: str, training_name: str, training_nr: str,
                        participants_jc_id: str, time_period: str,
-                       date_ranges: List[str, str]) -> reportlab.platypus.Table:
+                       date_ranges: List[str]) -> reportlab.platypus.Table:
 
         header = "Anwesenheitsliste"
 
@@ -358,7 +359,7 @@ class TimeReport():
         return res
 
     def _gen_confirmation_text(self, training_name: str, participant_name: str,
-                               date_ranges: List[str, str]) -> List[reportlab.platypus.Paragraph]:
+                               date_ranges: List[str]) -> List[reportlab.platypus.Paragraph]:
 
         # format time period
         if date_ranges[0] == date_ranges[1]:

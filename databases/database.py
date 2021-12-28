@@ -39,10 +39,10 @@ class Database:
         sql = "INSERT INTO Jobcenter (Name, 'E-Mail', Strasse, Nr, PLZ, Stadt) " \
               "VALUES (?, ?, ?, ?, ?, ?)"
 
-        street, nr = jobcenter.street_and_nr.split()
         self.connect_to_database()
         with closing(self.conn.cursor()) as cursor:
-            cursor.execute(sql, (jobcenter.name, jobcenter.email, street, nr, jobcenter.zip_code, jobcenter.city))
+            cursor.execute(sql, (jobcenter.name, jobcenter.email, jobcenter.street, jobcenter.street_nr,
+                                 jobcenter.zip_code, jobcenter.city))
             self.conn.commit()
 
         print(f"{jobcenter} successfully added to the database.")
@@ -216,7 +216,8 @@ class Database:
         """Create a Jobcenter object from an sqlite3.Row"""
 
         return Jobcenter(name=sqlite3_row["Name"],
-                         street_and_nr=sqlite3_row["Strasse"] + " " + sqlite3_row["Nr"],
+                         street=sqlite3_row["Strasse"],
+                         street_nr=sqlite3_row["Nr"],
                          zip_code=sqlite3_row["PLZ"],
                          city=sqlite3_row["Stadt"],
                          data_base_id=sqlite3_row["ID"]

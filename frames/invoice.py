@@ -72,7 +72,7 @@ class Invoice(ttk.Frame):
         self.data_frame = ttk.Frame(frame_right, style="Secondary.TFrame")
         self.data_frame.grid(padx=20)
 
-        sep_pad_y = 10
+        sep_pad_y = 5
 
         # participant data
         self.participant_title = tk.StringVar()
@@ -95,7 +95,8 @@ class Invoice(ttk.Frame):
         sep.grid(row=next_row, column=0, columnspan=3, sticky="EW", pady=sep_pad_y)
         lbl_texts = ["Name des Jobcenters", "Straße und Nr", "PLZ und Ort"]
         self.jc_name = tk.StringVar()
-        self.jc_street_and_nr = tk.StringVar()
+        self.jc_street = tk.StringVar()
+        self.jc_street_nr = tk.StringVar()
         self.jc_zip_and_city = tk.StringVar()
         string_variables = [self.jc_name]
         next_row = self.create_widgets(
@@ -106,8 +107,8 @@ class Invoice(ttk.Frame):
             starting_row=next_row + 1,
             func=self.pick_jobcenter_from_db,
         )
-        for item_label, variable in zip(["Straße und Nr", "PLZ und Ort"],
-                                        [self.jc_street_and_nr, self.jc_zip_and_city]):
+        for item_label, variable in zip(["Straße", "Nr", "PLZ und Ort"],
+                                        [self.jc_street, self.jc_street_nr, self.jc_zip_and_city]):
             ttk.Label(self.data_frame, style="Secondary.TLabel", text=item_label).grid(
                 row=next_row, column=1, pady=5, sticky="W")
             ttk.Label(self.data_frame, style="Secondary.TLabel", textvariable=variable).grid(
@@ -181,7 +182,7 @@ class Invoice(ttk.Frame):
 
         # error text
         lbl_error = ttk.Label(button_frame, textvariable=self.error_text, style="Secondary.Error.TLabel")
-        lbl_error.grid(pady=(0, 10))
+        lbl_error.grid(pady=(0, 5))
 
         # Go button
         btn = BLImageButtonLabel(parent=button_frame, func=self.create_invoice,
@@ -196,13 +197,13 @@ class Invoice(ttk.Frame):
         btn.grid(pady=(10, 5))
 
         self.variables = [self.participant_title, self.participant_first_name, self.participant_last_name,
-                          self.participant_jc_id, self.jc_name, self.jc_street_and_nr, self.jc_zip_and_city,
+                          self.participant_jc_id, self.jc_name, self.jc_street, self.jc_street_nr, self.jc_zip_and_city,
                           self.training_name, self.training_nr_training_lesseons, self.training_start,
                           self.training_end, self.training_cost_per_lesson, self.invoice_name, self.invoice_nr,
                           self.invoice_creation_date, self.invoice_target_date]
         # create random data
-        self.pre_populate()
-        # self.populate_with_random_data()
+        # self.pre_populate()
+        self.populate_with_random_data()
 
     def change_invoice_name(self) -> None:
         """Update the invoice name based on data entries"""
@@ -306,7 +307,7 @@ class Invoice(ttk.Frame):
         coaching_entry_fields = [self.training_start, self.training_end, self.training_nr_training_lesseons]
 
         # jobcenter
-        jc_entry_fields = [self.jc_name, self.jc_street_and_nr, self.jc_zip_and_city]
+        jc_entry_fields = [self.jc_name, self.jc_street, self.jc_street_nr, self.jc_zip_and_city]
 
         for category in [pariticpant_entry_fields, invoice_entry_fields, training_entry_fields, coaching_entry_fields,
                          jc_entry_fields]:
@@ -402,7 +403,8 @@ class Invoice(ttk.Frame):
                         coaching_end=coaching_end,
                         coaching_nr_lessons=training_lessons,
                         jc_name=self.jc_name.get(),
-                        jc_street_and_nr=self.jc_street_and_nr.get(),
+                        jc_street=self.jc_street.get(),
+                        jc_street_nr=self.jc_street_nr.get(),
                         jc_zip=self.jc_zip_and_city.get().split()[0],
                         jc_city=self.jc_zip_and_city.get().split()[1],
                         path=path
@@ -464,7 +466,8 @@ class Invoice(ttk.Frame):
         self.training_cost_per_lesson.set("12,34")
 
         self.jc_name.set("Testjobcenter")
-        self.jc_street_and_nr.set("Berlinerstr. 987")
+        self.jc_street.set("Berlinerstr.")
+        self.jc_street_nr.set("987")
         self.jc_zip_and_city.set("12321 Berlin")
 
     def turn_entry_red(self, event: tk.Event, widget: ttk.Entry) -> None:
