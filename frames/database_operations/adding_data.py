@@ -14,7 +14,7 @@ from widgets.buttons import BLImageButtonLabel
 class AddParticipant(ttk.Frame):
     """A frame that allows to add a participant to the database"""
 
-    def __init__(self, parent: Type[Union[tk.Tk, ttk.Frame]], controller: Type[tk.Tk]) -> None:
+    def __init__(self, parent: Union[tk.Tk, ttk.Frame], controller: tk.Tk) -> None:
         super().__init__(parent)
         self["style"] = "Secondary.TFrame"
         self.controller = controller
@@ -275,7 +275,7 @@ class AddParticipant(ttk.Frame):
 class AddCoach(ttk.Frame):
     """A frame that allows to add a coach to the database"""
 
-    def __init__(self, parent: Type[Union[tk.Tk, ttk.Frame]], controller: Type[tk.Tk]) -> None:
+    def __init__(self, parent: Union[tk.Tk, ttk.Frame], controller: tk.Tk) -> None:
         super().__init__(parent)
         self["style"] = "Secondary.TFrame"
         self.controller = controller
@@ -491,7 +491,7 @@ class AddCoach(ttk.Frame):
 class AddJobcenter(ttk.Frame):
     """A frame that allows to add a jobcenter to the database"""
 
-    def __init__(self, parent: Type[Union[tk.Tk, ttk.Frame]], controller: Type[tk.Tk]) -> None:
+    def __init__(self, parent: Union[tk.Tk, ttk.Frame], controller: tk.Tk) -> None:
         super().__init__(parent)
         self["style"] = "Secondary.TFrame"
         self.controller = controller

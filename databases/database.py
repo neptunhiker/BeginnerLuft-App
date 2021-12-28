@@ -20,7 +20,7 @@ class Database:
         self.conn = sqlite3.connect(self.database_path)
         self.conn.row_factory = sqlite3.Row
 
-    def add_coach(self, coach: Type[Coach]) -> None:
+    def add_coach(self, coach: Coach) -> None:
         """Insert coach data into the data base"""
 
         sql = "INSERT INTO Coaches (Anrede, Vorname, Nachname) " \
@@ -33,7 +33,7 @@ class Database:
 
         print(f"{coach} successfully added to the database.")
 
-    def add_jobcenter(self, jobcenter: Type[Jobcenter]) -> None:
+    def add_jobcenter(self, jobcenter: Jobcenter) -> None:
         """Insert jobcenter data into the data base"""
 
         sql = "INSERT INTO Jobcenter (Name, 'E-Mail', Strasse, Nr, PLZ, Stadt) " \
@@ -47,7 +47,7 @@ class Database:
 
         print(f"{jobcenter} successfully added to the database.")
 
-    def add_participant(self, participant: Type[Participant]) -> None:
+    def add_participant(self, participant: Participant) -> None:
         """Insert participant data into the data base"""
 
         sql = "INSERT INTO Teilnehmer (Anrede, Vorname, Nachname, Strasse_und_Nr, PLZ, Stadt, Kundennummer ) " \
@@ -164,7 +164,7 @@ class Database:
 
         return trainings
 
-    def select_single_query(self, query: str, arguments: Union[None, list] = None) -> Type[sqlite3.Row]:
+    def select_single_query(self, query: str, arguments: Union[None, list] = None) -> sqlite3.Row:
         """Executes a select statement and returns the first result of the table row"""
 
         self.connect_to_database()
@@ -202,7 +202,7 @@ class Database:
         return True
 
     @staticmethod
-    def create_employee(sqlite3_row: Type[sqlite3.Row]) -> Employee:
+    def create_employee(sqlite3_row: sqlite3.Row) -> Employee:
         """Create an Employee object from an sqlite3.Row"""
 
         return Employee(title=sqlite3_row["Anrede"],
@@ -212,7 +212,7 @@ class Database:
                         )
 
     @staticmethod
-    def create_jobcenter(sqlite3_row: Type[sqlite3.Row]) -> Jobcenter:
+    def create_jobcenter(sqlite3_row: sqlite3.Row) -> Jobcenter:
         """Create a Jobcenter object from an sqlite3.Row"""
 
         return Jobcenter(name=sqlite3_row["Name"],
@@ -223,7 +223,7 @@ class Database:
                          )
 
     @staticmethod
-    def create_participant(sqlite3_row: Type[sqlite3.Row]) -> Participant:
+    def create_participant(sqlite3_row: sqlite3.Row) -> Participant:
         """Create an Participant object from an sqlite3.Row"""
 
         return Participant(title=sqlite3_row["Anrede"],
@@ -237,7 +237,7 @@ class Database:
                            )
 
     @staticmethod
-    def create_training(sqlite3_row: Type[sqlite3.Row]) -> Training:
+    def create_training(sqlite3_row: sqlite3.Row) -> Training:
         """Create a Training object from an sqlite3.Row"""
 
         cost_per_training_lesson = sqlite3_row["Kosten_pro_UE"]
