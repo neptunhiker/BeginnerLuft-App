@@ -1,3 +1,6 @@
+from typing import Union
+
+
 class Training:
 
     def __init__(self, name: str, cost_per_training_lesson: float, data_base_id: Union[None, str]=None):
