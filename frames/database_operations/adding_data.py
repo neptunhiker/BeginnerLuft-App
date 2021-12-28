@@ -699,7 +699,8 @@ class AddJobcenter(ttk.Frame):
 
         jobcenter = Jobcenter(
             name=self.name.get(),
-            street_and_nr=f"{self.street.get()} {self.nr.get()}",
+            street=self.street.get(),
+            street_nr=self.nr.get(),
             zip_code=self.zip.get(),
             city=self.city.get(),
             email=self.email.get(),
