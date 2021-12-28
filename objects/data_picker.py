@@ -1,6 +1,5 @@
-import sqlite3
-
 from PIL import Image, ImageTk
+import sqlite3
 import tkinter as tk
 from tkinter import ttk
 
@@ -10,7 +9,7 @@ from widgets.buttons import BLButton
 
 class PickParticipant(tk.Toplevel):
 
-    def __init__(self, controller, parent):
+    def __init__(self, controller: tk.Tk, parent: ttk.Frame) -> None:
         super(PickParticipant, self).__init__()
         self.controller = controller
         self.parent = parent
@@ -78,7 +77,7 @@ class PickParticipant(tk.Toplevel):
                          command=self.send_data)
         btn.grid()
 
-    def handle_user_selection(self, event: tk.Event):
+    def handle_user_selection(self, event: tk.Event) -> None:
         """Get data from frame when user changes a selection"""
 
         # get ID
@@ -91,7 +90,7 @@ class PickParticipant(tk.Toplevel):
 
         self.error_message.set("")
 
-    def send_data(self):
+    def send_data(self) -> None:
         """Send the data to the parent frame"""
 
         if self.selected_participant is None:
@@ -108,7 +107,7 @@ class PickParticipant(tk.Toplevel):
 
 class PickJobcenter(tk.Toplevel):
 
-    def __init__(self, controller, parent):
+    def __init__(self, controller: tk.Tk, parent: ttk.Frame) -> None:
         super(PickJobcenter, self).__init__()
         self.controller = controller
         self.parent = parent

@@ -1,29 +1,22 @@
 import datetime
-import os.path
-import platform
-from tkinter import filedialog
-
 import pandas as pd
-
+import platform
 import reportlab
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import Table, Image
 from reportlab.platypus import Paragraph
 from reportlab.lib.styles import ParagraphStyle
+from typing import List, Union
 
-# gui.file_ze_coach = file_coach
-# gui.file_ze_beginnerluft = file_bl
-# gui.training_name = training_name
-# gui.training_nr = training_nr
-# gui.participant_name = participant_name
-# gui.avgs_nr = avgs_nr
-# gui.time_period = ?
 
 class TimeReport():
 
-    def __init__(self, file_coach, file_bl, training_name, training_nr, participant_first_name, participant_last_name,
-                 participant_title, participant_jc_id, confirmation_period_start, confirmation_period_end):
+    def __init__(self, file_coach: str, file_bl: str, training_name: str, training_nr: str, participant_first_name: str,
+                 participant_last_name: str, participant_title: str, participant_jc_id: str,
+                 confirmation_period_start: Union[datetime.date, str],
+                 confirmation_period_end: Union[datetime.date, str]) -> None:
+
         self.file_coach = file_coach
         self.file_bl = file_bl
         self.training_name = training_name
@@ -53,7 +46,7 @@ class TimeReport():
             self._filter_df()
             self._determine_date_range()
 
-    def _get_data(self):
+    def _get_data(self) -> None:
 
         # get times of coachings conducted by coach
         try:
@@ -108,21 +101,21 @@ class TimeReport():
             print(err)
             self.error = True
 
-    def filter_df(self, months):
+    def filter_df(self, months: str) -> None:
 
         # filter dataframe for specific date range and update output matrix
         self._filter_df(month_selection=months)
         self._determine_date_range()
         # self._create_df_matrix()
 
-    def _filter_df(self, month_selection="all"):
+    def _filter_df(self, month_selection: str = "all") -> None:
 
         # filter dataframe for specific date range
         # self.df["Datum"] = pd.to_datetime(self.df["Datum"])
         if month_selection != "all":
             self.filtered_df = self.df[self.df["Datum"].dt.month.isin(month_selection)]
 
-    def _determine_date_range(self):
+    def _determine_date_range(self) -> None:
 
         if not self.filtered_df.empty:
             # locale.setlocale(locale.LC_TIME, locale.normalize("de"))  # does not work
@@ -131,13 +124,14 @@ class TimeReport():
             date_range = [first_date, last_date]
             self.date_ranges = date_range
 
-    def _create_df_matrix(self):
+    def _create_df_matrix(self) -> None:
         sum_ues = "{:.0f}".format(self.filtered_df["UE"].sum())
         self.filtered_df.loc[:, 'Datum'] = self.filtered_df['Datum'].apply(lambda x: x.strftime("%d.%m.%y"))
-        self.filtered_df.loc[:, 'Von'] = self.filtered_df['Von'].apply(lambda x: x.strftime("%H:%M") if isinstance(x, datetime.datetime) else x)
-        self.filtered_df.loc[:, 'Bis'] = self.filtered_df['Bis'].apply(lambda x: x.strftime("%H:%M") if isinstance(x, datetime.datetime) else x)
+        self.filtered_df.loc[:, 'Von'] = self.filtered_df['Von'].apply(
+            lambda x: x.strftime("%H:%M") if isinstance(x, datetime.datetime) else x)
+        self.filtered_df.loc[:, 'Bis'] = self.filtered_df['Bis'].apply(
+            lambda x: x.strftime("%H:%M") if isinstance(x, datetime.datetime) else x)
         self.filtered_df.loc[:, 'UE'] = self.filtered_df['UE'].apply(lambda x: "{:.0f}".format(x))
-
 
         matrix = self.filtered_df.values.tolist()
         matrix.insert(0, self.filtered_df.columns)  # header of dataframe
@@ -149,7 +143,7 @@ class TimeReport():
 
         self.output_matrix = matrix
 
-    def create_report(self, path):
+    def create_report(self, path: str) -> bool:
 
         try:
             # filename = f"BeginnerLuft Zeiterfassung {self.gui.participant_name}.pdf"
@@ -162,7 +156,7 @@ class TimeReport():
                 0.15 * height,  # header
                 0.80 * height,  # body
                 0.05 * height  # footer
-                ]
+            ]
 
             # create output matrix
             self._create_df_matrix()
@@ -185,9 +179,8 @@ class TimeReport():
                 ("LEFTPADDING", (0, 0), (0, -1), 0),
                 ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
                 ("BOTTOMPADDING", (0, -2), (-1, -2), 20),
-                ("LINEBELOW", (0,1), (-1,1), 1, "grey"),
+                ("LINEBELOW", (0, 1), (-1, 1), 1, "grey"),
             ])
-
 
             main_table.wrapOn(pdf, 0, 0)
             main_table.drawOn(pdf, 0, 0)
@@ -201,7 +194,7 @@ class TimeReport():
             print(err)
             return False
 
-    def gen_header_table(self, width, height):
+    def gen_header_table(self, width: int, height: int) -> reportlab.platypus.Table:
 
         width_list = [
             0.1 * width,
@@ -229,15 +222,16 @@ class TimeReport():
             ("ALIGN", (0, 0), (1, 1), "LEFT"),  # horizontal
             ("VALIGN", (0, 0), (1, 1), "MIDDLE"),
             ("LEFTPADDING", (-1, 0), (-1, 0), -width_list[1] + 98),  # unit is points
-            ("FONTSIZE", (2,0), (2,0), 16),
+            ("FONTSIZE", (2, 0), (2, 0), 16),
             ("BOTTOMPADDING", (2, 0), (2, -1), 50),
             # ("LINEBELOW", (0,0), (-1,0), 1, "grey"),
         ])
 
         return res
 
-    def gen_body_table(self, width, height, data, training_name, training_nr, participant_name, participant_jc_id,
-                       time_period, date_ranges):
+    def gen_body_table(self, width: float, height: float, data: list, training_name: str, training_nr: str,
+                       participant_name: str, participant_jc_id: str, time_period: str,
+                       date_ranges: List[str, str]) -> reportlab.platypus.Table:
 
         participant_name = participant_name
         width_list = [
@@ -253,13 +247,30 @@ class TimeReport():
             0.10 * height,
         ]
         res = Table([
-            ["", self._gen_meta_data(width=width_list[1], height=height_list[3],
-                                     participant_name=participant_name, training_name=training_name, training_nr=training_nr,
-                                     participants_jc_id=participant_jc_id, time_period=time_period, date_ranges=date_ranges), ""],
-            ["", self._gen_times_table(width=width_list[1], height=height_list[1], data=data), ""],
-            ["", self._gen_confirmation_text(training_name=training_name, participant_name=participant_name,
-                                        date_ranges=date_ranges), ""],
-            ["", self._gen_signature_table(width=width_list[1], height=height_list[3], participant_name=participant_name),
+            ["",
+             self._gen_meta_data(width=width_list[1],
+                                 height=height_list[3],
+                                 participant_name=participant_name,
+                                 training_name=training_name,
+                                 training_nr=training_nr,
+                                 participants_jc_id=participant_jc_id,
+                                 time_period=time_period,
+                                 date_ranges=date_ranges),
+             ""],
+            ["",
+             self._gen_times_table(width=width_list[1],
+                                   height=height_list[1],
+                                   data=data),
+             ""],
+            ["",
+             self._gen_confirmation_text(training_name=training_name,
+                                         participant_name=participant_name,
+                                         date_ranges=date_ranges),
+             ""],
+            ["",
+             self._gen_signature_table(width=width_list[1],
+                                       height=height_list[3],
+                                       participant_name=participant_name),
              ""],
         ],
             colWidths=width_list,
@@ -287,42 +298,11 @@ class TimeReport():
 
         return res
 
-    def _gen_meta_data(self, width, height, participant_name, training_name, training_nr, participants_jc_id,
-                       time_period, date_ranges):
-
-        # month_names = {}
-        # month_names[1] = "Januar"
-        # month_names[2] = "Februar"
-        # month_names[3] = "März"
-        # month_names[4] = "April"
-        # month_names[5] = "Mai"
-        # month_names[6] = "Juni"
-        # month_names[7] = "Juli"
-        # month_names[8] = "August"
-        # month_names[9] = "September"
-        # month_names[10] = "Oktober"
-        # month_names[11] = "November"
-        # month_names[12] = "Dezember"
+    def _gen_meta_data(self, width: float, height: float, participant_name: str, training_name: str, training_nr: str,
+                       participants_jc_id: str, time_period: str,
+                       date_ranges: List[str, str]) -> reportlab.platypus.Table:
 
         header = "Anwesenheitsliste"
-        # min_month = date_ranges[0][0:2]
-        # min_year = date_ranges[0][-4:]
-        # max_month = date_ranges[1][0:2]
-        # max_year = date_ranges[1][-4:]
-        # min_month_german = month_names[int(min_month)][0:3]
-        # max_month_german = month_names[int(max_month)][0:3]
-        #
-        # if min_year == max_year:
-        #     header = f"{header} {min_month_german} bis {max_month_german} {max_year}"
-        # else:
-        #     header = f"{header} {min_month_german} {min_year} bis {max_month_german} {max_year}"
-
-        # res = Table([
-        #     [header],
-        #     [f"Maßnahme: {training_name}"],
-        #     [f"Maßnahmennummer: {training_nr}"],
-        #     [f"Teilnehmer:in {participant_name}"]
-        # ])
 
         width_list = [
             0.5 * width,
@@ -348,7 +328,7 @@ class TimeReport():
 
         return res
 
-    def _gen_times_table(self, width, height, data):
+    def _gen_times_table(self, width: int, height: int, data: list) -> reportlab.platypus.Table:
 
         width_list = [
             0.15 * width,
@@ -377,7 +357,8 @@ class TimeReport():
         ])
         return res
 
-    def _gen_confirmation_text(self, training_name, participant_name, date_ranges):
+    def _gen_confirmation_text(self, training_name: str, participant_name: str,
+                               date_ranges: List[str, str]) -> List[reportlab.platypus.Paragraph]:
 
         # format time period
         if date_ranges[0] == date_ranges[1]:
@@ -410,18 +391,13 @@ class TimeReport():
 
         return para_list
 
-    def _gen_signature_table(self, width, height, participant_name):
+    def _gen_signature_table(self, width: float, height: float, participant_name: str) -> reportlab.platypus.Table:
 
         width_list = [
             0.4 * width,
             0.2 * width,
             0.4 * width
         ]
-
-        # img_path = "resources/Vanguard.png"
-        # img_width = width_list[0] * 0.6
-        # img_height = height * 0.5
-        # img = Image(filename=img_path, width=img_width, height=img_height, kind="proportional")
 
         res = Table([
             ["_" * 30, "", "_" * 30],
@@ -438,7 +414,7 @@ class TimeReport():
 
         return res
 
-    def gen_footer_table(self, width, height):
+    def gen_footer_table(self, width: float, height: float) -> reportlab.platypus.Table:
         text = "BeginnerLuft gGmbH - Bandelstr. 1 - 10559 Berlin - www.beginnerluft.de"
 
         width_list = [

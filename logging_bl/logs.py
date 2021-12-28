@@ -3,11 +3,11 @@ import logging
 
 class BLLogger(logging.Logger):
 
-    def __init__(self):
+    def __init__(self) -> None:
         super(BLLogger, self).__init__(__name__)
         self.setLevel(logging.DEBUG)
 
-    def add_file_handler(self, log_file: str, log_format: str, level: int, mode: str = "a"):
+    def add_file_handler(self, log_file: str, log_format: str, level: int, mode: str = "a") -> None:
         """Add a handler that logs to a file"""
 
         handler = logging.FileHandler(filename=log_file, mode=mode)
@@ -17,7 +17,7 @@ class BLLogger(logging.Logger):
 
         self.addHandler(handler)
 
-    def add_console_handler(self, log_format: str, level: int):
+    def add_console_handler(self, log_format: str, level: int) -> None:
         """Add a handler that logs to the console"""
 
         handler = logging.StreamHandler()
