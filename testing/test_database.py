@@ -7,12 +7,13 @@ import utils.helpers as helpers
 from objects import jobcenter, training
 from objects import people as people
 
+
 class CheckForExistingEntries(unittest.TestCase):
 
     def setUp(self) -> None:
         self.db = Database("../../Database/unittest_test_database.db")
 
-    def test_check_for_coach_full_name(self):
+    def test_check_for_coach_full_name(self) -> None:
         coach_first_name = "Erika"
         coach_last_name = "Mustermann"
         output = self.db.check_for_coach_full_name(coach_first_name=coach_first_name, coach_last_name=coach_last_name)
@@ -24,7 +25,7 @@ class CheckForExistingEntries(unittest.TestCase):
         output = self.db.check_for_coach_full_name(coach_first_name=coach_first_name, coach_last_name=coach_last_name)
         self.assertFalse(output)
 
-    def test_check_for_jobcenter_name(self):
+    def test_check_for_jobcenter_name(self) -> None:
         jc_name = "Testjobcenter"
         output = self.db.check_for_jobcenter_name(jobcenter_name=jc_name)
         self.assertTrue(output)
@@ -33,7 +34,7 @@ class CheckForExistingEntries(unittest.TestCase):
         output = self.db.check_for_jobcenter_name(jobcenter_name=jc_name)
         self.assertFalse(output)
 
-    def test_check_for_participant_jc_id(self):
+    def test_check_for_participant_jc_id(self) -> None:
         participant_jc_id = "123asd"
         output = self.db.check_for_participant_jc_id(jobcenter_id=participant_jc_id)
         self.assertTrue(output)
@@ -42,27 +43,28 @@ class CheckForExistingEntries(unittest.TestCase):
         output = self.db.check_for_participant_jc_id(jobcenter_id=participant_jc_id)
         self.assertFalse(output)
 
+
 class GetFunctions(unittest.TestCase):
 
     def setUp(self) -> None:
         self.db = Database("../../Database/unittest_test_database.db")
 
-    def test_get_employees(self):
+    def test_get_employees(self) -> None:
         employees = self.db.get_employees()
         for employee in employees:
             self.assertIsInstance(employee, people.Employee)
 
-    def test_get_jobcenters(self):
+    def test_get_jobcenters(self) -> None:
         jcs = self.db.get_jobcenters()
         for employee in jcs:
             self.assertIsInstance(employee, jobcenter.Jobcenter)
 
-    def test_get_participants(self):
+    def test_get_participants(self) -> None:
         participants = self.db.get_participants()
         for participant in participants:
             self.assertIsInstance(participant, people.Participant)
 
-    def test_get_trainings(self):
+    def test_get_trainings(self) -> None:
         trainings = self.db.get_trainings()
         for train in trainings:
             self.assertIsInstance(train, training.Training)
@@ -75,7 +77,7 @@ class UpdatePassword(unittest.TestCase):
         self.sql = "SELECT * FROM Passwoerter WHERE ID = 1"
         self.old_password = self.db.select_single_query(self.sql)["Passwort"]
 
-    def test_update_password(self):
+    def test_update_password(self) -> None:
         universe = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
         new_password = "".join(random.sample(universe, 10))
         new_hashed_password = helpers.hash_password(new_password)
@@ -84,7 +86,7 @@ class UpdatePassword(unittest.TestCase):
         self.assertNotEqual(self.old_password, new_pwd_in_db)
         self.assertTrue(target_output)
 
-    def test_bad_user_id(self):
+    def test_bad_user_id(self) -> None:
         target_output = self.db.update_password(user_id="some non existent user id", password="new password")
         self.assertFalse(target_output)
 

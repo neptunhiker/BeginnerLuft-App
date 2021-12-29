@@ -11,13 +11,13 @@ from utils import helpers
 
 class CheckIfFileExists(unittest.TestCase):
 
-    def test_happy_path(self):
+    def test_happy_path(self) -> None:
         path = f"{__name__}.py"
         target_output = True
         output = helpers.check_if_file_exists(path)
         self.assertEqual(target_output, output)
 
-    def test_non_happy_path(self):
+    def test_non_happy_path(self) -> None:
         path = "something"
         target_output = False
         output = helpers.check_if_file_exists(path)
@@ -29,7 +29,7 @@ class CheckIfFileExists(unittest.TestCase):
 
 class CreateInvoiceNr(unittest.TestCase):
 
-    def test_happy_path(self):
+    def test_happy_path(self) -> None:
         date = datetime.date(2021, 8, 4)
         output = helpers.create_invoice_nr(creation_date=date, participant_first_name="Mohammed",
                                            participant_last_name="Ali")
@@ -48,7 +48,7 @@ class CreateInvoiceNr(unittest.TestCase):
         target_output = "2022-02-03-MA"
         self.assertEqual(target_output, output)
 
-    def test_non_happy_path(self):
+    def test_non_happy_path(self) -> None:
         first_name = "Casius"
         last_name = "Clay"
         date = "something"
@@ -72,7 +72,7 @@ class CreateInvoiceNr(unittest.TestCase):
 
 class TestCreateInvoiceName(unittest.TestCase):
 
-    def test_happy_path(self):
+    def test_happy_path(self) -> None:
         participant_first_name = "Rachel"
         participant_last_name = "Robinson"
 
@@ -86,7 +86,7 @@ class TestCreateInvoiceName(unittest.TestCase):
         target_output = "2021-03-09 Rechnung Rachel Robinson"
         self.assertEqual(target_output, output)
 
-    def test_non_happy_path(self):
+    def test_non_happy_path(self) -> None:
         creation_date = ""
         self.assertRaises(DateFormatException, helpers.create_invoice_name, creation_date, "Rachel", "Robinson")
 
@@ -105,7 +105,7 @@ class TestCreateInvoiceName(unittest.TestCase):
 
 class DeterminePaymentTargetDate(unittest.TestCase):
 
-    def test_happy_path(self):
+    def test_happy_path(self) -> None:
         date = datetime.date(year=2021, month=2, day=26)
         target_output = datetime.date(year=2021, month=3, day=12)
         func_output = helpers.determine_payment_target_date(starting_date=date, payment_horizon_in_days=14)
@@ -126,7 +126,7 @@ class DeterminePaymentTargetDate(unittest.TestCase):
         func_output = helpers.determine_payment_target_date(starting_date=date, payment_horizon_in_days=17)
         self.assertEqual(func_output, target_output)
 
-    def test_non_happy_path(self):
+    def test_non_happy_path(self) -> None:
         date = "2021-05-12"
         payment_horizon_in_days = 14
         self.assertRaises(TypeError, helpers.determine_payment_target_date, date, payment_horizon_in_days)
@@ -142,7 +142,7 @@ class DeterminePaymentTargetDate(unittest.TestCase):
 
 class FormatToGermanDate(unittest.TestCase):
 
-    def test_happy_path(self):
+    def test_happy_path(self) -> None:
         date = datetime.date(year=1984, month=1, day=31)
         target_output = "31. Januar 1984"
         func_output = helpers.format_to_german_date(date=date)
@@ -168,14 +168,14 @@ class FormatToGermanDate(unittest.TestCase):
         func_output = helpers.format_to_german_date(date=date)
         self.assertEqual(func_output, target_output)
 
-    def test_non_happy_path(self):
+    def test_non_happy_path(self) -> None:
         date = "2021-06-03"
         self.assertRaises(AttributeError, helpers.format_to_german_date, date)
 
 
 class ParseDateFromString(unittest.TestCase):
 
-    def test_happy_path(self):
+    def test_happy_path(self) -> None:
         datestring = "2021-10-22"
         target_output = datetime.date(year=2021, month=10, day=22)
         func_output = helpers.parse_date_from_string(datestring)
@@ -256,7 +256,7 @@ class ParseDateFromString(unittest.TestCase):
         func_output = helpers.parse_date_from_string(datestring)
         self.assertEqual(func_output, target_output)
 
-    def test_non_happy_path(self):
+    def test_non_happy_path(self) -> None:
         datestring = "something"
         self.assertRaises(DateFormatException, helpers.parse_date_from_string, datestring)
 
@@ -278,7 +278,7 @@ class ParseDateFromString(unittest.TestCase):
 
 class PasswordMinRequirements(unittest.TestCase):
 
-    def test_happy_path(self):
+    def test_happy_path(self) -> None:
 
         password = "lasdflKJn23"
         target_output = True
@@ -305,14 +305,15 @@ class PasswordMinRequirements(unittest.TestCase):
         output = helpers.password_min_requirements(password)
         self.assertEqual(target_output, output)
 
-    def test_non_happy_path(self):
+    def test_non_happy_path(self) -> None:
 
         password = 13423
         self.assertRaises(TypeError, helpers.password_min_requirements, password)
 
+
 class StringToFloat(unittest.TestCase):
 
-    def test_simple_cases(self):
+    def test_simple_cases(self) -> None:
         """Test normal conversion of string to float"""
 
         string = 23.34
@@ -330,7 +331,7 @@ class StringToFloat(unittest.TestCase):
         target_output = 10.12
         self.assertEqual(output, target_output)
 
-    def test_complex_cases(self):
+    def test_complex_cases(self) -> None:
         string = "10.000,23"
         output = helpers.string_to_float(string)
         target_output = 10000.23
@@ -354,7 +355,7 @@ class StringToFloat(unittest.TestCase):
 
 class VerifyPassword(unittest.TestCase):
 
-    def test_happy_path(self):
+    def test_happy_path(self) -> None:
 
         password = "123456asdfJKLÖ"
         hashed_password = helpers.hash_password(password=password)
@@ -374,7 +375,7 @@ class VerifyPassword(unittest.TestCase):
         self.assertEqual(target_output, helpers.verify_password(stored_password=hashed_password,
                                                                 provided_password=password))
 
-    def test_non_happy_path(self):
+    def test_non_happy_path(self) -> None:
         password = 123
         self.assertRaises(AttributeError, helpers.verify_password, "stored password", password)
 

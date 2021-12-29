@@ -1,22 +1,23 @@
 """Customized Buttons"""
-
 from PIL import Image, ImageTk
 import tkinter as tk
 from tkinter import ttk
 from tkinter import PhotoImage
+from typing import Callable, Union
 
 from design.colors import bl_colors
 
 
 class BLButton(ttk.Button):
 
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent: Union[ttk.Frame, tk.Tk], **kwargs) -> None:
         super(BLButton, self).__init__(parent, cursor="hand2", **kwargs)
 
 
 class BLImageButtonLabel(tk.Label):
 
-    def __init__(self, parent, func, path_to_file_01, path_to_file_02, *args, **kwargs):
+    def __init__(self, parent: Union[ttk.Frame, tk.Tk], func: Callable, path_to_file_01: str,
+                 path_to_file_02: str, *args, **kwargs) -> None:
 
         self.func = func
         self.image_01 = Image.open(path_to_file_01)
@@ -35,20 +36,21 @@ class BLImageButtonLabel(tk.Label):
         self.bind("<Leave>", self.on_leave)
         self.bind("<Button-1>", self.on_click)
 
-    def on_leave(self, event):
+    def on_leave(self, event: tk.Event) -> None:
         self.configure(image=self.button_photo_01)
 
-    def on_enter(self, event):
+    def on_enter(self, event: tk.Event) -> None:
         self.configure(image=self.button_photo_02)
 
-    def on_click(self, event):
+    def on_click(self, event: tk.Event) -> None:
         self.func()
 
 
 class BLImageButtonCanvas:
     """Clickable button based on a picture that can be placed on a canvas"""
 
-    def __init__(self, parent, canvas, path_to_image_01, path_to_image_02, x_coor, y_coor, func=None, *args, **kwargs):
+    def __init__(self, parent: Union[ttk.Frame, tk.Tk], canvas: tk.Canvas, path_to_image_01: str,
+                 path_to_image_02: str, x_coor: int, y_coor: int, func: Callable = None, *args, **kwargs) -> None:
         self.parent = parent
         self.canvas = canvas
         self.func = func
@@ -69,15 +71,15 @@ class BLImageButtonCanvas:
         self.canvas.tag_bind(self.img_on_canvas, '<Enter>', self.on_enter)
         self.canvas.tag_bind(self.img_on_canvas, '<Leave>', self.on_leave)
 
-    def on_enter(self, event):
+    def on_enter(self, event: tk.Event) -> None:
         self.parent.configure(cursor="hand2")
         self.canvas.itemconfig(self.img_on_canvas, image=self.image_02)
 
-    def on_leave(self, event):
+    def on_leave(self, event: tk.Event) -> None:
         self.parent.configure(cursor="")
         self.canvas.itemconfig(self.img_on_canvas, image=self.image_01)
 
-    def on_click(self, event):
+    def on_click(self, event: tk.Event) -> None:
         if self.func is not None:
             self.func(*self.args, **self.kwargs)
 

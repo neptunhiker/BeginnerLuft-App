@@ -1,9 +1,12 @@
 from abc import ABC, abstractmethod
 import datetime
+
+import reportlab.platypus
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.platypus import Image, Paragraph, Table
+from typing import List
 
 from objects.invoice import Invoice
 from objects.jobcenter import Jobcenter
@@ -37,9 +40,12 @@ class PDFReport(ABC):
 class PDFInvoice(PDFReport):
     """An invoice in pdf format"""
 
-    def __init__(self, invoice_name, invoice, time_period_start, time_period_end, nr_of_training_lessons,
-                 image_gallery_path="../Assets",
-                 path="../../Output/PDF Rechnungen", save_file=True, show_success_message=True):
+    def __init__(self, invoice_name: str, invoice: Invoice, time_period_start: datetime.date,
+                 time_period_end: datetime.date, nr_of_training_lessons: int,
+                 image_gallery_path: str = "../Assets",
+                 path: str = "../../Output/PDF Rechnungen", save_file: bool = True,
+                 show_success_message: bool = True) -> None:
+
         self.image_gallery_path = image_gallery_path
         self.invoice = invoice
         self.participant = invoice.participant
@@ -108,7 +114,7 @@ class PDFInvoice(PDFReport):
             if show_success_message:
                 self.show_success_message()
 
-    def create_header(self):
+    def create_header(self) -> reportlab.platypus.Table:
         """Create a header for the report"""
 
         img_path = f"{self.image_gallery_path}/logos/beginnerluft.png"
@@ -133,7 +139,7 @@ class PDFInvoice(PDFReport):
 
         return res
 
-    def create_body(self):
+    def create_body(self) -> reportlab.platypus.Table:
 
         height_list = [0.15, 0.1, 0.05, 0.05, 0.45, 0.2]
         height_list = [height * self.row_heights[1] for height in height_list]
@@ -158,7 +164,7 @@ class PDFInvoice(PDFReport):
 
         return res
 
-    def _body_create_address_for_recipient(self):
+    def _body_create_address_for_recipient(self) -> List[reportlab.platypus.Paragraph]:
         """Create the adress field for the job center"""
 
         street_and_nr = f"{self.jobcenter.street} {self.jobcenter.street_nr}"
@@ -172,7 +178,7 @@ class PDFInvoice(PDFReport):
         para_list.append(para_01)
         return para_list
 
-    def _body_create_address_bl(self):
+    def _body_create_address_bl(self) -> List[reportlab.platypus.Paragraph]:
         """Create the address field for BeginnerLuft"""
 
         para_list = []
@@ -186,7 +192,7 @@ class PDFInvoice(PDFReport):
         para_list.append(para_01)
         return para_list
 
-    def _body_create_date_and_invoice_nr(self):
+    def _body_create_date_and_invoice_nr(self) -> List[reportlab.platypus.Paragraph]:
         """Create date and invoice nr"""
 
         para_list = []
@@ -198,7 +204,7 @@ class PDFInvoice(PDFReport):
         para_list.append(para_01)
         return para_list
 
-    def _body_create_intro_text(self):
+    def _body_create_intro_text(self) -> List[reportlab.platypus.Paragraph]:
         """Create the introductory text for the invoice"""
         if self.participant_title == "Herr":
             title = "Herrn"
@@ -251,7 +257,7 @@ class PDFInvoice(PDFReport):
 
         return para_list
 
-    def _body_create_invoice_details(self):
+    def _body_create_invoice_details(self) -> reportlab.platypus.Table:
         """Create the details for the invoice"""
 
         if self.time_period_start.year == self.time_period_end.year:
@@ -280,7 +286,7 @@ class PDFInvoice(PDFReport):
 
         return res_table
 
-    def _body_create_wire_instructions(self):
+    def _body_create_wire_instructions(self) -> List[reportlab.platypus.Paragraph]:
         """Create the wire instructions for transferring the money to BeginnerLuft"""
 
         para_list = []
@@ -298,7 +304,7 @@ class PDFInvoice(PDFReport):
         para_list.append(para_01)
         return para_list
 
-    def _body_create_greetings(self):
+    def _body_create_greetings(self) -> List[reportlab.platypus.Paragraph]:
         """Create the greetings at the end of the invoice document"""
 
         para_list = []
@@ -310,7 +316,7 @@ class PDFInvoice(PDFReport):
         para_list.append(para_01)
         return para_list
 
-    def create_footer(self):
+    def create_footer(self) -> reportlab.platypus.Table:
         """Create a footer for the report"""
 
         width_list = [
@@ -342,22 +348,24 @@ class PDFInvoice(PDFReport):
         ])
         return res
 
-    def save_report(self):
+    def save_report(self) -> None:
         """Save the current page of the canvas, store the file and close the canvas"""
 
         self.pdf.showPage()
         self.pdf.save()
 
-    def show_success_message(self):
+    def show_success_message(self) -> None:
         msg = f"Rechnung für {self.participant_name} erstellt und gespeichert unter\n\n{self.full_path}"
         helpers.MessageWindow(message_header="Rechnung erstellt!", message=msg)
 
     @classmethod
-    def from_data(cls, participant_title, participant_first_name, participant_last_name, participant_id,
-                  invoice_name, invoice_total_amount, invoice_nr, invoice_creation_date, invoice_target_date,
-                  training_name, training_cost_per_lesson,
-                  coaching_start, coaching_end, coaching_nr_lessons,
-                  jc_name, jc_street, jc_street_nr, jc_zip, jc_city, path):
+    def from_data(cls, participant_title: str, participant_first_name: str, participant_last_name: str,
+                  participant_id: str, invoice_name: str, invoice_total_amount: float, invoice_nr: str,
+                  invoice_creation_date: datetime.date, invoice_target_date: datetime.date,
+                  training_name: str, training_cost_per_lesson: float,
+                  coaching_start: datetime.date, coaching_end: datetime.date, coaching_nr_lessons: int,
+                  jc_name: str, jc_street: str, jc_street_nr: str, jc_zip: str, jc_city: str,
+                  path: str) -> "PDFInvoice":
         """Create instance of class only based on necessary data"""
 
         jc = Jobcenter(name=jc_name, street=jc_street, street_nr=jc_street_nr, zip_code=jc_zip, city=jc_city)
@@ -396,7 +404,8 @@ if __name__ == '__main__':
         coaching_end=datetime.date(2021, 9, 17),
         coaching_nr_lessons=100,
         jc_name="Testjobcenter",
-        jc_street_and_nr="Berlinerstr. 123",
+        jc_street="Berlinerstr.",
+        jc_street_nr="123",
         jc_zip="12345",
         jc_city="Berlin"
     )

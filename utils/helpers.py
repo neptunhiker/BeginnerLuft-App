@@ -16,7 +16,7 @@ def check_if_file_exists(path_to_file: str) -> bool:
     return path.is_file()
 
 
-def create_invoice_nr(creation_date: Union[str, datetime.datetime], participant_first_name: str,
+def create_invoice_nr(creation_date: Union[str, datetime.date], participant_first_name: str,
                       participant_last_name: str) -> str:
     """Return an invoice number based on a date and participant first and last name"""
 
@@ -84,7 +84,7 @@ def hash_password(password: str) -> str:
     return pwd
 
 
-def open_directory(path):
+def open_directory(path: str) -> None:
     """Opens the given directory"""
     # does not work
     pass
@@ -142,6 +142,7 @@ def password_min_requirements(password: str) -> bool:
 
     return True
 
+
 def string_to_float(string: str) -> float:
     """Convert a string to a float"""
 
@@ -171,7 +172,7 @@ def verify_password(stored_password: str, provided_password: str) -> bool:
 
 class NewWindow(tk.Toplevel):
 
-    def __init__(self):
+    def __init__(self) -> None:
         super(NewWindow, self).__init__()
         self.mainloop()
 
@@ -180,7 +181,7 @@ class MessageWindow(tk.Toplevel):
     """A separate message window"""
 
     def __init__(self, controller: tk.Tk, message_header: str, message: str, width: int = 600, height: int = 200,
-                 alert: bool = False):
+                 alert: bool = False) -> None:
         """
         Pops up a window with a header and a message
 
@@ -239,7 +240,7 @@ class MessageWindow(tk.Toplevel):
 class DatabaseErrorWindow(MessageWindow):
     """Pops up a data base error window"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super(DatabaseErrorWindow, self).__init__(message_header="Datenbankfehler",
                                                   message="Auf die Datenbank kann nicht zugegriffen werden.",
                                                   alert=True)

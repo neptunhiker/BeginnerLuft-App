@@ -8,7 +8,7 @@ from objects.training import Training
 
 class Invoice:
 
-    def __init__(self, invoice_nr: str, total_amount: float, creation_date:datetime.date,
+    def __init__(self, invoice_nr: str, total_amount: float, creation_date: datetime.date,
                  target_date: datetime.date, jobcenter: Jobcenter,
                  nr_training_lessons: int, participant: Participant, training: Training,
                  signer: str = "BeginnerLuft gGmbH", money_inflow=None) -> None:
