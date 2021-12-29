@@ -9,8 +9,11 @@ from reportlab.platypus import Paragraph
 from reportlab.lib.styles import ParagraphStyle
 from typing import List, Union
 
+from utils import helpers
+from utils.custom_exceptions import InsufficientTimeTrackingData
 
-class TimeReport():
+
+class TimeReport:
 
     def __init__(self, file_coach: str, file_bl: str, training_name: str, training_nr: str, participant_first_name: str,
                  participant_last_name: str, participant_title: str, participant_jc_id: str,
@@ -41,55 +44,63 @@ class TimeReport():
         self.month_selection = []
         self.error = False
 
-        self._get_data()
-
-        if not self.error:
+        if self._get_data_for_bl() or self._get_data_for_coach():
+            self._concatenate_dataframes()
+            self._sort_and_clean_data()
             self._filter_df()
             self._determine_date_range()
+        else:
+            raise InsufficientTimeTrackingData
 
-    def _get_data(self) -> None:
+    def _get_data_for_bl(self) -> bool:
+        """Import time tracking data for beginnerluft from an excel sheet"""
+        # get times of coachings conducted by BeginnerLuft
+        try:
+            self.df_beginnerluft = helpers.import_data_from_excel_into_df(self.file_bl, "Zeiterfassung")
+            self.df_beginnerluft.dropna(how="all", inplace=True)
+            self.df_beginnerluft = self.df_beginnerluft[["Datum", "Von", "Bis", "UE", "Kommentar bei Terminabsage"]]
+
+            # rename columns
+            self.df_beginnerluft.rename(columns={"Kommentar bei Terminabsage": "Kommentar"}, inplace=True)
+
+        except FileNotFoundError as err:
+            print(err)
+            return False
+        else:
+            return True
+
+    def _get_data_for_coach(self) -> bool:
+        """Import time tracking data from a coach from an excel sheet"""
 
         # get times of coachings conducted by coach
         try:
-            if platform.system() == "Darwin":  # MAC
-                self.df_coach = pd.read_excel(self.file_coach, sheet_name="Zeiterfassung")
-            else:
-                if int(pd.__version__[2:4]) < 21:
-                    self.df_coach = pd.read_excel(self.file_coach, sheetname="Zeiterfassung")
-                else:
-                    self.df_coach = pd.read_excel(self.file_coach, sheet_name="Zeiterfassung")
+            self.df_coach = helpers.import_data_from_excel_into_df(self.file_coach, sheet_name="Zeiterfassung")
             self.df_coach.dropna(how="all", inplace=True)
             self.df_coach = self.df_coach[["Datum", "Von", "Bis", "UE", "Kommentar bei Terminabsage"]]
+
+            # rename columns
+            self.df_coach.rename(columns={"Kommentar bei Terminabsage": "Kommentar"}, inplace=True)
+
         except FileNotFoundError as err:
             print(err)
-        except Exception as err:
-            print(err)
-            raise Exception
+            return False
+        else:
+            return True
 
-        # get times of coachings conducted by BeginnerLuft
-        try:
-            if platform.system() == "Darwin":  # MAC
-                self.df_beginnerluft = pd.read_excel(self.file_bl, sheet_name="Zeiterfassung")
-            else:
-                if int(pd.__version__[2:4]) < 21:
-                    self.df_beginnerluft = pd.read_excel(self.file_bl, sheetname="Zeiterfassung")
-                else:
-                    self.df_beginnerluft = pd.read_excel(self.file_bl, sheet_name="Zeiterfassung")
-            self.df_beginnerluft.dropna(how="all", inplace=True)
-            self.df_beginnerluft = self.df_beginnerluft[["Datum", "Von", "Bis", "UE", "Kommentar bei Terminabsage"]]
-        except FileNotFoundError as err:
-            print(err)
-        except Exception as err:
-            print(err)
-            raise Exception
-
-        # rename columns
-        for df in [self.df_coach, self.df_beginnerluft]:
-            df.rename(columns={"Kommentar bei Terminabsage": "Kommentar"}, inplace=True)
-
+    def _concatenate_dataframes(self) -> None:
+        """Concatenates the data from beginnerluft and from the coach into one dataframe"""
         try:
             # concatenate the two data frames
             self.df = pd.concat([self.df_beginnerluft, self.df_coach], ignore_index=True)
+
+        except Exception as err:
+            print("Error while trying to concatenate two data frames.")
+            print(err)
+            self.error = True
+
+    def _sort_and_clean_data(self) -> None:
+        """Sort dataframe by date and clean null values up"""
+        try:
 
             # sort dataframe by date
             self.df.sort_values(by=["Datum"], inplace=True)
@@ -99,6 +110,7 @@ class TimeReport():
             self.filtered_df = self.df.copy()
 
         except Exception as err:
+            print("Error while sorting and cleaning data frame.")
             print(err)
             self.error = True
 
@@ -110,6 +122,7 @@ class TimeReport():
         # self._create_df_matrix()
 
     def _filter_df(self, month_selection: str = "all") -> None:
+        """Filters dataframe to only include data for a specific month"""
 
         # filter dataframe for specific date range
         # self.df["Datum"] = pd.to_datetime(self.df["Datum"])
@@ -117,6 +130,7 @@ class TimeReport():
             self.filtered_df = self.df[self.df["Datum"].dt.month.isin(month_selection)]
 
     def _determine_date_range(self) -> None:
+        """Get the earliest month and latest month in the dataframe"""
 
         if not self.filtered_df.empty:
             # locale.setlocale(locale.LC_TIME, locale.normalize("de"))  # does not work

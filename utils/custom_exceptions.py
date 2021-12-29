@@ -8,3 +8,6 @@ class DateFormatException(ReportCreationError):
 
 class ReportCreationException(Exception):
     pass
+
+class InsufficientTimeTrackingData(Exception):
+    pass

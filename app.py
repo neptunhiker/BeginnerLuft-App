@@ -43,9 +43,6 @@ class BeginnerLuftApp(tk.Tk):
         # patch to picture gallery
         self.pic_gallery_path = "../Assets"
 
-        # starting frame
-        self.starting_frame = starting_frame
-
         # set the style to clam to have more styling flexibility
         self.style = ttk.Style(self)
         self.style.theme_use("clam")
@@ -138,6 +135,8 @@ class BeginnerLuftApp(tk.Tk):
             TimeTracking: time_tracking_frame,
         }
 
+        # starting frame
+        self.starting_frame = TimeTracking
         if self.starting_frame != Login:
             self.logged_in = True  # automatic log-in for testing purposes only, remove later
 

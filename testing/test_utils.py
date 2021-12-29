@@ -5,6 +5,8 @@ Tests that cover the helper functions in utils.helpers
 import datetime
 import unittest
 
+import pandas as pd
+
 from utils.custom_exceptions import DateFormatException
 from utils import helpers
 
@@ -12,7 +14,7 @@ from utils import helpers
 class CheckIfFileExists(unittest.TestCase):
 
     def test_happy_path(self) -> None:
-        path = f"{__name__}.py"
+        path = f"test_utils.py"
         target_output = True
         output = helpers.check_if_file_exists(path)
         self.assertEqual(target_output, output)
@@ -69,8 +71,33 @@ class CreateInvoiceNr(unittest.TestCase):
         date = "2021-02-12"
         self.assertRaises(AttributeError, helpers.create_invoice_nr, date, first_name, last_name)
 
+class ImportDataFromExcel(unittest.TestCase):
 
-class TestCreateInvoiceName(unittest.TestCase):
+    def setUp(self) -> None:
+        self.path = "../../Test_data/zeiterfassung_test.xlsx"
+
+    def test_import_data_from_excel_into_df_happy_path(self) -> None:
+
+        df = helpers.import_data_from_excel_into_df(path=self.path, sheet_name="Zeiterfassung")
+
+        target_output = pd.DataFrame
+        output = type(df)
+        self.assertEqual(target_output, output)
+
+        target_output = 27
+        output = len(df)
+        self.assertEqual(target_output, output)
+
+    def test_import_data_from_excel_into_df_non_happy_path(self) -> None:
+
+        path = "non existing file"
+        self.assertRaises(FileNotFoundError, helpers.import_data_from_excel_into_df, path, "some sheetname")
+
+        sheetname = "non existing sheetname"
+        self.assertRaises(ValueError, helpers.import_data_from_excel_into_df, self.path, sheetname)
+
+
+class CreateInvoiceName(unittest.TestCase):
 
     def test_happy_path(self) -> None:
         participant_first_name = "Rachel"

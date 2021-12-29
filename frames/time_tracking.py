@@ -9,6 +9,7 @@ from typing import Callable, List
 from objects.data_picker import PickParticipant, PickTraining
 from reports.time_tracking.time_tracking import TimeReport
 from utils import helpers
+from utils.custom_exceptions import InsufficientTimeTrackingData
 from widgets.buttons import BLImageButtonLabel
 from widgets.labels import BLBoldClickableSecondaryLabel
 
@@ -35,6 +36,7 @@ class TimeTracking(ttk.Frame):
         self.confirmation_period_end = tk.StringVar()
         self.file_path_time_sheet_bl = tk.StringVar()
         self.file_path_time_sheet_coach = tk.StringVar()
+        self.report = None
 
         self.variables = [self.participant_title, self.participant_first_name, self.participant_last_name,
                           self.participant_jc_id, self.training_name, self.training_id,
@@ -157,8 +159,8 @@ class TimeTracking(ttk.Frame):
         )
         btn_img_back.grid(pady=10)
 
-        self.pre_populate()
-        # self.populate_with_test_data()
+        # self.pre_populate()
+        self.populate_with_test_data()
 
     def pre_populate(self) -> None:
         """Populates the form with some data"""
@@ -184,18 +186,13 @@ class TimeTracking(ttk.Frame):
         self.file_path_time_sheet_coach.set(
             "/Volumes/GoogleDrive/Meine Ablage/2021-10-03 Operations/Arbeitsordner/Python/Zeiterfassung/BL-Time-Tracking/resources/Zeiterfassung Ahmed Muhadi.xlsx")
 
-    def create_time_tracking_sheet(self) -> None:
 
-        # completeness check
-        if not self.completeness_check():
-            return
-        # correctness check
-        if not self.correctness_check():
-            return
 
-        # Instantiate the TimeReport
+    def create_time_tracking_instance(self) -> bool:
+        """Create an instance of the object TimeReport"""
+
         try:
-            report = TimeReport(
+            self.report = TimeReport(
                 file_coach=self.file_path_time_sheet_coach.get(),
                 file_bl=self.file_path_time_sheet_bl.get(),
                 participant_title=self.participant_title.get(),
@@ -207,6 +204,20 @@ class TimeTracking(ttk.Frame):
                 confirmation_period_start=helpers.parse_date_from_string(self.confirmation_period_start.get()),
                 confirmation_period_end=helpers.parse_date_from_string(self.confirmation_period_end.get())
             )
+
+            return True
+
+        except InsufficientTimeTrackingData as err:
+            msg_logging = f"Time tracking sheet could not be created."
+            self.controller.bl_logger.exception(msg_logging)
+            helpers.MessageWindow(controller=self.controller,
+                                  message_header="Zeiterfassung nicht erstellt!",
+                                  message=f"Die Zeiterfassung konnte nicht erstellt werden, da weder eine korrekte "
+                                          f"Datei für die Zeiterfassung des Coaches noch für die Zeiterfassung von "
+                                          f"BeginnerLuft importiert werden konnte.",
+                                  alert=True)
+            return False
+
         except Exception as err:
             print(err)
             msg_logging = f"Time tracking sheet could not be created."
@@ -219,41 +230,64 @@ class TimeTracking(ttk.Frame):
                                           f"Spaltenüberschriften o.ä.)",
                                   height=300,
                                   alert=True)
+            return False
+
+    def create_time_tracking_sheet(self) -> None:
+        """
+        Run through all steps needed to create a pdf version for time tracking
+
+        - Check completeness of given data
+        - Check correctness of given data
+        - Instantiate the TimeReport object
+        - Ask user where to save the file
+        - Create pdf report and save it on file"""
+
+        # completeness check
+        if not self.completeness_check():
+            return
+        # correctness check
+        if not self.correctness_check():
             return
 
-        # ask user where to save the file
+        # Instantiate the TimeReport
+        self.create_time_tracking_instance()
+
+        # Ask user where to save the file
         today = datetime.date.today().strftime("%Y-%m-%d")
         pre_filled_file_name = f"{today} Zeiterfassung {self.participant_first_name.get()} " \
                                f"{self.participant_last_name.get()}.pdf"
         path = asksaveasfilename(title="BeginnerLuft Zeiterfassung", initialdir="../Output/Zeiterfassung",
                                  initialfile=pre_filled_file_name, filetypes=(("pdf", "*.pdf"),))
         if path:
-            try:
-                report.create_report(path=path)
-            except Exception as err:
-                print(err)
-                msg_logging = f"Time tracking sheet could not be created."
-                self.controller.bl_logger.exception(msg_logging)
-                helpers.MessageWindow(
-                    controller=self.controller,
-                    message_header="Kein Zeiterfassungs-Sheet erstellt!",
-                    message=f"Leider ist etwas schiefgegangen! Bitte Dateneingaben überprüfen.",
-                    alert=True
-                )
+            self.create_and_save_pdf_report(path)
 
-                return
-            else:
-                full_name = f"{self.participant_first_name.get()} {self.participant_last_name.get()}"
-                logging_msg = f"{self.controller.current_user} successfully created a time tracking report for " \
-                              f"{full_name}."
-                self.controller.bl_logger.info(logging_msg)
-                self.clear_all()
-                helpers.MessageWindow(
-                    controller=self.controller,
-                    message_header="Zeiterfassungs-Sheet erstellt!",
-                    message=f"Ein Zeiterfassungs-Sheet für {full_name} wurde unter \n\n'{path}' \n\n erstellt.",
-                    height=300
-                )
+    def create_and_save_pdf_report(self, path: str) -> None:
+        """Create a pdf version of the time tracking report and save it"""
+        try:
+            self.report.create_report(path=path)
+        except Exception as err:
+            print(err)
+            msg_logging = f"Time tracking sheet could not be created."
+            self.controller.bl_logger.exception(msg_logging)
+            helpers.MessageWindow(
+                controller=self.controller,
+                message_header="Kein Zeiterfassungs-Sheet erstellt!",
+                message=f"Leider ist etwas schiefgegangen! Bitte Dateneingaben überprüfen.",
+                alert=True
+            )
+
+        else:
+            full_name = f"{self.participant_first_name.get()} {self.participant_last_name.get()}"
+            logging_msg = f"{self.controller.current_user} successfully created a time tracking report for " \
+                          f"{full_name}."
+            self.controller.bl_logger.info(logging_msg)
+            self.clear_all()
+            helpers.MessageWindow(
+                controller=self.controller,
+                message_header="Zeiterfassungs-Sheet erstellt!",
+                message=f"Ein Zeiterfassungs-Sheet für {full_name} wurde unter \n\n'{path}' \n\n erstellt.",
+                height=300
+            )
 
     def back_button(self) -> None:
         """Navigate to the dashboard"""

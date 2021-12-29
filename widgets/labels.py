@@ -1,7 +1,9 @@
 """Custom labels"""
 
+import tkinter as tk
 from tkinter import ttk
 from typing import Union
+
 
 class BLBoldClickableSecondaryLabel(ttk.Label):
 

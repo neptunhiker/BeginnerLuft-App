@@ -1,7 +1,11 @@
 import datetime
-import hashlib, binascii, os
+import binascii
+import hashlib
+import os
+import pandas as pd
 from pathlib import Path
 from PIL import Image, ImageTk
+import platform
 from typing import Type, Union
 import tkinter as tk
 from tkinter import ttk
@@ -82,6 +86,20 @@ def hash_password(password: str) -> str:
     pwdhash = binascii.hexlify(pwdhash)
     pwd = (salt + pwdhash).decode('ascii')
     return pwd
+
+
+def import_data_from_excel_into_df(path: str, sheet_name: str) -> pd.DataFrame:
+    """Import data from an excel document into a DataFrame"""
+
+    if platform.system() == "Darwin":  # MAC
+        df = pd.read_excel(path, sheet_name=sheet_name)
+    else:
+        if int(pd.__version__[2:4]) < 21:
+            df = pd.read_excel(path, sheetname=sheet_name)
+        else:
+            df = pd.read_excel(path, sheet_name=sheet_name)
+
+    return df
 
 
 def open_directory(path: str) -> None:
