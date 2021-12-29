@@ -44,7 +44,10 @@ class TimeReport:
         self.month_selection = []
         self.error = False
 
-        if self._get_data_for_bl() or self._get_data_for_coach():
+        available_dataframes = 0
+        available_dataframes += self._get_data_for_bl()
+        available_dataframes += self._get_data_for_coach()
+        if available_dataframes > 0:
             self._concatenate_dataframes()
             self._sort_and_clean_data()
             self._filter_df()
@@ -103,7 +106,7 @@ class TimeReport:
         try:
 
             # sort dataframe by date
-            self.df.sort_values(by=["Datum"], inplace=True)
+            self.df.sort_values(by=["Datum", "Von"], inplace=True)
 
             self.df["UE"] = self.df["UE"].fillna(0)  # fill UE with zero if cell is empty
             self.df = self.df.fillna("")
@@ -155,6 +158,12 @@ class TimeReport:
         # ensure that matrix always has the same length and is printed from top to bottom (workaround)
         for i in range(28 - len(matrix)):
             matrix.append(["", "", "", "", ""])
+
+        # format times to H:M
+        for i, _list in enumerate(matrix):
+            for j, item in enumerate(_list):
+                if isinstance(matrix[i][j], datetime.time):
+                    matrix[i][j] = matrix[i][j].strftime("%H:%M")
 
         self.output_matrix = matrix
 
@@ -343,7 +352,7 @@ class TimeReport:
 
         return res
 
-    def _gen_times_table(self, width: int, height: int, data: list) -> reportlab.platypus.Table:
+    def _gen_times_table(self, width: float, height: float, data: list) -> reportlab.platypus.Table:
 
         width_list = [
             0.15 * width,

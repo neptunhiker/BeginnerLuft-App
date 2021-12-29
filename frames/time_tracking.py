@@ -181,12 +181,8 @@ class TimeTracking(ttk.Frame):
         self.training_id.set("123321")
         self.confirmation_period_start.set("22.01.1984")
         self.confirmation_period_end.set("29.03.1984")
-        self.file_path_time_sheet_bl.set(
-            "/Volumes/GoogleDrive/Meine Ablage/2021-10-03 Operations/Arbeitsordner/Python/Zeiterfassung/BL-Time-Tracking/resources/Zeiterfassung Ahmed Muhadi.xlsx")
-        self.file_path_time_sheet_coach.set(
-            "/Volumes/GoogleDrive/Meine Ablage/2021-10-03 Operations/Arbeitsordner/Python/Zeiterfassung/BL-Time-Tracking/resources/Zeiterfassung Ahmed Muhadi.xlsx")
-
-
+        self.file_path_time_sheet_bl.set("../Test_data/zeiterfassung_test_bl.xlsx")
+        self.file_path_time_sheet_coach.set("../Test_data/zeiterfassung_test_coach.xlsx")
 
     def create_time_tracking_instance(self) -> bool:
         """Create an instance of the object TimeReport"""
