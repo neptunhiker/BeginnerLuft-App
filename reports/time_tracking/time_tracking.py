@@ -51,6 +51,7 @@ class TimeReport:
             self._concatenate_dataframes()
             self._sort_and_clean_data()
             self._filter_df()
+            self._format_columns()
             self._determine_date_range()
         else:
             raise InsufficientTimeTrackingData
@@ -117,18 +118,29 @@ class TimeReport:
             print(err)
             self.error = True
 
+    def _format_columns(self) -> None:
+        """Format the columns of the dataframe"""
+        self.df['Von'] = self.df['Von'].apply(lambda x: x.strftime("%H:%M"))
+        self.df['Bis'] = self.df['Bis'].apply(lambda x: x.strftime("%H:%M"))
+        self.df['UE'] = self.df['UE'].apply(lambda x: int(x))
+
+        self.filtered_df['Von'] = self.filtered_df['Von'].apply(lambda x: x.strftime("%H:%M"))
+        self.filtered_df['Bis'] = self.filtered_df['Bis'].apply(lambda x: x.strftime("%H:%M"))
+        self.filtered_df['UE'] = self.filtered_df['UE'].apply(lambda x: int(x))
+
+
+
     def filter_df(self, months: str) -> None:
 
         # filter dataframe for specific date range and update output matrix
         self._filter_df(month_selection=months)
         self._determine_date_range()
-        # self._create_df_matrix()
+
 
     def _filter_df(self, month_selection: str = "all") -> None:
         """Filters dataframe to only include data for a specific month"""
 
         # filter dataframe for specific date range
-        # self.df["Datum"] = pd.to_datetime(self.df["Datum"])
         if month_selection != "all":
             self.filtered_df = self.df[self.df["Datum"].dt.month.isin(month_selection)]
 

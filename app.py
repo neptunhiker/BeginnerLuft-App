@@ -239,6 +239,13 @@ class BeginnerLuftApp(tk.Tk):
 
         self.style.configure("Error.TEntry", foreground="red")
 
+        self.style.configure(
+            "TCheckbutton",
+            background=bl_colors["bg secondary"]
+        )
+
+        self.style.configure("Error.TEntry", foreground="red")
+
     def menu(self):
         """Create a menu"""
 

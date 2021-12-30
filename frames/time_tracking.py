@@ -106,19 +106,6 @@ class TimeTracking(ttk.Frame):
         self.create_file_picker(starting_row=next_row, header_text="Zeiterfassung-Sheets", descriptions=descriptions,
                                 variables=variables, sep=True)
 
-        # FRAME action ----------------------------------------------------
-        action_frame = ttk.Frame(frame_left, style="Secondary.TFrame")
-        action_frame.grid(row=1, column=0, sticky="EW", padx=10)
-        action_frame.columnconfigure(0, weight=1)
-
-        btn_go = BLImageButtonLabel(
-            parent=action_frame,
-            func=self.create_time_tracking_sheet,
-            path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/timetracking_sheet_01.png",
-            path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/timetracking_sheet_02.png",
-        )
-        btn_go.grid(pady=10)
-
         # FRAME navigation ----------------------------------------------------
         nav_frame = ttk.Frame(frame_left, style="Secondary.TFrame")
         nav_frame.grid(row=2, column=0, sticky="EW", padx=10)
@@ -136,13 +123,13 @@ class TimeTracking(ttk.Frame):
         frame_right = ttk.Frame(self, style="Secondary.TFrame")
         frame_right.grid(row=0, column=1, sticky="NSEW")
         frame_right.columnconfigure(0, weight=1)
-        frame_right.rowconfigure(0, weight=1)
+        frame_right.rowconfigure((0), weight=1)
 
         # POSITIONING frame ----------------------------------------------------
-        pos_frame_right = ttk.Frame(frame_right, style="pos_frame_right.TFrame")
+        pos_frame_right = ttk.Frame(frame_right, style="Secondary.TFrame")
         pos_frame_right.grid(row=0, sticky="NSEW")
         pos_frame_right.columnconfigure(0, weight=1)
-        pos_frame_right.rowconfigure(1, weight=1)
+        pos_frame_right.rowconfigure((1, 3), weight=1)
 
         # HEADER frame ----------------------------------------------------
         header_frame = ttk.Frame(pos_frame_right, style="Secondary.TFrame")
@@ -153,18 +140,55 @@ class TimeTracking(ttk.Frame):
         header = ttk.Label(header_frame, text="Datenvorschau", style="Secondary.Header.TLabel")
         header.grid()
 
+        # FRAME data preview ----------------------------------------------------
+        data_preview_frame = ttk.Frame(pos_frame_right, style="Secondary.TFrame")
+        data_preview_frame.grid(sticky="EW", padx=20)
+        data_preview_frame.columnconfigure(0, weight=1)
+
+        btn_preview = BLImageButtonLabel(
+            parent=data_preview_frame,
+            func=self.create_data_preview,
+            path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/data_preview_01.png",
+            path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/data_preview_02.png",
+        )
+        btn_preview.grid(pady=(10, 20))
+
+        ttk.Separator(data_preview_frame).grid(sticky="EW")
+
         # CONTENT frame ----------------------------------------------------
         self.content_frame_right = ttk.Frame(pos_frame_right, style="Secondary.TFrame")
-        self.content_frame_right.grid(row=1, padx=10)
-        # self.content_frame.columnconfigure(0, weight=1)
+        self.content_frame_right.grid(row=2, sticky="EW", padx=20)
+        self.content_frame_right.columnconfigure((0, 1), weight=1)
         self.content_frame_right.rowconfigure(0, weight=1)
 
-        self.txt_preview = tk.Text(self.content_frame_right, width=80, height=20)
-        self.txt_preview.grid(row=0, column=0, sticky="news", padx=(10, 10))
+        self.txt_preview = tk.Text(self.content_frame_right, width=70, height=20)
+        self.txt_preview.grid(row=0, column=0, padx=(10, 10))
 
-        scrollbar = ttk.Scrollbar(self.content_frame_right, orient="vertical", command=self.txt_preview.yview)
-        scrollbar.grid(row=0, column=2, sticky="ns", padx=(0, 10))
-        self.txt_preview['yscrollcommand'] = scrollbar.set  # communicate back to the scrollbar
+        self.scrollbar = ttk.Scrollbar(self.content_frame_right, orient="vertical", command=self.txt_preview.yview)
+        self.scrollbar.grid(row=0, column=1, sticky="nws", padx=(5, 10))
+        self.txt_preview['yscrollcommand'] = self.scrollbar.set  # communicate back to the scrollbar
+
+        ttk.Separator(self.content_frame_right).grid(sticky="EW", column=0, columnspan=2, pady=10, padx=10)
+
+        # DATA SELCTION FRAME
+        self.data_selection_frame = ttk.Frame(pos_frame_right, style="Secondary.TFrame")
+        self.data_selection_frame.grid(row=3, padx=20, pady=20, sticky="NSEW")
+        self.data_selection_frame.columnconfigure((0), weight=1)
+        self.data_selection_frame.rowconfigure((0, 1, 2, 3, 4, 5), weight=1)
+
+
+        # BUTTON FRAME
+        self.action_frame_right = ttk.Frame(frame_right, style="Secondary.TFrame")
+        self.action_frame_right.grid(row=1, column=0, sticky="NSEW")
+        self.action_frame_right.columnconfigure(0, weight=1)
+        
+        btn_go = BLImageButtonLabel(
+            parent=self.action_frame_right,
+            func=self.create_time_tracking_pdf,
+            path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/timetracking_sheet_01.png",
+            path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/timetracking_sheet_02.png",
+        )
+        btn_go.grid(pady=10)
 
         # self.pre_populate()
         self.populate_with_test_data()
@@ -179,6 +203,8 @@ class TimeTracking(ttk.Frame):
         self.training_id.set(training_id)
 
     def populate_with_test_data(self) -> None:
+        """Populates the form with test data"""
+
         self.participant_title.set("Herr")
         self.participant_first_name.set("Jimmy")
         self.participant_last_name.set("Murt")
@@ -235,22 +261,28 @@ class TimeTracking(ttk.Frame):
                                   alert=True)
             return False
 
-    def create_time_tracking_sheet(self) -> None:
-        """
-        Run through all steps needed to create a pdf version for time tracking
-
-        - Check completeness of given data
-        - Check correctness of given data
-        - Instantiate the TimeReport object
-        - create preview window
-        - Ask user where to save the file
-        - Create pdf report and save it on file"""
+    def run_all_prechecks(self) -> bool:
+        """Run all pre checks needed to be completed for the creation of a time tracking pdf and/or data preview"""
 
         # completeness check
         if not self.completeness_check():
-            return
+            return False
         # correctness check
         if not self.correctness_check():
+            return False
+
+        return True
+
+    def create_data_preview(self) -> None:
+        """
+        Run through all steps needed to create a pdf version for time tracking
+
+        - Run precheks
+        - Instantiate the TimeReport object
+        - create preview window
+        """
+
+        if not self.run_all_prechecks():
             return
 
         # Instantiate the TimeReport
@@ -258,15 +290,30 @@ class TimeTracking(ttk.Frame):
             return
 
         self.create_preview_window()
-        self.place_checkbuttons()
-        # # Ask user where to save the file
-        # today = datetime.date.today().strftime("%Y-%m-%d")
-        # pre_filled_file_name = f"{today} Zeiterfassung {self.participant_first_name.get()} " \
-        #                        f"{self.participant_last_name.get()}.pdf"
-        # path = asksaveasfilename(title="BeginnerLuft Zeiterfassung", initialdir="../Output/Zeiterfassung",
-        #                          initialfile=pre_filled_file_name, filetypes=(("pdf", "*.pdf"),))
-        # if path:
-        #     self.create_and_save_pdf_report(path)
+        self.place_checkbuttons_and_labels()
+
+    def create_time_tracking_pdf(self) -> None:
+        """
+        Run through all steps needed to create a pdf version for time tracking
+
+        - Ask user where to save the file
+        - Create pdf report and save it on file
+        """
+        if not self.run_all_prechecks():
+            return
+
+        # Instantiate the TimeReport
+        # if not self.create_time_tracking_instance():
+        #     return
+
+        # Ask user where to save the file
+        today = datetime.date.today().strftime("%Y-%m-%d")
+        pre_filled_file_name = f"{today} Zeiterfassung {self.participant_first_name.get()} " \
+                               f"{self.participant_last_name.get()}.pdf"
+        path = asksaveasfilename(title="BeginnerLuft Zeiterfassung", initialdir="../Output/Zeiterfassung",
+                                 initialfile=pre_filled_file_name, filetypes=(("pdf", "*.pdf"),))
+        if path:
+            self.create_and_save_pdf_report(path)
 
     def create_and_save_pdf_report(self, path: str) -> None:
         """Create a pdf version of the time tracking report and save it"""
@@ -460,12 +507,16 @@ class TimeTracking(ttk.Frame):
 
         self.completeness_check()
 
-    def place_checkbuttons(self) -> None:
+    def place_checkbuttons_and_labels(self) -> None:
 
-        self.checkbutton_list = self.create_checkbuttons(frame=self.content_frame_right)
+        # label
+        lbl = ttk.Label(self.data_selection_frame, text="Datenauswahl", style="Bold.Secondary.TLabel")
+        lbl.grid(row=0, column=0)
+
+        self.checkbutton_list = self.create_checkbuttons(frame=self.data_selection_frame)
         for i, checkbutton in enumerate(self.checkbutton_list):
             self.content_frame_right.grid_rowconfigure(i, weight=1)
-            checkbutton.grid(row=1 + i, column=0, sticky="nw", padx=(0, 0))
+            checkbutton.grid(row=1 + i, column=0, padx=(0, 0))
             checkbutton.var.set(1)  # turns on all checkbuttons
 
     def create_checkbuttons(self, frame: ttk.Frame) -> List[ttk.Checkbutton]:
@@ -489,18 +540,18 @@ class TimeTracking(ttk.Frame):
         for i, date in enumerate(final_formatted_dates):
             var = tk.IntVar()
             cbtn = ttk.Checkbutton(frame, text=date, variable=var, style="TCheckbutton")
-            cbtn.bind("<ButtonRelease-1>", lambda event, btn=cbtn: self.change_preview(event, btn=btn))
+            cbtn.bind("<ButtonRelease-1>", lambda event: self.change_preview())
             cbtn.state(['!alternate'])  # remove alternate selected state
             cbtn.var = var  # attach variable to checkbutton
             checkbutton_list.append(cbtn)
 
         return checkbutton_list
 
-    def change_preview(self, event: tk.Event, btn: ttk.Checkbutton) -> None:
+    def change_preview(self) -> None:
+        """Update the data preview based on selection of user for months to show"""
 
         # determine selected months
         months = []
-        # btn.var.set(1)
         for btn in self.checkbutton_list:
             if (btn.instate(["selected"]) or btn.instate(["active"])) and \
                     btn.state() != ('active', 'focus', 'pressed', 'selected', 'hover'):
@@ -521,17 +572,12 @@ class TimeTracking(ttk.Frame):
             df.set_index("Datum", inplace=True)
             self.txt_preview.insert(tk.END, df)
 
-        scrollbar = ttk.Scrollbar(self.content_frame_right, orient="vertical", command=self.txt_preview.yview)
-        scrollbar.grid(row=0, column=2, sticky="ns", padx=(0, 10))
-        self.txt_preview['yscrollcommand'] = scrollbar.set  #  communicate back to the scrollbar
-
     def create_preview_window(self) -> None:
 
         # insert dataframe content as a preview to user into text field
         self.txt_preview.delete("1.0", tk.END)
         if not self.report.filtered_df.empty:
             df = self.report.filtered_df.copy()
-            # df = self.format_df(df)  # to be continued: does not work due to formatting to string somewhere else
             df.set_index("Datum", inplace=True)
             self.txt_preview.insert(tk.END, df)
 
