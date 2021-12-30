@@ -1,6 +1,6 @@
 import datetime
 import os
-from PIL import Image, ImageTk
+import pandas as pd
 from tkinter import ttk
 import tkinter as tk
 from tkinter.filedialog import askopenfilename, asksaveasfilename
@@ -38,30 +38,21 @@ class TimeTracking(ttk.Frame):
         self.file_path_time_sheet_bl = tk.StringVar()
         self.file_path_time_sheet_coach = tk.StringVar()
         self.report = None
+        self.checkbutton_list = []
 
         self.variables = [self.participant_title, self.participant_first_name, self.participant_last_name,
                           self.participant_jc_id, self.training_name, self.training_id,
                           self.confirmation_period_start, self.confirmation_period_end, self.file_path_time_sheet_bl,
                           self.file_path_time_sheet_coach]
 
-        # FRAME left
-        frame_left = ttk.Frame(self)
+        # LEFT HAND SIDE ----------------------------------------------------
+        frame_left = ttk.Frame(self, style="Secondary.TFrame")
         frame_left.grid(row=0, column=0, sticky="NSEW")
-        frame_left.rowconfigure(0, weight=1)
         frame_left.columnconfigure(0, weight=1)
-
-        # create image on canvas
-        create_background_image(path_of_image=f"{self.controller.pic_gallery_path}/backgrounds/office01.jpg",
-                                frame=frame_left, desired_width=1200)
-
-        # RIGHT HAND SIDE ----------------------------------------------------
-        frame_right = ttk.Frame(self, style="Secondary.TFrame")
-        frame_right.grid(row=0, column=1, sticky="NSEW")
-        frame_right.columnconfigure(0, weight=1)
-        frame_right.rowconfigure(0, weight=1)
+        frame_left.rowconfigure(0, weight=1)
 
         # POSITIONING frame ----------------------------------------------------
-        pos_frame = ttk.Frame(frame_right, style="Secondary.TFrame")
+        pos_frame = ttk.Frame(frame_left, style="Secondary.TFrame")
         pos_frame.grid(row=0, sticky="NSEW")
         pos_frame.columnconfigure(0, weight=1)
         pos_frame.rowconfigure(1, weight=1)
@@ -76,10 +67,10 @@ class TimeTracking(ttk.Frame):
         header.grid()
 
         # CONTENT frame ----------------------------------------------------
-        self.content_frame = ttk.Frame(pos_frame, style="Secondary.TFrame")
-        self.content_frame.grid(row=1, padx=10)
+        self.content_frame_left = ttk.Frame(pos_frame, style="Secondary.TFrame")
+        self.content_frame_left.grid(row=1, padx=10)
         # self.content_frame.columnconfigure(0, weight=1)
-        self.content_frame.rowconfigure(0, weight=1)
+        self.content_frame_left.rowconfigure(0, weight=1)
 
         sep_pad_y = 10
         self.pad_x = 20
@@ -102,13 +93,6 @@ class TimeTracking(ttk.Frame):
                                                     header_func=self.pick_training_from_db, descriptions=descriptions,
                                                     variables=variables, sep=True)
 
-        # # AVGS coupon
-        # descriptions = ["Nummer"]
-        # variables = [self.avgs_coupon_id]
-        # next_row = self.create_header_labels_entries(starting_row=next_row, header_text="AVGS-Gutschein",
-        #                                              header_func=None, descriptions=descriptions,
-        #                                              variables=variables, sep=True)
-
         # Confirmation period (Bewilligungszeitraum)
         descriptions = ["Beginn", "Ende"]
         variables = [self.confirmation_period_start, self.confirmation_period_end]
@@ -123,7 +107,7 @@ class TimeTracking(ttk.Frame):
                                 variables=variables, sep=True)
 
         # FRAME action ----------------------------------------------------
-        action_frame = ttk.Frame(frame_right, style="Secondary.TFrame")
+        action_frame = ttk.Frame(frame_left, style="Secondary.TFrame")
         action_frame.grid(row=1, column=0, sticky="EW", padx=10)
         action_frame.columnconfigure(0, weight=1)
 
@@ -136,7 +120,7 @@ class TimeTracking(ttk.Frame):
         btn_go.grid(pady=10)
 
         # FRAME navigation ----------------------------------------------------
-        nav_frame = ttk.Frame(frame_right, style="Secondary.TFrame")
+        nav_frame = ttk.Frame(frame_left, style="Secondary.TFrame")
         nav_frame.grid(row=2, column=0, sticky="EW", padx=10)
         nav_frame.columnconfigure(0, weight=1)
 
@@ -147,6 +131,40 @@ class TimeTracking(ttk.Frame):
             path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/back_02.png",
         )
         btn_img_back.grid(pady=10)
+
+        # RIGHT HAND SIDE ----------------------------------------------------
+        frame_right = ttk.Frame(self, style="Secondary.TFrame")
+        frame_right.grid(row=0, column=1, sticky="NSEW")
+        frame_right.columnconfigure(0, weight=1)
+        frame_right.rowconfigure(0, weight=1)
+
+        # POSITIONING frame ----------------------------------------------------
+        pos_frame_right = ttk.Frame(frame_right, style="pos_frame_right.TFrame")
+        pos_frame_right.grid(row=0, sticky="NSEW")
+        pos_frame_right.columnconfigure(0, weight=1)
+        pos_frame_right.rowconfigure(1, weight=1)
+
+        # HEADER frame ----------------------------------------------------
+        header_frame = ttk.Frame(pos_frame_right, style="Secondary.TFrame")
+        header_frame.grid(row=0, sticky="EW", padx=10, pady=(50, 0))
+        header_frame.columnconfigure(0, weight=1)
+
+        # header
+        header = ttk.Label(header_frame, text="Datenvorschau", style="Secondary.Header.TLabel")
+        header.grid()
+
+        # CONTENT frame ----------------------------------------------------
+        self.content_frame_right = ttk.Frame(pos_frame_right, style="Secondary.TFrame")
+        self.content_frame_right.grid(row=1, padx=10)
+        # self.content_frame.columnconfigure(0, weight=1)
+        self.content_frame_right.rowconfigure(0, weight=1)
+
+        self.txt_preview = tk.Text(self.content_frame_right, width=80, height=20)
+        self.txt_preview.grid(row=0, column=0, sticky="news", padx=(10, 10))
+
+        scrollbar = ttk.Scrollbar(self.content_frame_right, orient="vertical", command=self.txt_preview.yview)
+        scrollbar.grid(row=0, column=2, sticky="ns", padx=(0, 10))
+        self.txt_preview['yscrollcommand'] = scrollbar.set  # communicate back to the scrollbar
 
         # self.pre_populate()
         self.populate_with_test_data()
@@ -224,6 +242,7 @@ class TimeTracking(ttk.Frame):
         - Check completeness of given data
         - Check correctness of given data
         - Instantiate the TimeReport object
+        - create preview window
         - Ask user where to save the file
         - Create pdf report and save it on file"""
 
@@ -235,16 +254,19 @@ class TimeTracking(ttk.Frame):
             return
 
         # Instantiate the TimeReport
-        self.create_time_tracking_instance()
+        if not self.create_time_tracking_instance():
+            return
 
-        # Ask user where to save the file
-        today = datetime.date.today().strftime("%Y-%m-%d")
-        pre_filled_file_name = f"{today} Zeiterfassung {self.participant_first_name.get()} " \
-                               f"{self.participant_last_name.get()}.pdf"
-        path = asksaveasfilename(title="BeginnerLuft Zeiterfassung", initialdir="../Output/Zeiterfassung",
-                                 initialfile=pre_filled_file_name, filetypes=(("pdf", "*.pdf"),))
-        if path:
-            self.create_and_save_pdf_report(path)
+        self.create_preview_window()
+        self.place_checkbuttons()
+        # # Ask user where to save the file
+        # today = datetime.date.today().strftime("%Y-%m-%d")
+        # pre_filled_file_name = f"{today} Zeiterfassung {self.participant_first_name.get()} " \
+        #                        f"{self.participant_last_name.get()}.pdf"
+        # path = asksaveasfilename(title="BeginnerLuft Zeiterfassung", initialdir="../Output/Zeiterfassung",
+        #                          initialfile=pre_filled_file_name, filetypes=(("pdf", "*.pdf"),))
+        # if path:
+        #     self.create_and_save_pdf_report(path)
 
     def create_and_save_pdf_report(self, path: str) -> None:
         """Create a pdf version of the time tracking report and save it"""
@@ -358,24 +380,24 @@ class TimeTracking(ttk.Frame):
         """Create a header, static labels and dynamic entry fields"""
 
         if sep is True:
-            ttk.Separator(self.content_frame).grid(row=starting_row, column=0, columnspan=3,
-                                                   sticky="EW", pady=10)
+            ttk.Separator(self.content_frame_left).grid(row=starting_row, column=0, columnspan=3,
+                                                        sticky="EW", pady=10)
             starting_row += 1
 
         if header_func is not None:
-            lbl = BLBoldClickableSecondaryLabel(self.content_frame, text=header_text)
+            lbl = BLBoldClickableSecondaryLabel(self.content_frame_left, text=header_text)
             lbl.bind("<Button-1>", header_func)
         else:
-            lbl = ttk.Label(self.content_frame, text=header_text, style="Bold.Secondary.TLabel")
+            lbl = ttk.Label(self.content_frame_left, text=header_text, style="Bold.Secondary.TLabel")
 
         lbl.grid(row=starting_row, column=0, sticky="W", pady=self.pad_y)
 
         for i, item in enumerate(zip(descriptions, variables)):
-            lbl = ttk.Label(self.content_frame, text=item[0], style="Secondary.TLabel")
+            lbl = ttk.Label(self.content_frame_left, text=item[0], style="Secondary.TLabel")
             lbl.grid(row=starting_row + i, column=1, padx=self.pad_x, pady=self.pad_y, sticky="W")
             self.labels[item[0]] = (lbl, item[1])
 
-            ent_var = ttk.Entry(self.content_frame, textvariable=item[1])
+            ent_var = ttk.Entry(self.content_frame_left, textvariable=item[1])
             ent_var.grid(row=starting_row + i, column=2, pady=self.pad_y, sticky="W")
 
         return starting_row + (i + 1)
@@ -384,25 +406,25 @@ class TimeTracking(ttk.Frame):
                                     variables: List[tk.StringVar], header_func: Callable = None, sep=False) -> int:
         """Create a header, static labels and dynamic labels"""
         if sep is True:
-            ttk.Separator(self.content_frame).grid(row=starting_row, column=0, columnspan=3,
-                                                   sticky="EW", pady=10)
+            ttk.Separator(self.content_frame_left).grid(row=starting_row, column=0, columnspan=3,
+                                                        sticky="EW", pady=10)
             starting_row += 1
 
         if header_func is not None:
-            lbl = BLBoldClickableSecondaryLabel(self.content_frame, text=header_text)
+            lbl = BLBoldClickableSecondaryLabel(self.content_frame_left, text=header_text)
             lbl.bind("<Button-1>", header_func)
         else:
-            lbl = ttk.Label(self.content_frame, text=header_text, style="Bold.Secondary.TLabel")
+            lbl = ttk.Label(self.content_frame_left, text=header_text, style="Bold.Secondary.TLabel")
 
         lbl.grid(row=starting_row, column=0, sticky="W", pady=self.pad_y)
 
         for i, item in enumerate(zip(descriptions, variables)):
-            lbl = ttk.Label(self.content_frame, text=item[0], style="Secondary.TLabel")
+            lbl = ttk.Label(self.content_frame_left, text=item[0], style="Secondary.TLabel")
             lbl.grid(row=starting_row + i, column=1, padx=self.pad_x, pady=self.pad_y, sticky="W")
             item[1].set("Bitte auswählen")
             self.labels[item[0]] = (lbl, item[1])
 
-            lbl_var = ttk.Label(self.content_frame, textvariable=item[1], style="Secondary.TLabel")
+            lbl_var = ttk.Label(self.content_frame_left, textvariable=item[1], style="Secondary.TLabel")
             lbl_var.grid(row=starting_row + i, column=2, pady=self.pad_y, sticky="W")
 
         return starting_row + (i + 1)
@@ -411,20 +433,20 @@ class TimeTracking(ttk.Frame):
                            variables: List[tk.StringVar], sep=False) -> None:
         """"Create a header, labels, and labels that allow for picking files from a directory when clicked on"""
         if sep is True:
-            ttk.Separator(self.content_frame).grid(row=starting_row, column=0, columnspan=3,
-                                                   sticky="EW", pady=10)
+            ttk.Separator(self.content_frame_left).grid(row=starting_row, column=0, columnspan=3,
+                                                        sticky="EW", pady=10)
             starting_row += 1
 
-        lbl = ttk.Label(self.content_frame, text=header_text, style="Bold.Secondary.TLabel")
+        lbl = ttk.Label(self.content_frame_left, text=header_text, style="Bold.Secondary.TLabel")
         lbl.grid(row=starting_row, column=0, sticky="NW", pady=self.pad_y)
 
         for i, item in enumerate(zip(descriptions, variables)):
-            lbl = ttk.Label(self.content_frame, text=item[0], style="Secondary.TLabel")
+            lbl = ttk.Label(self.content_frame_left, text=item[0], style="Secondary.TLabel")
             lbl.grid(row=starting_row + i, column=1, padx=self.pad_x, pady=self.pad_y, sticky="NW")
             item[1].set("Bitte Datei auswählen")
             self.labels[item[0]] = (lbl, item[1])
 
-            lbl_var = ttk.Label(self.content_frame, textvariable=item[1], style="Clickable.Secondary.TLabel",
+            lbl_var = ttk.Label(self.content_frame_left, textvariable=item[1], style="Clickable.Secondary.TLabel",
                                 cursor="hand2", wraplength=250)
             lbl_var.bind("<Button-1>", lambda event, variable=item[1]: self.choose_file(event, variable))
             lbl_var.grid(row=starting_row + i, column=2, pady=self.pad_y, sticky="NW")
@@ -438,6 +460,81 @@ class TimeTracking(ttk.Frame):
 
         self.completeness_check()
 
+    def place_checkbuttons(self) -> None:
+
+        self.checkbutton_list = self.create_checkbuttons(frame=self.content_frame_right)
+        for i, checkbutton in enumerate(self.checkbutton_list):
+            self.content_frame_right.grid_rowconfigure(i, weight=1)
+            checkbutton.grid(row=1 + i, column=0, sticky="nw", padx=(0, 0))
+            checkbutton.var.set(1)  # turns on all checkbuttons
+
+    def create_checkbuttons(self, frame: ttk.Frame) -> List[ttk.Checkbutton]:
+
+        # output / return value
+        checkbutton_list = []
+
+        # get unique dates
+        dates = self.report.df["Datum"].unique()
+        formatted_dates = [pd.to_datetime(str(date)).strftime("%m/%Y") for date in dates]
+
+        # keep only unique month/year combinations
+        final_dates = set(formatted_dates)
+
+        # sort those combinations
+        final_parsed_dates = [datetime.datetime.strptime(date, "%m/%Y") for date in final_dates]
+        final_parsed_dates.sort()
+        final_formatted_dates = [date.strftime("%m/%Y") for date in final_parsed_dates]
+
+        # create checkbuttons
+        for i, date in enumerate(final_formatted_dates):
+            var = tk.IntVar()
+            cbtn = ttk.Checkbutton(frame, text=date, variable=var, style="TCheckbutton")
+            cbtn.bind("<ButtonRelease-1>", lambda event, btn=cbtn: self.change_preview(event, btn=btn))
+            cbtn.state(['!alternate'])  # remove alternate selected state
+            cbtn.var = var  # attach variable to checkbutton
+            checkbutton_list.append(cbtn)
+
+        return checkbutton_list
+
+    def change_preview(self, event: tk.Event, btn: ttk.Checkbutton) -> None:
+
+        # determine selected months
+        months = []
+        # btn.var.set(1)
+        for btn in self.checkbutton_list:
+            if (btn.instate(["selected"]) or btn.instate(["active"])) and \
+                    btn.state() != ('active', 'focus', 'pressed', 'selected', 'hover'):
+                months.append(btn.cget("text")[0:2])
+
+        months = [int(month) for month in months]
+
+        # filter dataframe
+        self.report.filter_df(months=months)
+
+        # insert dataframe content as a preview to user into text field
+        self.txt_preview.delete("1.0", tk.END)
+
+        # insert filtered data only if filtered dataframe has data in it
+        if not self.report.filtered_df.empty:
+            df = self.report.filtered_df.copy()
+            # df = self.format_df(df)  # to be continued: does not work due to formatting to str somewhere before
+            df.set_index("Datum", inplace=True)
+            self.txt_preview.insert(tk.END, df)
+
+        scrollbar = ttk.Scrollbar(self.content_frame_right, orient="vertical", command=self.txt_preview.yview)
+        scrollbar.grid(row=0, column=2, sticky="ns", padx=(0, 10))
+        self.txt_preview['yscrollcommand'] = scrollbar.set  #  communicate back to the scrollbar
+
+    def create_preview_window(self) -> None:
+
+        # insert dataframe content as a preview to user into text field
+        self.txt_preview.delete("1.0", tk.END)
+        if not self.report.filtered_df.empty:
+            df = self.report.filtered_df.copy()
+            # df = self.format_df(df)  # to be continued: does not work due to formatting to string somewhere else
+            df.set_index("Datum", inplace=True)
+            self.txt_preview.insert(tk.END, df)
+
     def clear_all(self) -> None:
         """Clears all data on the form"""
         for label_text, item in self.labels.items():
@@ -449,6 +546,8 @@ class TimeTracking(ttk.Frame):
                 item[1].set("Bitte auswählen")
         self.update()
         self.update_idletasks()
+
+
 
 
 class TimeTrackingMonthSelection(ttk.Frame):
@@ -471,4 +570,3 @@ class TimeTrackingMonthSelection(ttk.Frame):
         # create image on canvas
         create_background_image(path_of_image=f"{self.controller.pic_gallery_path}/backgrounds/office01.jpg",
                                 frame=frame_left)
-
