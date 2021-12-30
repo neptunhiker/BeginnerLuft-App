@@ -12,7 +12,7 @@ from widgets.labels import BLBoldClickableSecondaryLabel
 from reports.invoice import PDFInvoice
 from utils import helpers
 from utils import custom_exceptions
-
+from widgets.background import create_background_image
 from widgets.buttons import BLImageButtonLabel
 
 
@@ -33,21 +33,9 @@ class Invoice(ttk.Frame):
         frame_left.rowconfigure(0, weight=1)
         frame_left.columnconfigure(0, weight=1)
 
-        # create background image
-        image = Image.open(f"{self.controller.pic_gallery_path}/backgrounds/office02.jpg")
-        desired_width = 800
-        ratio = image.height / image.width
-        calculated_height = int(desired_width * ratio)
-        image = image.resize((desired_width, calculated_height), Image.ANTIALIAS)
-        bg_image = ImageTk.PhotoImage(image)
-
-        # create canvas
-        canvas = tk.Canvas(frame_left)
-        canvas.grid(row=0, column=0, sticky="NSEW")
-
-        # set image in canvas
-        canvas.create_image(0, 0, image=bg_image, anchor="nw")
-        canvas.image = bg_image
+        # create image on canvas
+        create_background_image(path_of_image=f"{self.controller.pic_gallery_path}/backgrounds/birches_bw_01.jpg",
+                                frame=frame_left)
 
         # RIGHT HAND SIDE
         frame_right = ttk.Frame(self, style="Secondary.TFrame")

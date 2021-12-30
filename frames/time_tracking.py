@@ -10,6 +10,7 @@ from objects.data_picker import PickParticipant, PickTraining
 from reports.time_tracking.time_tracking import TimeReport
 from utils import helpers
 from utils.custom_exceptions import InsufficientTimeTrackingData
+from widgets.background import create_background_image
 from widgets.buttons import BLImageButtonLabel
 from widgets.labels import BLBoldClickableSecondaryLabel
 
@@ -49,21 +50,9 @@ class TimeTracking(ttk.Frame):
         frame_left.rowconfigure(0, weight=1)
         frame_left.columnconfigure(0, weight=1)
 
-        # create background image
-        image = Image.open(f"{self.controller.pic_gallery_path}/backgrounds/office01.jpg")
-        desired_width = 1200
-        ratio = image.height / image.width
-        calculated_height = int(desired_width * ratio)
-        image = image.resize((desired_width, calculated_height), Image.ANTIALIAS)
-        bg_image = ImageTk.PhotoImage(image)
-
-        # create canvas
-        canvas = tk.Canvas(frame_left)
-        canvas.grid(row=0, column=0, sticky="NSEW")
-
-        # set image in canvas
-        canvas.create_image(0, 0, image=bg_image, anchor="nw")
-        canvas.image = bg_image
+        # create image on canvas
+        create_background_image(path_of_image=f"{self.controller.pic_gallery_path}/backgrounds/office01.jpg",
+                                frame=frame_left, desired_width=1200)
 
         # RIGHT HAND SIDE ----------------------------------------------------
         frame_right = ttk.Frame(self, style="Secondary.TFrame")
@@ -460,3 +449,26 @@ class TimeTracking(ttk.Frame):
                 item[1].set("Bitte auswählen")
         self.update()
         self.update_idletasks()
+
+
+class TimeTrackingMonthSelection(ttk.Frame):
+    """A frame that allows user to select specific months for creating a pdf for time tracking of coachings"""
+
+    def __init__(self, parent: ttk.Frame, controller: tk.Tk) -> None:
+        super().__init__(parent)
+        self["style"] = "Secondary.TFrame"
+        self.controller = controller
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(0, weight=1)
+
+        # FRAME left
+        frame_left = ttk.Frame(self)
+        frame_left.grid(row=0, column=0, sticky="NSEW")
+        frame_left.rowconfigure(0, weight=1)
+        frame_left.columnconfigure(0, weight=1)
+
+        # create image on canvas
+        create_background_image(path_of_image=f"{self.controller.pic_gallery_path}/backgrounds/office01.jpg",
+                                frame=frame_left)
+

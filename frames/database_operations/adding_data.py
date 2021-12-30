@@ -8,6 +8,7 @@ from typing import Type, Union
 from objects.jobcenter import Jobcenter
 from objects.people import Participant, Coach
 from utils.helpers import DatabaseErrorWindow, MessageWindow
+from widgets.background import create_background_image
 from widgets.buttons import BLImageButtonLabel
 
 
@@ -27,21 +28,9 @@ class AddParticipant(ttk.Frame):
         frame_left.rowconfigure(0, weight=1)
         frame_left.columnconfigure(0, weight=1)
 
-        # create background image
-        image = Image.open(f"{self.controller.pic_gallery_path}/backgrounds/office01.jpg")
-        desired_width = 1200
-        ratio = image.height / image.width
-        calculated_height = int(desired_width * ratio)
-        image = image.resize((desired_width, calculated_height), Image.ANTIALIAS)
-        bg_image = ImageTk.PhotoImage(image)
-
-        # create canvas
-        canvas = tk.Canvas(frame_left)
-        canvas.grid(row=0, column=0, sticky="NSEW")
-
-        # set image in canvas
-        canvas.create_image(0, 0, image=bg_image, anchor="nw")
-        canvas.image = bg_image
+        # create image on canvas
+        create_background_image(path_of_image=f"{self.controller.pic_gallery_path}/backgrounds/office01.jpg",
+                                frame=frame_left, desired_width=1200)
 
         # RIGHT HAND SIDE
         frame_right = ttk.Frame(self, style="Secondary.TFrame")
@@ -288,21 +277,9 @@ class AddCoach(ttk.Frame):
         frame_left.rowconfigure(0, weight=1)
         frame_left.columnconfigure(0, weight=1)
 
-        # create background image
-        image = Image.open("../Assets/backgrounds/office01.jpg")
-        desired_width = 1200
-        ratio = image.height / image.width
-        calculated_height = int(desired_width * ratio)
-        image = image.resize((desired_width, calculated_height), Image.ANTIALIAS)
-        bg_image = ImageTk.PhotoImage(image)
-
-        # create canvas
-        canvas = tk.Canvas(frame_left)
-        canvas.grid(row=0, column=0, sticky="NSEW")
-
-        # set image in canvas
-        canvas.create_image(0, 0, image=bg_image, anchor="nw")
-        canvas.image = bg_image
+        # create image on canvas
+        create_background_image(path_of_image=f"{self.controller.pic_gallery_path}/backgrounds/office01.jpg",
+                                frame=frame_left, desired_width=1200)
 
         # RIGHT HAND SIDE
         frame_right = ttk.Frame(self, style="Secondary.TFrame")
@@ -504,21 +481,9 @@ class AddJobcenter(ttk.Frame):
         frame_left.rowconfigure(0, weight=1)
         frame_left.columnconfigure(0, weight=1)
 
-        # create background image
-        image = Image.open(f"{self.controller.pic_gallery_path}/backgrounds/office01.jpg")
-        desired_width = 1200
-        ratio = image.height / image.width
-        calculated_height = int(desired_width * ratio)
-        image = image.resize((desired_width, calculated_height), Image.ANTIALIAS)
-        bg_image = ImageTk.PhotoImage(image)
-
-        # create canvas
-        canvas = tk.Canvas(frame_left)
-        canvas.grid(row=0, column=0, sticky="NSEW")
-
-        # set image in canvas
-        canvas.create_image(0, 0, image=bg_image, anchor="nw")
-        canvas.image = bg_image
+        # create image on canvas
+        create_background_image(path_of_image=f"{self.controller.pic_gallery_path}/backgrounds/office01.jpg",
+                                frame=frame_left, desired_width=1200)
 
         # RIGHT HAND SIDE
         frame_right = ttk.Frame(self, style="Secondary.TFrame")
