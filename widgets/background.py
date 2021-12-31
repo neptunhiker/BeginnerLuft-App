@@ -3,7 +3,7 @@ from tkinter import ttk
 import tkinter as tk
 
 
-def create_background_image(path_of_image: str, frame: ttk.Frame, desired_width: int = 1800) -> None:
+def create_background_image(path_of_image: str, frame: ttk.Frame, desired_width: int = 1800) -> tk.Canvas:
     """Create and place a background image on a canvas"""
 
     # create background image
@@ -20,3 +20,5 @@ def create_background_image(path_of_image: str, frame: ttk.Frame, desired_width:
     # set image in canvas
     canvas.create_image(0, 0, image=bg_image, anchor="nw")
     canvas.image = bg_image
+
+    return canvas

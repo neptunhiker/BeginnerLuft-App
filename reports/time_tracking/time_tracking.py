@@ -128,16 +128,13 @@ class TimeReport:
         self.filtered_df['Bis'] = self.filtered_df['Bis'].apply(lambda x: x.strftime("%H:%M"))
         self.filtered_df['UE'] = self.filtered_df['UE'].apply(lambda x: int(x))
 
-
-
-    def filter_df(self, months: str) -> None:
+    def filter_df(self, months: List[int]) -> None:
 
         # filter dataframe for specific date range and update output matrix
         self._filter_df(month_selection=months)
         self._determine_date_range()
 
-
-    def _filter_df(self, month_selection: str = "all") -> None:
+    def _filter_df(self, month_selection: Union[List[int], str] = "all") -> None:
         """Filters dataframe to only include data for a specific month"""
 
         # filter dataframe for specific date range

@@ -21,6 +21,7 @@ class TimeTracking(ttk.Frame):
     def __init__(self, parent: ttk.Frame, controller: tk.Tk) -> None:
         super().__init__(parent)
         self["style"] = "Secondary.TFrame"
+        self.parent = parent
         self.controller = controller
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
@@ -32,7 +33,6 @@ class TimeTracking(ttk.Frame):
         self.training_name = tk.StringVar()
         self.training_id = tk.StringVar()
         self.training_cost_per_lesson = tk.StringVar()  # not needed but keep it as it is passed by datapicker
-        # self.avgs_coupon_id = tk.StringVar()
         self.confirmation_period_start = tk.StringVar()
         self.confirmation_period_end = tk.StringVar()
         self.file_path_time_sheet_bl = tk.StringVar()
@@ -51,8 +51,17 @@ class TimeTracking(ttk.Frame):
         frame_left.columnconfigure(0, weight=1)
         frame_left.rowconfigure(0, weight=1)
 
+        create_background_image(path_of_image=f"{self.controller.pic_gallery_path}/backgrounds/office01.jpg",
+                                frame=frame_left, desired_width=1200)
+
+        # RIGHT HAND SIDE ----------------------------------------------------
+        frame_right = ttk.Frame(self, style="Secondary.TFrame")
+        frame_right.grid(row=0, column=1, sticky="NSEW")
+        frame_right.columnconfigure(0, weight=1)
+        frame_right.rowconfigure((0), weight=1)
+
         # POSITIONING frame ----------------------------------------------------
-        pos_frame = ttk.Frame(frame_left, style="Secondary.TFrame")
+        pos_frame = ttk.Frame(frame_right, style="Secondary.TFrame")
         pos_frame.grid(row=0, sticky="NSEW")
         pos_frame.columnconfigure(0, weight=1)
         pos_frame.rowconfigure(1, weight=1)
@@ -107,115 +116,58 @@ class TimeTracking(ttk.Frame):
                                 variables=variables, sep=True)
 
         # FRAME navigation ----------------------------------------------------
-        nav_frame = ttk.Frame(frame_left, style="Secondary.TFrame")
+        nav_frame = ttk.Frame(frame_right, style="Secondary.TFrame")
         nav_frame.grid(row=2, column=0, sticky="EW", padx=10)
         nav_frame.columnconfigure(0, weight=1)
 
-        btn_img_back = BLImageButtonLabel(
+        btn_data_preview = BLImageButtonLabel(
+            parent=nav_frame,
+            func=self.enter_data_preview_screen,
+            path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/data_preview_01.png",
+            path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/data_preview_02.png",
+        )
+        btn_data_preview.grid(pady=10)
+
+        btn_back = BLImageButtonLabel(
             parent=nav_frame,
             func=self.back_button,
             path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/back_01.png",
             path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/back_02.png",
         )
-        btn_img_back.grid(pady=10)
-
-        # RIGHT HAND SIDE ----------------------------------------------------
-        frame_right = ttk.Frame(self, style="Secondary.TFrame")
-        frame_right.grid(row=0, column=1, sticky="NSEW")
-        frame_right.columnconfigure(0, weight=1)
-        frame_right.rowconfigure((0), weight=1)
-
-        # POSITIONING frame ----------------------------------------------------
-        pos_frame_right = ttk.Frame(frame_right, style="Secondary.TFrame")
-        pos_frame_right.grid(row=0, sticky="NSEW")
-        pos_frame_right.columnconfigure(0, weight=1)
-        pos_frame_right.rowconfigure((1, 3), weight=1)
-
-        # HEADER frame ----------------------------------------------------
-        header_frame = ttk.Frame(pos_frame_right, style="Secondary.TFrame")
-        header_frame.grid(row=0, sticky="EW", padx=10, pady=(50, 0))
-        header_frame.columnconfigure(0, weight=1)
-
-        # header
-        header = ttk.Label(header_frame, text="Datenvorschau", style="Secondary.Header.TLabel")
-        header.grid()
-
-        # FRAME data preview ----------------------------------------------------
-        data_preview_frame = ttk.Frame(pos_frame_right, style="Secondary.TFrame")
-        data_preview_frame.grid(sticky="EW", padx=20)
-        data_preview_frame.columnconfigure(0, weight=1)
-
-        btn_preview = BLImageButtonLabel(
-            parent=data_preview_frame,
-            func=self.create_data_preview,
-            path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/data_preview_01.png",
-            path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/data_preview_02.png",
-        )
-        btn_preview.grid(pady=(10, 20))
-
-        ttk.Separator(data_preview_frame).grid(sticky="EW")
-
-        # CONTENT frame ----------------------------------------------------
-        self.content_frame_right = ttk.Frame(pos_frame_right, style="Secondary.TFrame")
-        self.content_frame_right.grid(row=2, sticky="EW", padx=20)
-        self.content_frame_right.columnconfigure((0, 1), weight=1)
-        self.content_frame_right.rowconfigure(0, weight=1)
-
-        self.txt_preview = tk.Text(self.content_frame_right, width=70, height=20)
-        self.txt_preview.grid(row=0, column=0, padx=(10, 10))
-
-        self.scrollbar = ttk.Scrollbar(self.content_frame_right, orient="vertical", command=self.txt_preview.yview)
-        self.scrollbar.grid(row=0, column=1, sticky="nws", padx=(5, 10))
-        self.txt_preview['yscrollcommand'] = self.scrollbar.set  # communicate back to the scrollbar
-
-        ttk.Separator(self.content_frame_right).grid(sticky="EW", column=0, columnspan=2, pady=10, padx=10)
-
-        # DATA SELCTION FRAME
-        self.data_selection_frame = ttk.Frame(pos_frame_right, style="Secondary.TFrame")
-        self.data_selection_frame.grid(row=3, padx=20, pady=20, sticky="NSEW")
-        self.data_selection_frame.columnconfigure((0), weight=1)
-        self.data_selection_frame.rowconfigure((0, 1, 2, 3, 4, 5), weight=1)
-
-
-        # BUTTON FRAME
-        self.action_frame_right = ttk.Frame(frame_right, style="Secondary.TFrame")
-        self.action_frame_right.grid(row=1, column=0, sticky="NSEW")
-        self.action_frame_right.columnconfigure(0, weight=1)
-        
-        btn_go = BLImageButtonLabel(
-            parent=self.action_frame_right,
-            func=self.create_time_tracking_pdf,
-            path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/timetracking_sheet_01.png",
-            path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/timetracking_sheet_02.png",
-        )
-        btn_go.grid(pady=10)
+        btn_back.grid(pady=10)
 
         # self.pre_populate()
         self.populate_with_test_data()
 
-    def pre_populate(self) -> None:
-        """Populates the form with some data"""
+    def enter_data_preview_screen(self) -> None:
+        """
+        Navigate to the data preview screen
 
-        training_name = "Individuelles Berufscoaching"
-        self.training_name.set(training_name)
-        sql = f"SELECT * FROM Massnahmen WHERE Bezeichnung = '{training_name}'"
-        training_id = self.controller.db.select_single_query(sql)["ID"]
-        self.training_id.set(training_id)
+        - check completeness and correctness of data
 
-    def populate_with_test_data(self) -> None:
-        """Populates the form with test data"""
+        """
+        if not self.run_all_prechecks():
+            return
 
-        self.participant_title.set("Herr")
-        self.participant_first_name.set("Jimmy")
-        self.participant_last_name.set("Murt")
-        self.participant_jc_id.set("jcid123")
-        # self.avgs_coupon_id.set("lsajfd123")
-        self.training_name.set("fast ind. Coaching")
-        self.training_id.set("123321")
-        self.confirmation_period_start.set("22.01.1984")
-        self.confirmation_period_end.set("29.03.1984")
-        self.file_path_time_sheet_bl.set("../Test_data/zeiterfassung_test_bl.xlsx")
-        self.file_path_time_sheet_coach.set("../Test_data/zeiterfassung_test_coach.xlsx")
+        # Instantiate the TimeReport
+        if not self.create_time_tracking_instance():
+            return
+
+        frame = TimeTrackingMonthSelection(parent=self.parent, controller=self.controller, report=self.report,
+                                           return_screen=self)
+        frame.grid(row=0, column=0, sticky="NSEW")
+
+    def run_all_prechecks(self) -> bool:
+        """Run all pre checks needed to be completed for the creation of a time tracking pdf and/or data preview"""
+
+        # completeness check
+        if not self.completeness_check():
+            return False
+        # correctness check
+        if not self.correctness_check():
+            return False
+
+        return True
 
     def create_time_tracking_instance(self) -> bool:
         """Create an instance of the object TimeReport"""
@@ -261,87 +213,30 @@ class TimeTracking(ttk.Frame):
                                   alert=True)
             return False
 
-    def run_all_prechecks(self) -> bool:
-        """Run all pre checks needed to be completed for the creation of a time tracking pdf and/or data preview"""
 
-        # completeness check
-        if not self.completeness_check():
-            return False
-        # correctness check
-        if not self.correctness_check():
-            return False
+    def pre_populate(self) -> None:
+        """Populates the form with some data"""
 
-        return True
+        training_name = "Individuelles Berufscoaching"
+        self.training_name.set(training_name)
+        sql = f"SELECT * FROM Massnahmen WHERE Bezeichnung = '{training_name}'"
+        training_id = self.controller.db.select_single_query(sql)["ID"]
+        self.training_id.set(training_id)
 
-    def create_data_preview(self) -> None:
-        """
-        Run through all steps needed to create a pdf version for time tracking
+    def populate_with_test_data(self) -> None:
+        """Populates the form with test data"""
 
-        - Run precheks
-        - Instantiate the TimeReport object
-        - create preview window
-        """
-
-        if not self.run_all_prechecks():
-            return
-
-        # Instantiate the TimeReport
-        if not self.create_time_tracking_instance():
-            return
-
-        self.create_preview_window()
-        self.place_checkbuttons_and_labels()
-
-    def create_time_tracking_pdf(self) -> None:
-        """
-        Run through all steps needed to create a pdf version for time tracking
-
-        - Ask user where to save the file
-        - Create pdf report and save it on file
-        """
-        if not self.run_all_prechecks():
-            return
-
-        # Instantiate the TimeReport
-        # if not self.create_time_tracking_instance():
-        #     return
-
-        # Ask user where to save the file
-        today = datetime.date.today().strftime("%Y-%m-%d")
-        pre_filled_file_name = f"{today} Zeiterfassung {self.participant_first_name.get()} " \
-                               f"{self.participant_last_name.get()}.pdf"
-        path = asksaveasfilename(title="BeginnerLuft Zeiterfassung", initialdir="../Output/Zeiterfassung",
-                                 initialfile=pre_filled_file_name, filetypes=(("pdf", "*.pdf"),))
-        if path:
-            self.create_and_save_pdf_report(path)
-
-    def create_and_save_pdf_report(self, path: str) -> None:
-        """Create a pdf version of the time tracking report and save it"""
-        try:
-            self.report.create_report(path=path)
-        except Exception as err:
-            print(err)
-            msg_logging = f"Time tracking sheet could not be created."
-            self.controller.bl_logger.exception(msg_logging)
-            helpers.MessageWindow(
-                controller=self.controller,
-                message_header="Kein Zeiterfassungs-Sheet erstellt!",
-                message=f"Leider ist etwas schiefgegangen! Bitte Dateneingaben überprüfen.",
-                alert=True
-            )
-
-        else:
-            full_name = f"{self.participant_first_name.get()} {self.participant_last_name.get()}"
-            logging_msg = f"{self.controller.current_user} successfully created a time tracking report for " \
-                          f"{full_name}."
-            self.controller.bl_logger.info(logging_msg)
-            self.clear_all()
-            helpers.MessageWindow(
-                controller=self.controller,
-                message_header="Zeiterfassungs-Sheet erstellt!",
-                message=f"Ein Zeiterfassungs-Sheet für {full_name} wurde unter \n\n'{path}' \n\n erstellt.",
-                height=300
-            )
+        self.participant_title.set("Herr")
+        self.participant_first_name.set("Jimmy")
+        self.participant_last_name.set("Murt")
+        self.participant_jc_id.set("jcid123")
+        # self.avgs_coupon_id.set("lsajfd123")
+        self.training_name.set("fast ind. Coaching")
+        self.training_id.set("123321")
+        self.confirmation_period_start.set("22.01.1984")
+        self.confirmation_period_end.set("29.03.1984")
+        self.file_path_time_sheet_bl.set("../Test_data/zeiterfassung_test_bl.xlsx")
+        self.file_path_time_sheet_coach.set("../Test_data/zeiterfassung_test_coach.xlsx")
 
     def back_button(self) -> None:
         """Navigate to the dashboard"""
@@ -507,22 +402,112 @@ class TimeTracking(ttk.Frame):
 
         self.completeness_check()
 
-    def place_checkbuttons_and_labels(self) -> None:
+
+    def clear_all(self) -> None:
+        """Clears all data on the form"""
+        for label_text, item in self.labels.items():
+            if label_text in ["Nummer"]:
+                item[1].set("")
+            elif label_text in ["Datei BeginnerLuft", "Datei Coach"]:
+                item[1].set("Bitte Datei auswählen")
+            else:
+                item[1].set("Bitte auswählen")
+        self.update()
+        self.update_idletasks()
+
+
+class TimeTrackingMonthSelection(ttk.Frame):
+    """A frame that allows user to select specific months for creating a pdf for time tracking of coachings"""
+
+    def __init__(self, parent: ttk.Frame, controller: tk.Tk, report: TimeReport, return_screen: ttk.Frame) -> None:
+        super().__init__(parent)
+        self["style"] = "Secondary.TFrame"
+        self.controller = controller
+        self.return_screen = return_screen
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1)
+        self.report = report
+        self.checkbutton_list = []
+
+        # FRAME left
+        frame_left = ttk.Frame(self)
+        frame_left.grid(row=0, column=0, sticky="NSEW")
+        frame_left.rowconfigure(0, weight=1)
+        frame_left.columnconfigure(0, weight=1)
+
+        # create image on canvas
+        canvas = create_background_image(path_of_image=f"{self.controller.pic_gallery_path}/backgrounds/office01.jpg",
+                                         frame=frame_left, desired_width=1800)
+        canvas.columnconfigure(0, weight=1)
+        canvas.rowconfigure(0, weight=1)
+
+        container_frame = ttk.Frame(canvas, style="Testing.TFrame")
+        container_frame.grid(row=0, column=0)
+        container_frame.columnconfigure(0, weight=1)
+
+        # HEADER frame ----------------------------------------------------
+        header_frame = ttk.Frame(container_frame, style="Secondary.TFrame")
+        header_frame.grid(sticky="EW", padx=20, pady=20)
+        header_frame.columnconfigure(0, weight=1)
+
+        # header
+        header = ttk.Label(header_frame, text="Datenvorschau", style="Secondary.Header.TLabel")
+        header.grid()
+
+        # FRAME data preview ----------------------------------------------------
+        data_preview_frame = ttk.Frame(container_frame, style="Secondary.TFrame")
+        data_preview_frame.grid(sticky="EW", padx=20, pady=20)
+        data_preview_frame.columnconfigure(0, weight=1)
+
+        self.txt_preview = tk.Text(data_preview_frame, width=70, height=20)
+        self.txt_preview.grid(row=0, column=0)
+
+        self.scrollbar = ttk.Scrollbar(data_preview_frame, orient="vertical", command=self.txt_preview.yview)
+        self.scrollbar.grid(row=0, column=1, sticky="nws")
+        self.txt_preview['yscrollcommand'] = self.scrollbar.set  # communicate back to the scrollbar
+
+        # DATA SELECTION FRAME
+        data_selection_frame = ttk.Frame(container_frame, style="Secondary.TFrame")
+        data_selection_frame.grid(sticky="EW", padx=20, pady=20)
+        data_selection_frame.columnconfigure(0, weight=1)
+
+        # Place checkbutton and fill preview window with data
+        self.place_checkbuttons_and_labels(frame=data_selection_frame)
+        self.write_to_preview_window()
+
+
+        # BUTTON FRAME
+        self.button_frame = ttk.Frame(container_frame, style="Secondary.TFrame")
+        self.button_frame.grid(sticky="EW", padx=20, pady=20)
+        self.button_frame.columnconfigure(0, weight=1)
+
+        btn_go = BLImageButtonLabel(
+            parent=self.button_frame,
+            func=self.create_time_tracking_pdf,
+            path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/timetracking_sheet_01.png",
+            path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/timetracking_sheet_02.png",
+        )
+        btn_go.grid(pady=10)
+
+
+    def place_checkbuttons_and_labels(self, frame) -> None:
+        """Place checkbuttons on frame that allow for filtering data by months"""
 
         # label
-        lbl = ttk.Label(self.data_selection_frame, text="Datenauswahl", style="Bold.Secondary.TLabel")
+        lbl = ttk.Label(frame, text="Datenauswahl", style="Bold.Secondary.TLabel")
         lbl.grid(row=0, column=0)
 
-        self.checkbutton_list = self.create_checkbuttons(frame=self.data_selection_frame)
+        self.create_checkbuttons(frame=frame)
         for i, checkbutton in enumerate(self.checkbutton_list):
-            self.content_frame_right.grid_rowconfigure(i, weight=1)
+            frame.grid_rowconfigure(i, weight=1)
             checkbutton.grid(row=1 + i, column=0, padx=(0, 0))
             checkbutton.var.set(1)  # turns on all checkbuttons
 
-    def create_checkbuttons(self, frame: ttk.Frame) -> List[ttk.Checkbutton]:
+    def create_checkbuttons(self, frame: ttk.Frame) -> None:
+        """Create checkbuttons and add them to a list of checkbuttons"""
 
         # output / return value
-        checkbutton_list = []
+        self.checkbutton_list = []
 
         # get unique dates
         dates = self.report.df["Datum"].unique()
@@ -540,14 +525,12 @@ class TimeTracking(ttk.Frame):
         for i, date in enumerate(final_formatted_dates):
             var = tk.IntVar()
             cbtn = ttk.Checkbutton(frame, text=date, variable=var, style="TCheckbutton")
-            cbtn.bind("<ButtonRelease-1>", lambda event: self.change_preview())
+            cbtn.bind("<ButtonRelease-1>", lambda event: self.update_preview_window())
             cbtn.state(['!alternate'])  # remove alternate selected state
             cbtn.var = var  # attach variable to checkbutton
-            checkbutton_list.append(cbtn)
+            self.checkbutton_list.append(cbtn)
 
-        return checkbutton_list
-
-    def change_preview(self) -> None:
+    def update_preview_window(self) -> None:
         """Update the data preview based on selection of user for months to show"""
 
         # determine selected months
@@ -559,20 +542,12 @@ class TimeTracking(ttk.Frame):
 
         months = [int(month) for month in months]
 
-        # filter dataframe
+        # filter dataframe and update preview window
         self.report.filter_df(months=months)
+        self.write_to_preview_window()
 
-        # insert dataframe content as a preview to user into text field
-        self.txt_preview.delete("1.0", tk.END)
-
-        # insert filtered data only if filtered dataframe has data in it
-        if not self.report.filtered_df.empty:
-            df = self.report.filtered_df.copy()
-            # df = self.format_df(df)  # to be continued: does not work due to formatting to str somewhere before
-            df.set_index("Datum", inplace=True)
-            self.txt_preview.insert(tk.END, df)
-
-    def create_preview_window(self) -> None:
+    def write_to_preview_window(self) -> None:
+        """Write data into preview window"""
 
         # insert dataframe content as a preview to user into text field
         self.txt_preview.delete("1.0", tk.END)
@@ -581,38 +556,50 @@ class TimeTracking(ttk.Frame):
             df.set_index("Datum", inplace=True)
             self.txt_preview.insert(tk.END, df)
 
-    def clear_all(self) -> None:
-        """Clears all data on the form"""
-        for label_text, item in self.labels.items():
-            if label_text in ["Nummer"]:
-                item[1].set("")
-            elif label_text in ["Datei BeginnerLuft", "Datei Coach"]:
-                item[1].set("Bitte Datei auswählen")
-            else:
-                item[1].set("Bitte auswählen")
-        self.update()
-        self.update_idletasks()
+    def create_time_tracking_pdf(self) -> None:
+        """
+        Run through all steps needed to create a pdf version for time tracking
+
+        - Ask user where to save the file
+        - Create pdf report and save it on file
+        """
+
+        # Ask user where to save the file
+        today = datetime.date.today().strftime("%Y-%m-%d")
+        pre_filled_file_name = f"{today} Zeiterfassung {self.report.participant_first_name} " \
+                               f"{self.report.participant_last_name}.pdf"
+        path = asksaveasfilename(title="BeginnerLuft Zeiterfassung", initialdir="../Output/Zeiterfassung",
+                                 initialfile=pre_filled_file_name, filetypes=(("pdf", "*.pdf"),))
+        if path:
+            self.create_and_save_pdf_report(path)
+            self.controller.nav_to_dashboard()
+            # self.destroy()
+
+    def create_and_save_pdf_report(self, path: str) -> None:
+        """Create a pdf version of the time tracking report and save it"""
+        try:
+            self.report.create_report(path=path)
+        except Exception as err:
+            print(err)
+            msg_logging = f"Time tracking sheet could not be created."
+            self.controller.bl_logger.exception(msg_logging)
+            helpers.MessageWindow(
+                controller=self.controller,
+                message_header="Kein Zeiterfassungs-Sheet erstellt!",
+                message=f"Leider ist etwas schiefgegangen! Bitte Dateneingaben überprüfen.",
+                alert=True
+            )
+
+        else:
+            full_name = f"{self.report.participant_first_name} {self.report.participant_last_name}"
+            logging_msg = f"{self.controller.current_user} successfully created a time tracking report for " \
+                          f"{full_name}."
+            self.controller.bl_logger.info(logging_msg)
+            helpers.MessageWindow(
+                controller=self.controller,
+                message_header="Zeiterfassungs-Sheet erstellt!",
+                message=f"Ein Zeiterfassungs-Sheet für {full_name} wurde unter \n\n'{path}' \n\n erstellt.",
+                height=300
+            )
 
 
-
-
-class TimeTrackingMonthSelection(ttk.Frame):
-    """A frame that allows user to select specific months for creating a pdf for time tracking of coachings"""
-
-    def __init__(self, parent: ttk.Frame, controller: tk.Tk) -> None:
-        super().__init__(parent)
-        self["style"] = "Secondary.TFrame"
-        self.controller = controller
-        self.columnconfigure(0, weight=1)
-        self.columnconfigure(1, weight=1)
-        self.rowconfigure(0, weight=1)
-
-        # FRAME left
-        frame_left = ttk.Frame(self)
-        frame_left.grid(row=0, column=0, sticky="NSEW")
-        frame_left.rowconfigure(0, weight=1)
-        frame_left.columnconfigure(0, weight=1)
-
-        # create image on canvas
-        create_background_image(path_of_image=f"{self.controller.pic_gallery_path}/backgrounds/office01.jpg",
-                                frame=frame_left)
