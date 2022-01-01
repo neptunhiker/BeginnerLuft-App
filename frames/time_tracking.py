@@ -12,6 +12,7 @@ from utils import helpers
 from utils.custom_exceptions import InsufficientTimeTrackingData
 from widgets.background import create_background_image
 from widgets.buttons import BLImageButtonLabel
+from widgets.entries import BLEntryWidget
 from widgets.labels import BLBoldClickableSecondaryLabel
 
 
@@ -337,7 +338,7 @@ class TimeTrackingDataSelection(ttk.Frame):
             lbl.grid(row=starting_row + i, column=1, padx=self.pad_x, pady=self.pad_y, sticky="W")
             self.labels[item[0]] = (lbl, item[1])
 
-            ent_var = ttk.Entry(self.content_frame_left, textvariable=item[1])
+            ent_var = BLEntryWidget(self.content_frame_left, textvariable=item[1])
             item[1].set("Bitte auswählen")
             ent_var.bind("<FocusIn>", lambda event, entry_widget=ent_var: self.focus_in(entry_widget))
             ent_var.bind("<FocusOut>", lambda event, entry_widget=ent_var: self.focus_out(entry_widget))

@@ -244,6 +244,7 @@ class BeginnerLuftApp(tk.Tk):
             background=bl_colors["bg secondary"]
         )
 
+        self.style.configure("TEntry", )
         self.style.configure("Error.TEntry", foreground="red")
 
         self.style.configure(
