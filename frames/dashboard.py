@@ -5,7 +5,7 @@ from PIL import Image, ImageTk
 from design.fonts import bl_font_title, bl_font_subtitle
 from frames.database_operations.adding_data import AddParticipant, AddCoach, AddJobcenter
 from frames.invoice import Invoice
-from frames.time_tracking import TimeTracking
+from frames.time_tracking import TimeTrackingDataSelection
 from widgets.buttons import BLImageButtonCanvas
 
 
@@ -50,7 +50,7 @@ class Dashboard(ttk.Frame):
         """Create clickable buttons that lead to other frames"""
 
         picture_file_names = ["databaseoperations", "dashboard_invoice", "timetracking"]  # without exetension such as _01, _02
-        next_frames = [DatabaseOperationsDashboard, Invoice, TimeTracking]
+        next_frames = [DatabaseOperationsDashboard, Invoice, TimeTrackingDataSelection]
 
         x_start_pos = self.screen_midpoint
         y_start_pos = 300

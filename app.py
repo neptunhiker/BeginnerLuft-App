@@ -9,7 +9,7 @@ from frames.dashboard import Dashboard, DatabaseOperationsDashboard
 from frames.database_operations.adding_data import AddParticipant, AddCoach, AddJobcenter
 from frames.invoice import Invoice
 from frames.login import Login
-from frames.time_tracking import TimeTracking
+from frames.time_tracking import TimeTrackingDataSelection, TimeTrackingDataPreview
 from frames.windows import set_dpi_awareness
 from logging_bl.logs import BLLogger
 from design.colors import bl_colors
@@ -115,11 +115,17 @@ class BeginnerLuftApp(tk.Tk):
         )
         login_frame.grid(row=0, column=0, sticky="NSEW")
 
-        time_tracking_frame = TimeTracking(
+        tt_data_selection_frame = TimeTrackingDataSelection(
             parent=self.container,
             controller=self,
         )
-        time_tracking_frame.grid(row=0, column=0, sticky="NSEW")
+        tt_data_selection_frame.grid(row=0, column=0, sticky="NSEW")
+
+        tt_data_preview_frame = TimeTrackingDataPreview(
+            parent=self.container,
+            controller=self,
+        )
+        tt_data_preview_frame.grid(row=0, column=0, sticky="NSEW")
 
         # Allow for switching between frames
         self.frames = {
@@ -132,11 +138,12 @@ class BeginnerLuftApp(tk.Tk):
             DatabaseOperationsDashboard: database_operations_dashboard_frame,
             Invoice: invoice_frame,
             Login: login_frame,
-            TimeTracking: time_tracking_frame,
+            TimeTrackingDataSelection: tt_data_selection_frame,
+            TimeTrackingDataPreview: tt_data_preview_frame,
         }
 
         # starting frame
-        self.starting_frame = TimeTracking
+        self.starting_frame = TimeTrackingDataSelection
         if self.starting_frame != Login:
             self.logged_in = True  # automatic log-in for testing purposes only, remove later
 
@@ -259,7 +266,7 @@ class BeginnerLuftApp(tk.Tk):
         nav_menu.add_command(label="Dashboard", command=self.nav_to_dashboard)
         nav_menu.add_separator()
         nav_menu.add_command(label="Datenbankoperationen", command=self.nav_to_database_operations)
-        nav_menu.add_command(label="Zeiterfassung", command=lambda container=TimeTracking: self.show_frame(container))
+        nav_menu.add_command(label="Zeiterfassung", command=lambda container=TimeTrackingDataSelection: self.show_frame(container))
         nav_menu.add_command(label="Rechnungserstellung", command=lambda container=Invoice: self.show_frame(container))
         menubar.add_cascade(label="Navigation", menu=nav_menu)
 

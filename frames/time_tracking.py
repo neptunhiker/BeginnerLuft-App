@@ -15,7 +15,7 @@ from widgets.buttons import BLImageButtonLabel
 from widgets.labels import BLBoldClickableSecondaryLabel
 
 
-class TimeTracking(ttk.Frame):
+class TimeTrackingDataSelection(ttk.Frame):
     """A frame that allows user to create a pdf for time tracking of coachings"""
 
     def __init__(self, parent: ttk.Frame, controller: tk.Tk) -> None:
@@ -153,9 +153,8 @@ class TimeTracking(ttk.Frame):
         if not self.create_time_tracking_instance():
             return
 
-        frame = TimeTrackingMonthSelection(parent=self.parent, controller=self.controller, report=self.report,
-                                           return_screen=self)
-        frame.grid(row=0, column=0, sticky="NSEW")
+        self.controller.frames[TimeTrackingDataPreview].build_up_frame(report=self.report)
+        self.controller.show_frame(TimeTrackingDataPreview)
 
     def run_all_prechecks(self) -> bool:
         """Run all pre checks needed to be completed for the creation of a time tracking pdf and/or data preview"""
@@ -416,17 +415,16 @@ class TimeTracking(ttk.Frame):
         self.update_idletasks()
 
 
-class TimeTrackingMonthSelection(ttk.Frame):
+class TimeTrackingDataPreview(ttk.Frame):
     """A frame that allows user to select specific months for creating a pdf for time tracking of coachings"""
 
-    def __init__(self, parent: ttk.Frame, controller: tk.Tk, report: TimeReport, return_screen: ttk.Frame) -> None:
+    def __init__(self, parent: ttk.Frame, controller: tk.Tk) -> None:
         super().__init__(parent)
         self["style"] = "Secondary.TFrame"
         self.controller = controller
-        self.return_screen = return_screen
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
-        self.report = report
+        self.report = None
         self.checkbutton_list = []
 
         # FRAME left
@@ -436,12 +434,13 @@ class TimeTrackingMonthSelection(ttk.Frame):
         frame_left.columnconfigure(0, weight=1)
 
         # create image on canvas
-        canvas = create_background_image(path_of_image=f"{self.controller.pic_gallery_path}/backgrounds/office01.jpg",
+        canvas = create_background_image(path_of_image=f"{self.controller.pic_gallery_path}/"
+                                                       f"backgrounds/birches_bw_01.jpg",
                                          frame=frame_left, desired_width=1800)
         canvas.columnconfigure(0, weight=1)
         canvas.rowconfigure(0, weight=1)
 
-        container_frame = ttk.Frame(canvas, style="Testing.TFrame")
+        container_frame = ttk.Frame(canvas, style="Secondary.TFrame")
         container_frame.grid(row=0, column=0)
         container_frame.columnconfigure(0, weight=1)
 
@@ -467,14 +466,9 @@ class TimeTrackingMonthSelection(ttk.Frame):
         self.txt_preview['yscrollcommand'] = self.scrollbar.set  # communicate back to the scrollbar
 
         # DATA SELECTION FRAME
-        data_selection_frame = ttk.Frame(container_frame, style="Secondary.TFrame")
-        data_selection_frame.grid(sticky="EW", padx=20, pady=20)
-        data_selection_frame.columnconfigure(0, weight=1)
-
-        # Place checkbutton and fill preview window with data
-        self.place_checkbuttons_and_labels(frame=data_selection_frame)
-        self.write_to_preview_window()
-
+        self.data_selection_frame = ttk.Frame(container_frame, style="Secondary.TFrame")
+        self.data_selection_frame.grid(sticky="EW", padx=20, pady=20)
+        self.data_selection_frame.columnconfigure(0, weight=1)
 
         # BUTTON FRAME
         self.button_frame = ttk.Frame(container_frame, style="Secondary.TFrame")
@@ -489,6 +483,21 @@ class TimeTrackingMonthSelection(ttk.Frame):
         )
         btn_go.grid(pady=10)
 
+        btn_back = BLImageButtonLabel(
+            parent=self.button_frame,
+            func=self.navigate_back,
+            path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/back_01.png",
+            path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/back_02.png",
+        )
+        btn_back.grid(pady=10)
+
+    def build_up_frame(self, report: TimeReport) -> None:
+        """Pass data to the frame so that it can be built up"""
+
+        self.report = report
+        # Place checkbutton and fill preview window with data
+        self.place_checkbuttons_and_labels(frame=self.data_selection_frame)
+        self.write_to_preview_window()
 
     def place_checkbuttons_and_labels(self, frame) -> None:
         """Place checkbuttons on frame that allow for filtering data by months"""
@@ -555,6 +564,7 @@ class TimeTrackingMonthSelection(ttk.Frame):
             df = self.report.filtered_df.copy()
             df.set_index("Datum", inplace=True)
             self.txt_preview.insert(tk.END, df)
+            self.txt_preview.insert(tk.END, f"\n{' ' * 26}{str(df['UE'].sum())}")  # sum of UEs at bottom of table
 
     def create_time_tracking_pdf(self) -> None:
         """
@@ -572,8 +582,7 @@ class TimeTrackingMonthSelection(ttk.Frame):
                                  initialfile=pre_filled_file_name, filetypes=(("pdf", "*.pdf"),))
         if path:
             self.create_and_save_pdf_report(path)
-            self.controller.nav_to_dashboard()
-            # self.destroy()
+            self.navigate_back
 
     def create_and_save_pdf_report(self, path: str) -> None:
         """Create a pdf version of the time tracking report and save it"""
@@ -602,4 +611,9 @@ class TimeTrackingMonthSelection(ttk.Frame):
                 height=300
             )
 
+    def navigate_back(self) -> None:
+        """Navigate to the previous screen"""
+        self.controller.show_frame(TimeTrackingDataSelection)
+        self.update()
+        self.update_idletasks()
 
