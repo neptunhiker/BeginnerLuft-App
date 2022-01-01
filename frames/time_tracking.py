@@ -582,7 +582,7 @@ class TimeTrackingDataPreview(ttk.Frame):
                                  initialfile=pre_filled_file_name, filetypes=(("pdf", "*.pdf"),))
         if path:
             self.create_and_save_pdf_report(path)
-            self.navigate_back
+
 
     def create_and_save_pdf_report(self, path: str) -> None:
         """Create a pdf version of the time tracking report and save it"""
@@ -604,16 +604,17 @@ class TimeTrackingDataPreview(ttk.Frame):
             logging_msg = f"{self.controller.current_user} successfully created a time tracking report for " \
                           f"{full_name}."
             self.controller.bl_logger.info(logging_msg)
+            self.navigate_back(success_message=True, participant_name=full_name, path=path)
+
+    def navigate_back(self, success_message: bool = False, participant_name: str = "", path: str = "") -> None:
+        """Navigate to the previous screen"""
+        self.controller.show_frame(TimeTrackingDataSelection)
+
+        if success_message:
             helpers.MessageWindow(
                 controller=self.controller,
                 message_header="Zeiterfassungs-Sheet erstellt!",
-                message=f"Ein Zeiterfassungs-Sheet für {full_name} wurde unter \n\n'{path}' \n\n erstellt.",
+                message=f"Ein Zeiterfassungs-Sheet für {participant_name} wurde unter \n\n'{path}' \n\n erstellt.",
                 height=300
             )
-
-    def navigate_back(self) -> None:
-        """Navigate to the previous screen"""
-        self.controller.show_frame(TimeTrackingDataSelection)
-        self.update()
-        self.update_idletasks()
 
