@@ -339,9 +339,21 @@ class TimeTrackingDataSelection(ttk.Frame):
             self.labels[item[0]] = (lbl, item[1])
 
             ent_var = ttk.Entry(self.content_frame_left, textvariable=item[1])
+            ent_var.bind("<FocusIn>", lambda event, entry_widget=ent_var: self.focus_in(entry_widget))
+            ent_var.bind("<FocusOut>", lambda event, entry_widget=ent_var: self.focus_out(entry_widget))
             ent_var.grid(row=starting_row + i, column=2, pady=self.pad_y, sticky="W")
 
         return starting_row + (i + 1)
+
+    def focus_in(self, entry_widget: ttk.Entry) -> bool:
+        """Clears the text when a user enters an entry widget and it still contains a specific text"""
+        if entry_widget.get() == "Bitte auswählen":
+            entry_widget.delete("0", tk.END)
+
+    def focus_out(self, entry_widget: ttk.Entry) -> bool:
+        """Writes a specific text into an Entry widget when the user focses out and leaves it blank"""
+        if entry_widget.get() == "":
+            entry_widget.insert("0", "Bitte auswählen")
 
     def create_header_labels_labels(self, starting_row: int, header_text: str, descriptions: List[str],
                                     variables: List[tk.StringVar], header_func: Callable = None, sep=False) -> int:
