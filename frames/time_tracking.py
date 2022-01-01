@@ -401,8 +401,7 @@ class TimeTrackingDataSelection(ttk.Frame):
 
         self.completeness_check()
 
-
-    def clear_all(self) -> None:
+    def clear_all(self, pre_populate: bool = False) -> None:
         """Clears all data on the form"""
         for label_text, item in self.labels.items():
             if label_text in ["Nummer"]:
@@ -411,8 +410,9 @@ class TimeTrackingDataSelection(ttk.Frame):
                 item[1].set("Bitte Datei auswählen")
             else:
                 item[1].set("Bitte auswählen")
-        self.update()
-        self.update_idletasks()
+
+        if pre_populate:
+            self.pre_populate()
 
 
 class TimeTrackingDataPreview(ttk.Frame):
@@ -422,6 +422,7 @@ class TimeTrackingDataPreview(ttk.Frame):
         super().__init__(parent)
         self["style"] = "Secondary.TFrame"
         self.controller = controller
+        self.parent = parent
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
         self.report = None
@@ -611,6 +612,7 @@ class TimeTrackingDataPreview(ttk.Frame):
         self.controller.show_frame(TimeTrackingDataSelection)
 
         if success_message:
+            self.controller.frames[TimeTrackingDataSelection].clear_all(pre_populate=True)
             helpers.MessageWindow(
                 controller=self.controller,
                 message_header="Zeiterfassungs-Sheet erstellt!",
