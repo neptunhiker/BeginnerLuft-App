@@ -10,6 +10,7 @@ from objects.people import Participant, Coach
 from utils.helpers import DatabaseErrorWindow, MessageWindow
 from widgets.background import create_background_image
 from widgets.buttons import BLImageButtonLabel
+from widgets.entries import BLEntryWidget
 
 
 class AddParticipant(ttk.Frame):
@@ -95,22 +96,22 @@ class AddParticipant(ttk.Frame):
         self.cmb_title["state"] = "readonly"
         self.cmb_title.grid(row=0, column=1, padx=pad_x, pady=pad_y, sticky="EW")
 
-        self.ent_first_name = ttk.Entry(content_frame, textvariable=self.first_name)
+        self.ent_first_name = BLEntryWidget(content_frame, textvariable=self.first_name)
         self.ent_first_name.grid(row=1, column=1, padx=pad_x, pady=pad_y, sticky="EW")
 
-        self.ent_last_name = ttk.Entry(content_frame, textvariable=self.last_name)
+        self.ent_last_name = BLEntryWidget(content_frame, textvariable=self.last_name)
         self.ent_last_name.grid(row=2, column=1, padx=pad_x, pady=pad_y, sticky="EW")
 
-        self.ent_street_and_nr = ttk.Entry(content_frame, textvariable=self.street_and_nr)
+        self.ent_street_and_nr = BLEntryWidget(content_frame, textvariable=self.street_and_nr)
         self.ent_street_and_nr.grid(row=3, column=1, padx=pad_x, pady=pad_y, sticky="EW")
 
-        self.ent_zip = ttk.Entry(content_frame, textvariable=self.zip)
+        self.ent_zip = BLEntryWidget(content_frame, textvariable=self.zip)
         self.ent_zip.grid(row=4, column=1, padx=pad_x, pady=pad_y, sticky="EW")
 
-        self.ent_city = ttk.Entry(content_frame, textvariable=self.city)
+        self.ent_city = BLEntryWidget(content_frame, textvariable=self.city)
         self.ent_city.grid(row=5, column=1, padx=pad_x, pady=pad_y, sticky="EW")
 
-        self.ent_jc_id = ttk.Entry(content_frame, textvariable=self.jc_id)
+        self.ent_jc_id = BLEntryWidget(content_frame, textvariable=self.jc_id)
         self.ent_jc_id.grid(row=6, column=1, padx=pad_x, pady=pad_y, sticky="EW")
 
         # FRAME buttons
@@ -327,10 +328,10 @@ class AddCoach(ttk.Frame):
         self.cmb_title["state"] = "readonly"
         self.cmb_title.grid(row=0, column=1, padx=pad_x, pady=pad_y, sticky="EW")
 
-        self.ent_first_name = ttk.Entry(content_frame, textvariable=self.first_name)
+        self.ent_first_name = BLEntryWidget(content_frame, textvariable=self.first_name)
         self.ent_first_name.grid(row=1, column=1, padx=pad_x, pady=pad_y, sticky="EW")
 
-        self.ent_last_name = ttk.Entry(content_frame, textvariable=self.last_name)
+        self.ent_last_name = BLEntryWidget(content_frame, textvariable=self.last_name)
         self.ent_last_name.grid(row=2, column=1, padx=pad_x, pady=pad_y, sticky="EW")
 
         # FRAME buttons
@@ -538,22 +539,22 @@ class AddJobcenter(ttk.Frame):
 
         self.variables = [self.name, self.email, self.street, self.nr, self.zip, self.city]
 
-        self.ent_name = ttk.Entry(content_frame, textvariable=self.name)
+        self.ent_name = BLEntryWidget(content_frame, textvariable=self.name)
         self.ent_name.grid(row=0, column=1, padx=pad_x, pady=pad_y, sticky="EW")
 
-        self.ent_email = ttk.Entry(content_frame, textvariable=self.email)
+        self.ent_email = BLEntryWidget(content_frame, textvariable=self.email)
         self.ent_email.grid(row=1, column=1, padx=pad_x, pady=pad_y, sticky="EW")
 
-        self.ent_street = ttk.Entry(content_frame, textvariable=self.street)
+        self.ent_street = BLEntryWidget(content_frame, textvariable=self.street)
         self.ent_street.grid(row=2, column=1, padx=pad_x, pady=pad_y, sticky="EW")
 
-        self.ent_nr = ttk.Entry(content_frame, textvariable=self.nr)
+        self.ent_nr = BLEntryWidget(content_frame, textvariable=self.nr)
         self.ent_nr.grid(row=3, column=1, padx=pad_x, pady=pad_y, sticky="EW")
 
-        self.ent_zip = ttk.Entry(content_frame, textvariable=self.zip)
+        self.ent_zip = BLEntryWidget(content_frame, textvariable=self.zip)
         self.ent_zip.grid(row=4, column=1, padx=pad_x, pady=pad_y, sticky="EW")
 
-        self.ent_city = ttk.Entry(content_frame, textvariable=self.city)
+        self.ent_city = BLEntryWidget(content_frame, textvariable=self.city)
         self.ent_city.grid(row=5, column=1, padx=pad_x, pady=pad_y, sticky="EW")
 
         # FRAME buttons

@@ -14,6 +14,7 @@ from utils import helpers
 from utils import custom_exceptions
 from widgets.background import create_background_image
 from widgets.buttons import BLImageButtonLabel
+from widgets.entries import BLEntryWidget
 
 
 class Invoice(ttk.Frame):
@@ -70,7 +71,7 @@ class Invoice(ttk.Frame):
         lbl_texts = ["Anrede", "Vorname", "Nachname", "Kundennummer"]
         string_variables = [self.participant_title, self.participant_first_name, self.participant_last_name,
                             self.participant_jc_id]
-        next_row = self.create_widgets(
+        next_row = self.create_labels(
             frame=self.data_frame,
             title="Teilnehmer",
             label_texts=lbl_texts,
@@ -87,7 +88,7 @@ class Invoice(ttk.Frame):
         self.jc_street_nr = tk.StringVar()
         self.jc_zip_and_city = tk.StringVar()
         string_variables = [self.jc_name]
-        next_row = self.create_widgets(
+        next_row = self.create_labels(
             frame=self.data_frame,
             title="Jobcenter",
             label_texts=lbl_texts,
@@ -106,12 +107,12 @@ class Invoice(ttk.Frame):
         # training data (Maßnahme)
         sep = ttk.Separator(self.data_frame)
         sep.grid(row=next_row, column=0, columnspan=3, sticky="EW", pady=sep_pad_y)
-        lbl_texts = ["Maßnahme"]
+        lbl_texts = ["Maßnahme", "Kosten pro Unterrichtseinheit"]
         self.training_name = tk.StringVar()
         self.training_cost_per_lesson = tk.StringVar()
         self.training_id = tk.StringVar()  # not needed here but keep it as it is used by data picker
-        string_variables = [self.training_name]
-        next_row = self.create_widgets(
+        string_variables = [self.training_name, self.training_cost_per_lesson]
+        next_row = self.create_labels(
             frame=self.data_frame,
             title="Maßnahme",
             label_texts=lbl_texts,
@@ -119,11 +120,11 @@ class Invoice(ttk.Frame):
             starting_row=next_row + 1,
             func=self.pick_training_from_db,
         )
-        lbl = ttk.Label(self.data_frame, text="Kosten pro Unterrichtseinheit", style="Secondary.TLabel")
-        lbl.grid(row=next_row, column=1, sticky="W", pady=5)
-        lbl_cost = ttk.Label(self.data_frame, textvariable=self.training_cost_per_lesson, style="Secondary.TLabel")
-        lbl_cost.grid(row=next_row, column=2, sticky="W", pady=5)
-        next_row += 1
+        # lbl = ttk.Label(self.data_frame, text="Kosten pro Unterrichtseinheit", style="Secondary.TLabel")
+        # lbl.grid(row=next_row, column=1, sticky="W", pady=5)
+        # lbl_cost = ttk.Label(self.data_frame, textvariable=self.training_cost_per_lesson, style="Secondary.TLabel")
+        # lbl_cost.grid(row=next_row, column=2, sticky="W", pady=5)
+        # next_row += 1
 
         # coaching data
         sep = ttk.Separator(self.data_frame)
@@ -269,8 +270,40 @@ class Invoice(ttk.Frame):
         for lbl_text, string_variable in zip(label_texts, string_variables):
             lbl = ttk.Label(frame, text=lbl_text, style="Secondary.TLabel")
             lbl.grid(row=row_counter, column=1, sticky="W", pady=pad_y, padx=(0, 10))
-            entry = ttk.Entry(frame, textvariable=string_variable, width=25)
+            entry = BLEntryWidget(frame, textvariable=string_variable, width=25)
             entry.grid(row=row_counter, column=2, sticky="W", pady=pad_y)
+            # entry.bind("<Button-1>", lambda event, widget=entry: self.turn_entry_red(event, widget=entry))  # only works for the last entry in the loop
+            row_counter += 1
+
+        return row_counter
+
+    def create_labels(self, frame: ttk.Frame, title: str, label_texts: List[str], string_variables: List[tk.StringVar],
+                      starting_row: int = 0, func: Callable = None) -> int:
+        """Create title, label, and entry widgets"""
+
+        pad_y = 5
+
+        if func is None:
+            lbl_header = ttk.Label(
+                frame,
+                text=title,
+                style="Bold.Secondary.TLabel"
+            )
+        else:
+            lbl_header = BLBoldClickableSecondaryLabel(
+                parent=frame,
+                text=title,
+            )
+            lbl_header.bind("<Button-1>", func)
+
+        lbl_header.grid(column=0, row=starting_row, sticky="W", padx=(0, 30))
+
+        row_counter = starting_row
+        for lbl_text, string_variable in zip(label_texts, string_variables):
+            lbl = ttk.Label(frame, text=lbl_text, style="Secondary.TLabel")
+            lbl.grid(row=row_counter, column=1, sticky="W", pady=pad_y, padx=(0, 10))
+            lbl_data = ttk.Label(frame, textvariable=string_variable, style="Secondary.TLabel")
+            lbl_data.grid(row=row_counter, column=2, sticky="W", pady=pad_y)
             # entry.bind("<Button-1>", lambda event, widget=entry: self.turn_entry_red(event, widget=entry))  # only works for the last entry in the loop
             row_counter += 1
 
