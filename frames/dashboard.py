@@ -3,7 +3,7 @@ import tkinter as tk
 from PIL import Image, ImageTk
 
 from design.fonts import bl_font_title, bl_font_subtitle
-from frames.database_operations.adding_data import AddParticipant, AddCoach, AddJobcenter
+from frames.database_operations.creating_data import AddParticipant, AddCoach, AddJobcenter
 from frames.invoice import Invoice
 from frames.time_tracking import TimeTrackingDataSelection
 from widgets.background import create_background_image

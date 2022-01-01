@@ -3,10 +3,10 @@ import sqlite3
 import unittest
 
 from databases.database import Database
-import utils.helpers as helpers
 from objects import jobcenter, training
 from objects import people as people
-
+import utils.helpers as helpers
+from utils import custom_exceptions
 
 class CheckForExistingEntries(unittest.TestCase):
 
@@ -48,6 +48,15 @@ class GetFunctions(unittest.TestCase):
 
     def setUp(self) -> None:
         self.db = Database("../../Database/unittest_test_database.db")
+
+    def test_get_column_names(self) -> None:
+        output = self.db._get_column_names(table_name="Teilnehmer")
+        target_output = ["ID", "Anrede", "Vorname", "Nachname", "Strasse_und_Nr", "PLZ", "Stadt", "Kundennummer"]
+        self.assertEqual(target_output, output)
+
+        self.assertRaises(custom_exceptions.SQLInjectionWarning, self.db._get_column_names,
+                          table_name="Teilnehmer; drop Teilnehmer")
+
 
     def test_get_employees(self) -> None:
         employees = self.db.get_employees()

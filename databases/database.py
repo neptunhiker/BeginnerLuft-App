@@ -5,7 +5,7 @@ from typing import List, Type, Union
 from objects.jobcenter import Jobcenter
 from objects.people import Coach, Employee, Participant
 from objects.training import Training
-
+from utils import custom_exceptions
 
 class Database:
     """A class for establishing a connection to a data base"""
@@ -103,6 +103,21 @@ class Database:
             return False
         else:
             return True
+
+    def _get_column_names(self, table_name: str) -> List[str]:
+        """Get a list of all column names of a table in database"""
+
+        # prevent sql injection
+        if not table_name.isalnum():
+            raise custom_exceptions.SQLInjectionWarning
+
+        sql = f"SELECT * FROM {table_name}"
+        self.connect_to_database()
+        with closing(self.conn.cursor()) as cursor:
+            cursor.execute(sql)
+            column_names = [description[0] for description in cursor.description]
+
+        return column_names
 
     def get_employees(self) -> List[Employee]:
         """Return a list of all employees found in the database"""

@@ -11,3 +11,6 @@ class ReportCreationException(Exception):
 
 class InsufficientTimeTrackingData(Exception):
     pass
+
+class SQLInjectionWarning(Exception):
+    pass
