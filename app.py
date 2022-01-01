@@ -5,12 +5,12 @@ from databases.backups import Backup
 from databases.database import Database
 from frames.boilerplate import Boilerplate
 from frames.change_password import ChangePassword
-from frames.dashboard import Dashboard, DatabaseOperationsDashboard
 from frames.database_operations.adding_data import AddParticipant, AddCoach, AddJobcenter
 from frames.invoice import Invoice
 from frames.login import Login
 from frames.time_tracking import TimeTrackingDataSelection, TimeTrackingDataPreview
 from frames.windows import set_dpi_awareness
+from frames import dashboard
 from logging_bl.logs import BLLogger
 from design.colors import bl_colors
 import design.fonts as bl_fonts
@@ -90,13 +90,37 @@ class BeginnerLuftApp(tk.Tk):
         )
         change_pw_frame.grid(row=0, column=0, sticky="NSEW")
 
-        dashboard_frame = Dashboard(
+        dashboard_frame = dashboard.Dashboard(
             parent=self.container,
             controller=self,
         )
         dashboard_frame.grid(row=0, column=0, sticky="NSEW")
 
-        database_operations_dashboard_frame = DatabaseOperationsDashboard(
+        database_create_dashboard_frame = dashboard.DatabaseCreateDashboard(
+            parent=self.container,
+            controller=self,
+        )
+        database_create_dashboard_frame.grid(row=0, column=0, sticky="NSEW")
+
+        database_read_dashboard_frame = dashboard.DatabaseReadDashboard(
+            parent=self.container,
+            controller=self,
+        )
+        database_read_dashboard_frame.grid(row=0, column=0, sticky="NSEW")
+
+        database_update_dashboard_frame = dashboard.DatabaseUpdateDashboard(
+            parent=self.container,
+            controller=self,
+        )
+        database_update_dashboard_frame.grid(row=0, column=0, sticky="NSEW")
+
+        database_delete_dashboard_frame = dashboard.DatabaseDeleteDashboard(
+            parent=self.container,
+            controller=self,
+        )
+        database_delete_dashboard_frame.grid(row=0, column=0, sticky="NSEW")
+
+        database_operations_dashboard_frame = dashboard.DatabaseOperationsDashboard(
             parent=self.container,
             controller=self,
         )
@@ -111,7 +135,7 @@ class BeginnerLuftApp(tk.Tk):
         login_frame = Login(
             parent=self.container,
             controller=self,
-            next_function=lambda: self.show_frame(Dashboard)
+            next_function=lambda: self.show_frame(dashboard.Dashboard)
         )
         login_frame.grid(row=0, column=0, sticky="NSEW")
 
@@ -134,8 +158,12 @@ class BeginnerLuftApp(tk.Tk):
             AddParticipant: add_participant_frame,
             Boilerplate: boilerplate_frame,
             ChangePassword: change_pw_frame,
-            Dashboard: dashboard_frame,
-            DatabaseOperationsDashboard: database_operations_dashboard_frame,
+            dashboard.Dashboard: dashboard_frame,
+            dashboard.DatabaseCreateDashboard: database_create_dashboard_frame,
+            dashboard.DatabaseReadDashboard: database_read_dashboard_frame,
+            dashboard.DatabaseUpdateDashboard: database_update_dashboard_frame,
+            dashboard.DatabaseDeleteDashboard: database_delete_dashboard_frame,
+            dashboard.DatabaseOperationsDashboard: database_operations_dashboard_frame,
             Invoice: invoice_frame,
             Login: login_frame,
             TimeTrackingDataSelection: tt_data_selection_frame,
@@ -143,7 +171,7 @@ class BeginnerLuftApp(tk.Tk):
         }
 
         # starting frame
-        self.starting_frame = TimeTrackingDataSelection
+        self.starting_frame = Login
         if self.starting_frame != Login:
             self.logged_in = True  # automatic log-in for testing purposes only, remove later
 
@@ -157,6 +185,7 @@ class BeginnerLuftApp(tk.Tk):
             frame.tkraise()
         else:
             MessageWindow(
+                controller=self,
                 message_header="Login erforderlich",
                 message="Bitte einloggen, um die APP zu nutzen.",
                 alert=True
@@ -166,10 +195,10 @@ class BeginnerLuftApp(tk.Tk):
         self.show_frame(Login)
 
     def nav_to_dashboard(self):
-        self.show_frame(Dashboard)
+        self.show_frame(dashboard.Dashboard)
 
     def nav_to_database_operations(self):
-        self.show_frame(DatabaseOperationsDashboard)
+        self.show_frame(dashboard.DatabaseOperationsDashboard)
         
     def nav_to_password_change(self):
         self.frames[ChangePassword].refresh()

@@ -203,6 +203,7 @@ class MessageWindow(tk.Toplevel):
         """
         Pops up a window with a header and a message
 
+        controller -- the root application
         message_header -- The header displayed at the top of the window
         message -- The message displayed underneath the header
         width -- The widht of the window (default 600)

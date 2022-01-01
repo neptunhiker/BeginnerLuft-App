@@ -5,6 +5,7 @@ import tkinter as tk
 import tkinter.messagebox
 from typing import Type, Union
 
+from frames import dashboard
 from objects.jobcenter import Jobcenter
 from objects.people import Participant, Coach
 from utils.helpers import DatabaseErrorWindow, MessageWindow
@@ -126,7 +127,8 @@ class AddParticipant(ttk.Frame):
         btn.grid()
 
         # back button
-        btn = BLImageButtonLabel(parent=buttons_frame, func=self.controller.nav_to_database_operations,
+        btn = BLImageButtonLabel(parent=buttons_frame,
+                                 func=lambda: self.controller.show_frame(dashboard.DatabaseCreateDashboard),
                                  path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/back_01.png",
                                  path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/back_02.png")
         btn.grid(pady=(20, 10))
@@ -346,7 +348,8 @@ class AddCoach(ttk.Frame):
         btn.grid()
 
         # back button
-        btn = BLImageButtonLabel(parent=buttons_frame, func=self.controller.nav_to_database_operations,
+        btn = BLImageButtonLabel(parent=buttons_frame,
+                                 func=lambda: self.controller.show_frame(dashboard.DatabaseCreateDashboard),
                                  path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/back_01.png",
                                  path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/back_02.png")
         btn.grid(pady=(20, 10))
@@ -569,7 +572,8 @@ class AddJobcenter(ttk.Frame):
         btn.grid()
 
         # back button
-        btn = BLImageButtonLabel(parent=buttons_frame, func=self.controller.nav_to_database_operations,
+        btn = BLImageButtonLabel(parent=buttons_frame,
+                                 func=lambda: self.controller.show_frame(dashboard.DatabaseCreateDashboard),
                                  path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/back_01.png",
                                  path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/back_02.png")
         btn.grid(pady=(20, 10))
