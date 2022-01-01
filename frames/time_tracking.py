@@ -136,8 +136,8 @@ class TimeTrackingDataSelection(ttk.Frame):
         )
         btn_back.grid(pady=10)
 
-        # self.pre_populate()
-        self.populate_with_test_data()
+        self.pre_populate()
+        # self.populate_with_test_data()
 
     def enter_data_preview_screen(self) -> None:
         """
@@ -211,7 +211,6 @@ class TimeTrackingDataSelection(ttk.Frame):
                                   height=300,
                                   alert=True)
             return False
-
 
     def pre_populate(self) -> None:
         """Populates the form with some data"""
@@ -339,6 +338,7 @@ class TimeTrackingDataSelection(ttk.Frame):
             self.labels[item[0]] = (lbl, item[1])
 
             ent_var = ttk.Entry(self.content_frame_left, textvariable=item[1])
+            item[1].set("Bitte auswählen")
             ent_var.bind("<FocusIn>", lambda event, entry_widget=ent_var: self.focus_in(entry_widget))
             ent_var.bind("<FocusOut>", lambda event, entry_widget=ent_var: self.focus_out(entry_widget))
             ent_var.grid(row=starting_row + i, column=2, pady=self.pad_y, sticky="W")
