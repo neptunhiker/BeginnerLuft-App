@@ -10,6 +10,9 @@ class Jobcenter:
         self.email = email
         self.data_base_id = data_base_id
 
+    def __str__(self):
+        return f"{self.name} {self.street} {self.street_nr} {self.zip_code} {self.city} E-Mail: {self.email}"
+
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.name!r}, {self.street!r}, {self.street_nr!r}, {self.zip_code!r}, " \
                f"{self.city!r}, {self.email}, {self.data_base_id})"

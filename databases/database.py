@@ -7,6 +7,7 @@ from objects.people import Coach, Employee, Participant
 from objects.training import Training
 from utils import custom_exceptions
 
+
 class Database:
     """A class for establishing a connection to a data base"""
 
@@ -119,6 +120,21 @@ class Database:
 
         return column_names
 
+    def get_coaches(self) -> List[Coach]:
+        """Return a list of all coaches found in the database"""
+
+        sql = "SELECT * FROM Coaches"
+        self.connect_to_database()
+        with closing(self.conn.cursor()) as cursor:
+            cursor.execute(sql)
+            results = cursor.fetchall()
+
+        coaches = []
+        for the_row in results:
+            coaches.append(self.create_coach(sqlite3_row=the_row))
+
+        return coaches
+
     def get_employees(self) -> List[Employee]:
         """Return a list of all employees found in the database"""
 
@@ -187,7 +203,6 @@ class Database:
             cursor.execute(query)
             return cursor.fetchall()
 
-
     def select_single_query(self, query: str, arguments: Union[None, list] = None) -> sqlite3.Row:
         """Executes a select statement and returns the first result of the table row"""
 
@@ -224,6 +239,16 @@ class Database:
             self.conn.commit()
         print(f"Password for user with the ID {user_id} successfully updated.")
         return True
+
+    @staticmethod
+    def create_coach(sqlite3_row: sqlite3.Row) -> Coach:
+        """Create an Participant object from an sqlite3.Row"""
+
+        return Coach(title=sqlite3_row["Anrede"],
+                     first_name=sqlite3_row["Vorname"],
+                     last_name=sqlite3_row["Nachname"],
+                     data_base_id=sqlite3_row["ID"],
+                     )
 
     @staticmethod
     def create_employee(sqlite3_row: sqlite3.Row) -> Employee:

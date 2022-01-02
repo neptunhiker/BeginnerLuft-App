@@ -74,6 +74,10 @@ class Participant(Human):
         return cls(title=title, first_name=first_name, last_name=last_name, street_and_nr=street_and_nr,
                    zip_code=zip_code, city=city, client_id_with_jc=id_with_jc)
 
+    def __str__(self):
+        return f"{self.title} {self.first_name} {self.last_name} {self.street_and_nr} {self.zip_code} {self.city} " \
+               f"Kundennummer: {self.id_with_jc}"
+
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.title}, {self.first_name}, {self.last_name}, {self.street_and_nr}, " \
                f"{self.zip_code}, {self.city}, {self.id_with_jc}, {self.data_base_id})"
@@ -90,6 +94,9 @@ class Coach(Human):
         """Factory method for creating a test coach"""
         title, first_name, last_name = NameCreator.create_name()
         return cls(title, first_name, last_name)
+
+    def __str__(self):
+        return f"{self.title} {self.first_name} {self.last_name}"
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.title}, {self.first_name}, {self.last_name}, {self.data_base_id})"

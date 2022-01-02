@@ -9,7 +9,7 @@ from typing import Callable, List
 from objects.data_picker import PickParticipant, PickTraining
 from reports.time_tracking.time_tracking import TimeReport
 from utils import helpers
-from utils.custom_exceptions import InsufficientTimeTrackingData
+from utils.custom_exceptions import InsufficientTimeTrackingData, DateFormatException
 from widgets.background import create_background_image
 from widgets.buttons import BLImageButtonLabel
 from widgets.entries import BLEntryWidget
@@ -355,6 +355,14 @@ class TimeTrackingDataSelection(ttk.Frame):
         """Writes a specific text into an Entry widget when the user focses out and leaves it blank"""
         if entry_widget.get() == "":
             entry_widget.insert("0", "Bitte auswählen")
+            entry_widget.configure(style="TEntry")
+        else:
+            try:
+                helpers.parse_date_from_string(entry_widget.get())
+            except DateFormatException:
+                entry_widget.configure(style="Error.TEntry")
+            else:
+                entry_widget.configure(style="TEntry")
 
     def create_header_labels_labels(self, starting_row: int, header_text: str, descriptions: List[str],
                                     variables: List[tk.StringVar], header_func: Callable = None, sep=False) -> int:

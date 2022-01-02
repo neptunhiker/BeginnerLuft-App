@@ -4,7 +4,7 @@ from PIL import Image, ImageTk
 
 from design.fonts import bl_font_title, bl_font_subtitle
 from frames.database_operations.creating_data import AddParticipant, AddCoach, AddJobcenter
-from frames.database_operations.reading_data import ReadParticipant
+from frames.database_operations.reading_data import ReadParticipants, ReadCoaches, ReadJobcenter
 from frames.invoice import Invoice
 from frames.time_tracking import TimeTrackingDataSelection
 from widgets.background import create_background_image
@@ -210,9 +210,9 @@ class DatabaseReadDashboard(ttk.Frame):
     def create_buttons(self) -> None:
         """Create clickable buttons that lead to other frames"""
 
-        picture_file_names = ["participants", "coaches", "jobcenter", "trainings",
+        picture_file_names = ["participants", "coaches", "jobcenter",
                               "back"]  # without exetension such as _01, _02
-        next_frames = [ReadParticipant, DatabaseReadDashboard, DatabaseReadDashboard, DatabaseReadDashboard,
+        next_frames = [ReadParticipants, ReadCoaches, ReadJobcenter,
                        DatabaseOperationsDashboard]
 
         x_start_pos = self.screen_midpoint

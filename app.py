@@ -6,7 +6,7 @@ from databases.database import Database
 from frames.boilerplate import Boilerplate
 from frames.change_password import ChangePassword
 from frames.database_operations.creating_data import AddParticipant, AddCoach, AddJobcenter
-from frames.database_operations.reading_data import ReadParticipant
+from frames.database_operations.reading_data import ReadParticipants, ReadCoaches, ReadJobcenter
 from frames.invoice import Invoice
 from frames.login import Login
 from frames.time_tracking import TimeTrackingDataSelection, TimeTrackingDataPreview
@@ -140,11 +140,24 @@ class BeginnerLuftApp(tk.Tk):
         )
         login_frame.grid(row=0, column=0, sticky="NSEW")
 
-        read_participant_frame = ReadParticipant(
+        read_coaches_frame = ReadCoaches(
+            parent=self.container,
+            controller=self,
+        )
+        read_coaches_frame.grid(row=0, column=0, sticky="NSEW")
+
+        read_jobcenter_frame = ReadJobcenter(
+            parent=self.container,
+            controller=self,
+        )
+        read_jobcenter_frame.grid(row=0, column=0, sticky="NSEW")
+
+        read_participant_frame = ReadParticipants(
             parent=self.container,
             controller=self,
         )
         read_participant_frame.grid(row=0, column=0, sticky="NSEW")
+
 
         tt_data_selection_frame = TimeTrackingDataSelection(
             parent=self.container,
@@ -173,13 +186,15 @@ class BeginnerLuftApp(tk.Tk):
             dashboard.DatabaseOperationsDashboard: database_operations_dashboard_frame,
             Invoice: invoice_frame,
             Login: login_frame,
-            ReadParticipant: read_participant_frame,
+            ReadCoaches: read_coaches_frame,
+            ReadJobcenter: read_jobcenter_frame,
+            ReadParticipants: read_participant_frame,
             TimeTrackingDataSelection: tt_data_selection_frame,
             TimeTrackingDataPreview: tt_data_preview_frame,
         }
 
         # starting frame
-        self.starting_frame = dashboard.DatabaseReadDashboard
+        self.starting_frame = Login
         if self.starting_frame != Login:
             self.logged_in = True  # automatic log-in for testing purposes only, remove later
 
