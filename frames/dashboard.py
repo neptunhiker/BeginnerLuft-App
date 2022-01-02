@@ -4,6 +4,7 @@ from PIL import Image, ImageTk
 
 from design.fonts import bl_font_title, bl_font_subtitle
 from frames.database_operations.creating_data import AddParticipant, AddCoach, AddJobcenter
+from frames.database_operations.reading_data import ReadParticipant
 from frames.invoice import Invoice
 from frames.time_tracking import TimeTrackingDataSelection
 from widgets.background import create_background_image
@@ -211,7 +212,7 @@ class DatabaseReadDashboard(ttk.Frame):
 
         picture_file_names = ["participants", "coaches", "jobcenter", "trainings",
                               "back"]  # without exetension such as _01, _02
-        next_frames = [DatabaseReadDashboard, DatabaseReadDashboard, DatabaseReadDashboard, DatabaseReadDashboard,
+        next_frames = [ReadParticipant, DatabaseReadDashboard, DatabaseReadDashboard, DatabaseReadDashboard,
                        DatabaseOperationsDashboard]
 
         x_start_pos = self.screen_midpoint

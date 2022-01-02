@@ -50,11 +50,11 @@ class GetFunctions(unittest.TestCase):
         self.db = Database("../../Database/unittest_test_database.db")
 
     def test_get_column_names(self) -> None:
-        output = self.db._get_column_names(table_name="Teilnehmer")
+        output = self.db.get_column_names(table_name="Teilnehmer")
         target_output = ["ID", "Anrede", "Vorname", "Nachname", "Strasse_und_Nr", "PLZ", "Stadt", "Kundennummer"]
         self.assertEqual(target_output, output)
 
-        self.assertRaises(custom_exceptions.SQLInjectionWarning, self.db._get_column_names,
+        self.assertRaises(custom_exceptions.SQLInjectionWarning, self.db.get_column_names,
                           table_name="Teilnehmer; drop Teilnehmer")
 
 

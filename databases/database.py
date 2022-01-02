@@ -104,7 +104,7 @@ class Database:
         else:
             return True
 
-    def _get_column_names(self, table_name: str) -> List[str]:
+    def get_column_names(self, table_name: str) -> List[str]:
         """Get a list of all column names of a table in database"""
 
         # prevent sql injection
@@ -178,6 +178,15 @@ class Database:
             trainings.append(self.create_training(sqlite3_row=row))
 
         return trainings
+
+    def select_multiple_query(self, query: str) -> List[sqlite3.Row]:
+        """Executes a select statement and returns all result rows of the table."""
+
+        self.connect_to_database()
+        with closing(self.conn.cursor()) as cursor:
+            cursor.execute(query)
+            return cursor.fetchall()
+
 
     def select_single_query(self, query: str, arguments: Union[None, list] = None) -> sqlite3.Row:
         """Executes a select statement and returns the first result of the table row"""

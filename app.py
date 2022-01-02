@@ -179,7 +179,7 @@ class BeginnerLuftApp(tk.Tk):
         }
 
         # starting frame
-        self.starting_frame = ReadParticipant
+        self.starting_frame = dashboard.DatabaseReadDashboard
         if self.starting_frame != Login:
             self.logged_in = True  # automatic log-in for testing purposes only, remove later
 
@@ -189,6 +189,11 @@ class BeginnerLuftApp(tk.Tk):
 
     def show_frame(self, container):
         if self.logged_in or container == Login:
+            # run a refresh method of the frame if it has one
+            method = getattr(container, "refresh", None)
+            if callable(method):
+                self.frames[container].refresh()
+
             frame = self.frames[container]
             frame.tkraise()
         else:
@@ -234,11 +239,7 @@ class BeginnerLuftApp(tk.Tk):
                              foreground="red")
         self.style.configure("Clickable.Secondary.TLabel", foreground=bl_colors["fg blue"])
         self.style.configure("Bold.Clickable.Secondary.TLabel", font=bl_fonts.bl_font_bold)
-        self.style.configure(
-            "Testing.TLabel",
-            background=bl_colors["bg testing"],
-            foreground=bl_colors["fg testing"],
-        )
+        self.style.configure("Testing.TLabel", background=bl_colors["bg testing"], foreground=bl_colors["fg testing"])
 
         self.style.configure(
             "TFrame",
