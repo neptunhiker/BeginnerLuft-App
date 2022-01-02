@@ -80,7 +80,7 @@ class ReadParticipant(ttk.Frame):
         nav_frame.grid(pady=30)
 
         btn = BLImageButtonLabel(parent=nav_frame,
-                                 func=lambda: self.controller.show_frame(dashboard.DatabaseCreateDashboard),
+                                 func=lambda: self.controller.show_frame(dashboard.DatabaseReadDashboard),
                                  path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/back_01.png",
                                  path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/back_02.png")
         btn.grid()
