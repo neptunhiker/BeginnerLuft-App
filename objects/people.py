@@ -51,13 +51,16 @@ class Participant(Human):
 
     def __init__(self, title: str, first_name: str, last_name: str, street_and_nr: str = None,
                  zip_code: Union[None, str] = None, city: Union[None, str] = None,
-                 client_id_with_jc: Union[None, str] = None, data_base_id: Union[None, str] = None) -> None:
+                 client_id_with_jc: Union[None, str] = None, country_of_origin: str = None,
+                 driving_license: Union[None, bool] = None, data_base_id: Union[None, str] = None) -> None:
         super().__init__(title=title, first_name=first_name, last_name=last_name)
         self.street_and_nr = street_and_nr
         self.zip_code = zip_code
         self.city = city
         self.avgs_coupons = {}
         self.id_with_jc = client_id_with_jc
+        self.country_of_origin = country_of_origin
+        self.driving_license = driving_license
         self.data_base_id = data_base_id
 
     @classmethod
