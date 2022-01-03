@@ -77,12 +77,16 @@ class ReadParticipants(ttk.Frame):
         self.participant_street_and_nr = tk.StringVar()
         self.participant_zip_code = tk.StringVar()
         self.participant_city = tk.StringVar()
+        self.participant_country_of_origin = tk.StringVar()
+        self.participant_driving_license = tk.StringVar()
         self.participant_id_with_jc = tk.StringVar()
 
         self.variables = [self.participant_title, self.participant_first_name, self.participant_last_name,
                           self.participant_street_and_nr, self.participant_zip_code, self.participant_city,
+                          self.participant_country_of_origin, self.participant_driving_license,
                           self.participant_id_with_jc]
-        lbl_headers = ["Anrede", "Vorname", "Nachname", "Straße und Nr", "PLZ", "Stadt", "Kundennummer"]
+        lbl_headers = ["Anrede", "Vorname", "Nachname", "Straße und Nr", "PLZ", "Stadt", "Herkunftsland",
+                       "Führerschein", "Kundennummer"]
         for i, item in enumerate(zip(lbl_headers, self.variables)):
             lbl_header = item[0]
             variable = item[1]
@@ -134,6 +138,8 @@ class ReadParticipants(ttk.Frame):
         self.participant_street_and_nr.set(self.selected_participant.street_and_nr)
         self.participant_zip_code.set(self.selected_participant.zip_code)
         self.participant_city.set(self.selected_participant.city)
+        self.participant_country_of_origin.set(self.selected_participant.country_of_origin)
+        self.participant_driving_license.set(self.selected_participant.driving_license)
         self.participant_id_with_jc.set(self.selected_participant.id_with_jc)
 
     def loop_through(self, direction: str = "next") -> None:

@@ -51,13 +51,15 @@ class Database:
     def add_participant(self, participant: Participant) -> None:
         """Insert participant data into the data base"""
 
-        sql = "INSERT INTO Teilnehmer (Anrede, Vorname, Nachname, Strasse_und_Nr, PLZ, Stadt, Kundennummer ) " \
-              "VALUES (?, ?, ?, ?, ?, ?, ?)"
+        sql = "INSERT INTO Teilnehmer (Anrede, Vorname, Nachname, Strasse_und_Nr, PLZ, Stadt, Herkunftsland," \
+              "Führerschein, Kundennummer ) " \
+              "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
         self.connect_to_database()
         with closing(self.conn.cursor()) as cursor:
             cursor.execute(sql, (participant.title, participant.first_name, participant.last_name,
                                  participant.street_and_nr, participant.zip_code, participant.city,
+                                 participant.country_of_origin, participant.driving_license,
                                  participant.id_with_jc))
             self.conn.commit()
 
@@ -283,6 +285,8 @@ class Database:
                            zip_code=sqlite3_row["PLZ"],
                            city=sqlite3_row["Stadt"],
                            client_id_with_jc=sqlite3_row["Kundennummer"],
+                           country_of_origin=sqlite3_row["Herkunftsland"],
+                           driving_license=sqlite3_row["Führerschein"],
                            data_base_id=sqlite3_row["ID"]
                            )
 
