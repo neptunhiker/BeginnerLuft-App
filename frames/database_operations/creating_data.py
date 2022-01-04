@@ -120,8 +120,12 @@ class AddParticipant(ttk.Frame):
         self.ent_city = BLEntryWidget(content_frame, textvariable=self.city)
         self.ent_city.grid(row=5, column=1, padx=pad_x, pady=pad_y, sticky="EW")
 
-        self.ent_country_of_origin = BLEntryWidget(content_frame, textvariable=self.country_of_origin)
-        self.ent_country_of_origin.grid(row=6, column=1, padx=pad_x, pady=pad_y, sticky="EW")
+        self.cmb_country_of_origin = ttk.Combobox(content_frame, textvariable=self.country_of_origin)
+        country_list = ['Afghanistan', 'Aserbaidschan', 'Brasilien', 'Eritrea', 'Irak', 'Iran', 'Kamerun', 'Nigeria',
+                        'Palästina', 'Somalia', 'Syrien', 'Türkei', 'Ukrain', 'Yemen']
+        country_list = sorted(country_list)
+        self.cmb_country_of_origin["values"] = country_list
+        self.cmb_country_of_origin.grid(row=6, column=1, padx=pad_x, pady=pad_y, sticky="EW")
 
         self.ent_driving_license = BLEntryWidget(content_frame, textvariable=self.driving_license)
         self.ent_driving_license.grid(row=7, column=1, padx=pad_x, pady=pad_y, sticky="EW")

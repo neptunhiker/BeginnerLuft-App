@@ -194,7 +194,7 @@ class BeginnerLuftApp(tk.Tk):
         }
 
         # starting frame
-        self.starting_frame = Login
+        self.starting_frame = dashboard.DatabaseCreateDashboard
         if self.starting_frame != Login:
             self.logged_in = True  # automatic log-in for testing purposes only, remove later
 
