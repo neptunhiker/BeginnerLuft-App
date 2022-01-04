@@ -11,6 +11,7 @@ import tkinter as tk
 from tkinter import ttk
 
 from utils.custom_exceptions import DateFormatException
+from widgets.buttons import BLImageButtonLabel
 
 
 def check_if_file_exists(path_to_file: str) -> bool:
@@ -198,7 +199,7 @@ class NewWindow(tk.Toplevel):
 class MessageWindow(tk.Toplevel):
     """A separate message window"""
 
-    def __init__(self, controller: tk.Tk, message_header: str, message: str, width: int = 600, height: int = 200,
+    def __init__(self, controller: tk.Tk, message_header: str, message: str, width: int = 600, height: int = 300,
                  alert: bool = False) -> None:
         """
         Pops up a window with a header and a message
@@ -252,6 +253,14 @@ class MessageWindow(tk.Toplevel):
         # message
         lbl_message = ttk.Label(frame_right, text=message, style="Secondary.TLabel", wraplength=180, anchor="center")
         lbl_message.grid()
+
+        btn_ok = BLImageButtonLabel(
+            parent=frame_right,
+            func=self.destroy,
+            path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/ok_01.png",
+            path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/ok_02.png",
+        )
+        btn_ok.grid(pady=10)
 
         self.mainloop()
 
