@@ -77,11 +77,20 @@ class AddParticipant(ttk.Frame):
         self.lbl_city = ttk.Label(content_frame, text="Ort", style="Secondary.TLabel")
         self.lbl_city.grid(column=0, sticky="W", padx=pad_x, pady=pad_y)
 
+        self.lbl_email = ttk.Label(content_frame, text="E-Mail", style="Secondary.TLabel")
+        self.lbl_email.grid(column=0, sticky="W", padx=pad_x, pady=pad_y)
+
+        self.lbl_cell_phone_nr = ttk.Label(content_frame, text="Handynummer", style="Secondary.TLabel")
+        self.lbl_cell_phone_nr.grid(column=0, sticky="W", padx=pad_x, pady=pad_y)
+
         self.lbl_country_of_origin= ttk.Label(content_frame, text="Herkunftsland", style="Secondary.TLabel")
         self.lbl_country_of_origin.grid(column=0, sticky="W", padx=pad_x, pady=pad_y)
 
         self.lbl_driving_license = ttk.Label(content_frame, text="Führerschein", style="Secondary.TLabel")
         self.lbl_driving_license.grid(column=0, sticky="W", padx=pad_x, pady=pad_y)
+
+        self.lbl_residency_status = ttk.Label(content_frame, text="Aufenthaltsstatus", style="Secondary.TLabel")
+        self.lbl_residency_status.grid(column=0, sticky="W", padx=pad_x, pady=pad_y)
 
         self.lbl_jc_id = ttk.Label(content_frame, text="Kundennummer (Jobcenter)*", style="Secondary.TLabel")
         self.lbl_jc_id.grid(column=0, sticky="W", padx=pad_x, pady=pad_y)
@@ -93,12 +102,16 @@ class AddParticipant(ttk.Frame):
         self.street_and_nr = tk.StringVar()
         self.zip = tk.StringVar()
         self.city = tk.StringVar()
+        self.email = tk.StringVar()
+        self.cell_phone_nr = tk.StringVar()
         self.country_of_origin = tk.StringVar()
         self.driving_license = tk.StringVar()
+        self.residency_status = tk.StringVar()
         self.jc_id = tk.StringVar()
 
         self.variables = [self.title, self.first_name, self.last_name, self.street_and_nr, self.zip,
-                          self.city, self.country_of_origin, self.driving_license, self.jc_id]
+                          self.city, self.email, self.cell_phone_nr,
+                          self.country_of_origin, self.driving_license, self.residency_status, self.jc_id]
 
         self.cmb_title = ttk.Combobox(content_frame, textvariable=self.title)
         self.cmb_title["values"] = ["Frau", "Herr"]
@@ -120,18 +133,32 @@ class AddParticipant(ttk.Frame):
         self.ent_city = BLEntryWidget(content_frame, textvariable=self.city)
         self.ent_city.grid(row=5, column=1, padx=pad_x, pady=pad_y, sticky="EW")
 
+        self.ent_email = BLEntryWidget(content_frame, textvariable=self.email)
+        self.ent_email.grid(row=6, column=1, padx=pad_x, pady=pad_y, sticky="EW")
+
+        self.ent_cell_phone_nr = BLEntryWidget(content_frame, textvariable=self.cell_phone_nr)
+        self.ent_cell_phone_nr.grid(row=7, column=1, padx=pad_x, pady=pad_y, sticky="EW")
+
         self.cmb_country_of_origin = ttk.Combobox(content_frame, textvariable=self.country_of_origin)
         country_list = ['Afghanistan', 'Aserbaidschan', 'Brasilien', 'Eritrea', 'Irak', 'Iran', 'Kamerun', 'Nigeria',
                         'Palästina', 'Somalia', 'Syrien', 'Türkei', 'Ukrain', 'Yemen']
         country_list = sorted(country_list)
         self.cmb_country_of_origin["values"] = country_list
-        self.cmb_country_of_origin.grid(row=6, column=1, padx=pad_x, pady=pad_y, sticky="EW")
+        self.cmb_country_of_origin.grid(row=8, column=1, padx=pad_x, pady=pad_y, sticky="EW")
 
-        self.ent_driving_license = BLEntryWidget(content_frame, textvariable=self.driving_license)
-        self.ent_driving_license.grid(row=7, column=1, padx=pad_x, pady=pad_y, sticky="EW")
+        self.cmb_driving_license = ttk.Combobox(content_frame, textvariable=self.driving_license, state="readonly")
+        self.cmb_driving_license["values"] = ["ja", "nein"]
+        self.cmb_driving_license.grid(row=9, column=1, padx=pad_x, pady=pad_y, sticky="EW")
+
+        self.cmb_residency_status = ttk.Combobox(content_frame, textvariable=self.residency_status)
+        sql = "SELECT * FROM Aufenthaltsstati"
+        result = self.controller.db.select_multiple_query(sql)
+        statuses = [row["Aufenthaltsstatus"] for row in result]
+        self.cmb_residency_status["values"] = statuses
+        self.cmb_residency_status.grid(row=10, column=1, padx=pad_x, pady=pad_y, sticky="EW")
 
         self.ent_jc_id = BLEntryWidget(content_frame, textvariable=self.jc_id)
-        self.ent_jc_id.grid(row=8, column=1, padx=pad_x, pady=pad_y, sticky="EW")
+        self.ent_jc_id.grid(row=11, column=1, padx=pad_x, pady=pad_y, sticky="EW")
 
         # FRAME buttons
         buttons_frame = ttk.Frame(pos_frame, style="Secondary.TFrame")
@@ -170,7 +197,8 @@ class AddParticipant(ttk.Frame):
         if self.controller.db.check_for_participant_jc_id(jobcenter_id=self.jc_id.get()):
             msg = f"Es existiert bereits ein Eintrag mit der Kundennummer {self.jc_id.get()} in der Datenbank." \
                   f" Ein erneuter Eintrag wurde nicht vorgenommen."
-            MessageWindow(message_header="Dateinbankeintrag bereits vorhanden", message=msg, alert=True)
+            MessageWindow(controller=self.controller,message_header= "Dateinbankeintrag bereits vorhanden",
+                          message=msg, alert=True)
             return
 
         # write to data base
@@ -255,6 +283,9 @@ class AddParticipant(ttk.Frame):
             city=self.city.get(),
             country_of_origin=self.country_of_origin.get(),
             driving_license=self.driving_license.get(),
+            email=self.email.get(),
+            cell_phone_nr=self.cell_phone_nr.get(),
+            residency_status=self.residency_status.get(),
             client_id_with_jc=self.jc_id.get(),
         )
 
@@ -264,7 +295,7 @@ class AddParticipant(ttk.Frame):
                                            f"{participant.last_name} to the data base.")
         except sqlite3.OperationalError as err:
             print(err)
-            DatabaseErrorWindow()
+            DatabaseErrorWindow(self.controller)
             return False
         else:
             return True
@@ -469,7 +500,7 @@ class AddCoach(ttk.Frame):
                                            f"{coach.last_name} to the data base.")
         except sqlite3.OperationalError as err:
             print(err)
-            DatabaseErrorWindow()
+            DatabaseErrorWindow(self.controller)
             return False
         else:
             return True
@@ -702,7 +733,7 @@ class AddJobcenter(ttk.Frame):
                                            f"to the data base.")
         except sqlite3.OperationalError as err:
             print(err)
-            DatabaseErrorWindow()
+            DatabaseErrorWindow(self.controller)
             return False
         else:
             return True

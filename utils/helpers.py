@@ -259,8 +259,9 @@ class MessageWindow(tk.Toplevel):
 class DatabaseErrorWindow(MessageWindow):
     """Pops up a data base error window"""
 
-    def __init__(self) -> None:
-        super(DatabaseErrorWindow, self).__init__(message_header="Datenbankfehler",
+    def __init__(self, controller: tk.Tk) -> None:
+        super(DatabaseErrorWindow, self).__init__(controller=controller,
+                                                  message_header="Datenbankfehler",
                                                   message="Auf die Datenbank kann nicht zugegriffen werden.",
                                                   alert=True)
 
