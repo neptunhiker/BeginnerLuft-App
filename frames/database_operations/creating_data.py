@@ -92,6 +92,12 @@ class AddParticipant(ttk.Frame):
         self.lbl_residency_status = ttk.Label(content_frame, text="Aufenthaltsstatus", style="Secondary.TLabel")
         self.lbl_residency_status.grid(column=0, sticky="W", padx=pad_x, pady=pad_y)
 
+        self.lbl_mother_tongue = ttk.Label(content_frame, text="Muttersprache", style="Secondary.TLabel")
+        self.lbl_mother_tongue.grid(column=0, sticky="W", padx=pad_x, pady=pad_y)
+
+        self.lbl_school_degree_germany = ttk.Label(content_frame, text="Schulabschluss aus Deutschland", style="Secondary.TLabel")
+        self.lbl_school_degree_germany.grid(column=0, sticky="W", padx=pad_x, pady=pad_y)
+
         self.lbl_jc_id = ttk.Label(content_frame, text="Kundennummer (Jobcenter)*", style="Secondary.TLabel")
         self.lbl_jc_id.grid(column=0, sticky="W", padx=pad_x, pady=pad_y)
 
@@ -107,11 +113,14 @@ class AddParticipant(ttk.Frame):
         self.country_of_origin = tk.StringVar()
         self.driving_license = tk.StringVar()
         self.residency_status = tk.StringVar()
+        self.mother_tongue = tk.StringVar()
+        self.school_degree_germany = tk.StringVar()
         self.jc_id = tk.StringVar()
 
         self.variables = [self.title, self.first_name, self.last_name, self.street_and_nr, self.zip,
                           self.city, self.email, self.cell_phone_nr,
-                          self.country_of_origin, self.driving_license, self.residency_status, self.jc_id]
+                          self.country_of_origin, self.driving_license, self.residency_status,
+                          self.mother_tongue, self.school_degree_germany, self.jc_id]
 
         self.cmb_title = ttk.Combobox(content_frame, textvariable=self.title)
         self.cmb_title["values"] = ["Frau", "Herr"]
@@ -157,8 +166,20 @@ class AddParticipant(ttk.Frame):
         self.cmb_residency_status["values"] = statuses
         self.cmb_residency_status.grid(row=10, column=1, padx=pad_x, pady=pad_y, sticky="EW")
 
+        self.cmb_mother_tongue = ttk.Combobox(content_frame, textvariable=self.mother_tongue)
+        sql = "SELECT * FROM Sprachen"
+        result = self.controller.db.select_multiple_query(sql)
+        languages = [row["Sprache"] for row in result]
+        self.cmb_mother_tongue["values"] = languages
+        self.cmb_mother_tongue.grid(row=11, column=1, padx=pad_x, pady=pad_y, sticky="EW")
+
+        self.cmb_school_degree_germany = ttk.Combobox(content_frame, textvariable=self.school_degree_germany,
+                                                      state="readonly")
+        self.cmb_school_degree_germany["values"] = ["ja", "nein"]
+        self.cmb_school_degree_germany.grid(row=12, column=1, padx=pad_x, pady=pad_y, sticky="EW")
+
         self.ent_jc_id = BLEntryWidget(content_frame, textvariable=self.jc_id)
-        self.ent_jc_id.grid(row=11, column=1, padx=pad_x, pady=pad_y, sticky="EW")
+        self.ent_jc_id.grid(row=13, column=1, padx=pad_x, pady=pad_y, sticky="EW")
 
         # FRAME buttons
         buttons_frame = ttk.Frame(pos_frame, style="Secondary.TFrame")
@@ -286,6 +307,8 @@ class AddParticipant(ttk.Frame):
             email=self.email.get(),
             cell_phone_nr=self.cell_phone_nr.get(),
             residency_status=self.residency_status.get(),
+            mother_tongue=self.mother_tongue.get(),
+            school_degree_germany=self.school_degree_germany.get(),
             client_id_with_jc=self.jc_id.get(),
         )
 

@@ -82,15 +82,19 @@ class ReadParticipants(ttk.Frame):
         self.participant_residency_status = tk.StringVar()
         self.participant_country_of_origin = tk.StringVar()
         self.participant_driving_license = tk.StringVar()
+        self.participant_mother_tongue = tk.StringVar()
+        self.participant_school_degree_germany = tk.StringVar()
         self.participant_id_with_jc = tk.StringVar()
 
         self.variables = [self.participant_title, self.participant_first_name, self.participant_last_name,
                           self.participant_street_and_nr, self.participant_zip_code, self.participant_city,
                           self.participant_email, self.participant_cell_phone_nr,
                           self.participant_country_of_origin, self.participant_driving_license,
-                          self.participant_id_with_jc, self.participant_residency_status]
+                          self.participant_id_with_jc, self.participant_residency_status, self.participant_mother_tongue,
+                          self.participant_school_degree_germany]
         lbl_headers = ["Anrede", "Vorname", "Nachname", "Straße und Nr", "PLZ", "Stadt", "E-Mail", "Handynummer",
-                       "Herkunftsland", "Führerschein", "Kundennummer", "Aufenthaltsstaus"]
+                       "Herkunftsland", "Führerschein", "Kundennummer", "Aufenthaltsstaus", "Muttersprache",
+                       "Schulabschluss in Deutschland"]
         for i, item in enumerate(zip(lbl_headers, self.variables)):
             lbl_header = item[0]
             variable = item[1]
@@ -148,6 +152,8 @@ class ReadParticipants(ttk.Frame):
         self.participant_country_of_origin.set(self.selected_participant.country_of_origin)
         self.participant_driving_license.set(self.selected_participant.driving_license)
         self.participant_id_with_jc.set(self.selected_participant.id_with_jc)
+        self.participant_mother_tongue.set(self.selected_participant.mother_tongue)
+        self.participant_school_degree_germany.set(self.selected_participant.school_degree_germany)
 
     def loop_through(self, direction: str = "next") -> None:
         """Pick the next participant from the dropdown box"""

@@ -54,6 +54,7 @@ class Participant(Human):
                  client_id_with_jc: Union[None, str] = None, country_of_origin: Union[str, None] = None,
                  driving_license: Union[bool, None] = None, email: Union[str, None] = None,
                  cell_phone_nr: Union[str, None] = None, residency_status: Union[str, None] = None,
+                 mother_tongue: Union[str, None] = None, school_degree_germany: Union[bool, None] = None,
                  data_base_id: Union[None, str] = None) -> None:
         super().__init__(title=title, first_name=first_name, last_name=last_name)
         self.street_and_nr = street_and_nr
@@ -66,6 +67,9 @@ class Participant(Human):
         self.email = email
         self.cell_phone_nr = cell_phone_nr
         self.residency_status = residency_status
+        self.mother_tongue = mother_tongue
+        self.language_skills = {}
+        self.school_degree_germany = school_degree_germany
         self.data_base_id = data_base_id
 
     @classmethod

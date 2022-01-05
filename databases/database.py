@@ -51,8 +51,9 @@ class Database:
     def add_participant(self, participant: Participant) -> None:
         """Insert participant data into the data base"""
         sql = "INSERT INTO Teilnehmer (Anrede, Vorname, Nachname, Strasse_und_Nr, PLZ, Stadt, Herkunftsland," \
-              "Führerschein, Kundennummer, 'E-Mail', Handynummer, Aufenthaltsstatus) " \
-              "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+              "Führerschein, Kundennummer, 'E-Mail', Handynummer, Aufenthaltsstatus, Muttersprache, " \
+              "'Schulabschluss in Deutschland') " \
+              "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
         self.connect_to_database()
         with closing(self.conn.cursor()) as cursor:
@@ -60,7 +61,8 @@ class Database:
                                  participant.street_and_nr, participant.zip_code, participant.city,
                                  participant.country_of_origin, participant.driving_license,
                                  participant.id_with_jc, participant.email, participant.cell_phone_nr,
-                                 participant.residency_status))
+                                 participant.residency_status, participant.mother_tongue,
+                                 participant.school_degree_germany))
             self.conn.commit()
 
         print(f"{participant} successfully added to the database.")
@@ -290,6 +292,8 @@ class Database:
                            client_id_with_jc=sqlite3_row["Kundennummer"],
                            country_of_origin=sqlite3_row["Herkunftsland"],
                            driving_license=sqlite3_row["Führerschein"],
+                           mother_tongue=sqlite3_row["Muttersprache"],
+                           school_degree_germany=sqlite3_row["Schulabschluss in Deutschland"],
                            data_base_id=sqlite3_row["ID"]
                            )
 
