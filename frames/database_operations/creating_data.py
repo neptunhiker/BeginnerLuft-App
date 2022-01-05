@@ -787,10 +787,11 @@ class AddLanguageSkills(ttk.Frame):
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1)
         self.participant = "Test Teilnehmer"
-        self.nr_of_languages = 0
+        self.widget_count = 0
         self.language_skills = {}
         self.available_languages = ["Arabisch", "Deutsch", "Englisch", "Italienisch"]
         self.language_widgets = {}
+        self.language_and_level = []
 
         frame_left = ttk.Frame(self)
         frame_left.grid(row=0, column=0, sticky="NSEW")
@@ -851,11 +852,10 @@ class AddLanguageSkills(ttk.Frame):
 
         # back button
         btn = BLImageButtonLabel(parent=buttons_frame,
-                                 func=lambda: self.controller.show_frame(dashboard.DatabaseCreateDashboard),
-                                 path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/back_01.png",
-                                 path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/back_02.png")
+                                 func=self.collect_data,
+                                 path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/ok_01.png",
+                                 path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/ok_02.png")
         btn.grid(pady=(20, 10))
-
 
     def insert_into_db(self) -> None:
         """Insert data into data base"""
@@ -907,33 +907,50 @@ class AddLanguageSkills(ttk.Frame):
     def add_language(self) -> None:
         """Add two dropdown fields for choosing a language and a language level"""
 
-        lbl_language_name = ttk.Label(self.languages_frame, text="Sprache", style="Secondary.TLabel")
-        lbl_language_name.grid(row=self.nr_of_languages * 2, column=0, sticky="W")
+        self.language_widgets[self.widget_count] = [tk.StringVar(), tk.StringVar()]
 
-        var_language_name = tk.StringVar()
+        lbl_language_name = ttk.Label(self.languages_frame, text="Sprache", style="Secondary.TLabel")
+        lbl_language_name.grid(row=self.widget_count * 2, column=0, sticky="W")
+
+        var_language_name = self.language_widgets[self.widget_count][0]
         cmb_language_name = ttk.Combobox(self.languages_frame, textvariable=var_language_name)
         cmb_language_name["values"] = self.available_languages
-        cmb_language_name.grid(row=self.nr_of_languages * 2 + 1, column=0, sticky="W", pady=(0, 10))
+        cmb_language_name.grid(row=self.widget_count * 2 + 1, column=0, sticky="W", pady=(0, 10))
 
         lbl_language_level = ttk.Label(self.languages_frame, text="Level", style="Secondary.TLabel")
-        lbl_language_level.grid(row=self.nr_of_languages * 2, column=1, sticky="W", padx=(10, 0))
+        lbl_language_level.grid(row=self.widget_count * 2, column=1, sticky="W", padx=(10, 0))
 
-        var_language_level = tk.StringVar()
+        var_language_level = self.language_widgets[self.widget_count][1]
         cmb_language_level = ttk.Combobox(self.languages_frame, textvariable=var_language_level, state="readonly")
         cmb_language_level["values"] = ["A1", "A2", "B1", "B2", "C1", "C2"]
-        cmb_language_level.grid(row=self.nr_of_languages * 2 + 1, column=1, sticky="W", padx=(10, 10), pady=(0, 10))
+        cmb_language_level.grid(row=self.widget_count * 2 + 1, column=1, sticky="W", padx=(10, 10), pady=(0, 10))
 
         widgets = [lbl_language_name, lbl_language_level, cmb_language_name, cmb_language_level]
         btn_delete = ttk.Button(self.languages_frame, text="löschen",
                                 command=lambda: self.delete_widgets(*widgets, btn_delete))
-        btn_delete.grid(row=self.nr_of_languages * 2 + 1, column=2, sticky="W")
+        btn_delete.grid(row=self.widget_count * 2 + 1, column=2, sticky="W")
 
-        # self.language_widgets[self.nr_of_languages] =
+        self.language_and_level.append([var_language_name, var_language_level])
 
-        self.nr_of_languages += 1
+
+        self.widget_count += 1
 
     def delete_widgets(self, *widgets: Union[ttk.Label, ttk.Combobox, ttk.Button]) -> None:
         """Removes widgets from scree"""
         for widget in widgets:
             widget.destroy()
+
+    def collect_data(self) -> None:
+        """Get the entered language"""
+
+        for item in self.language_and_level:
+            language_name = item[0].get()
+            language_level = item[1].get()
+            if language_name != "" and language_level != "":
+                self.language_skills[language_name] = language_level
+
+        print("Sprachkenntnisse")
+        for name, level in self.language_skills.items():
+            print(f"Sprache: {name}, level: {level}")
+
 
