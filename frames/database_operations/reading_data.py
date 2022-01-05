@@ -99,7 +99,7 @@ class ReadParticipants(ttk.Frame):
             lbl_header = item[0]
             variable = item[1]
             ttk.Label(self.data_frame, text=lbl_header,
-                      style="Bold.Secondary.TLabel").grid(row=i, column=0, sticky="W", padx=(40, 10))
+                      style="Bold.Secondary.TLabel").grid(row=i, column=0, sticky="E", padx=(0, 10))
             ttk.Label(self.data_frame, textvariable=variable,
                       style="Secondary.TLabel").grid(row=i, column=1, sticky="W")
 
@@ -154,6 +154,10 @@ class ReadParticipants(ttk.Frame):
         self.participant_id_with_jc.set(self.selected_participant.id_with_jc)
         self.participant_mother_tongue.set(self.selected_participant.mother_tongue)
         self.participant_school_degree_germany.set(self.selected_participant.school_degree_germany)
+
+        for variable in self.variables:
+            if variable.get() == "None":
+                variable.set("")
 
     def loop_through(self, direction: str = "next") -> None:
         """Pick the next participant from the dropdown box"""
@@ -289,7 +293,6 @@ class ReadCoaches(ttk.Frame):
     def get_coaches(self) -> None:
         """Get a list of coaches from the database"""
         list_of_coaches = self.controller.db.get_coaches()
-        print(list_of_coaches)
         for coach in list_of_coaches:
             self.coaches[str(coach.data_base_id)] = coach
 

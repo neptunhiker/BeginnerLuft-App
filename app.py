@@ -5,7 +5,7 @@ from databases.backups import Backup
 from databases.database import Database
 from frames.boilerplate import Boilerplate
 from frames.change_password import ChangePassword
-from frames.database_operations.creating_data import AddParticipant, AddCoach, AddJobcenter
+from frames.database_operations.creating_data import AddParticipant, AddCoach, AddJobcenter, AddLanguageSkills
 from frames.database_operations.reading_data import ReadParticipants, ReadCoaches, ReadJobcenter
 from frames.invoice import Invoice
 from frames.login import Login
@@ -72,6 +72,12 @@ class BeginnerLuftApp(tk.Tk):
             controller=self,
         )
         add_jobcenter_frame.grid(row=0, column=0, sticky="NSEW")
+
+        add_language_skills = AddLanguageSkills(
+            parent=self.container,
+            controller=self,
+        )
+        add_language_skills.grid(row=0, column=0, sticky="NSEW")
 
         add_participant_frame = AddParticipant(
             parent=self.container,
@@ -175,6 +181,7 @@ class BeginnerLuftApp(tk.Tk):
         self.frames = {
             AddCoach: add_coach_frame,
             AddJobcenter: add_jobcenter_frame,
+            AddLanguageSkills: add_language_skills,
             AddParticipant: add_participant_frame,
             Boilerplate: boilerplate_frame,
             ChangePassword: change_pw_frame,
@@ -194,7 +201,7 @@ class BeginnerLuftApp(tk.Tk):
         }
 
         # starting frame
-        self.starting_frame = dashboard.DatabaseCreateDashboard
+        self.starting_frame = AddLanguageSkills
         if self.starting_frame != Login:
             self.logged_in = True  # automatic log-in for testing purposes only, remove later
 

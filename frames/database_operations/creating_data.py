@@ -774,3 +774,166 @@ class AddJobcenter(ttk.Frame):
         header = "Datenbankeintrag erfolgreich"
         message = f"{name} wurde erfolgreich in die Datenbank eingetragen."
         MessageWindow(controller=self.controller, message_header=header, message=message)
+
+
+class AddLanguageSkills(ttk.Frame):
+    """A frame that allows to add a participant to the database"""
+
+    def __init__(self, parent: Union[tk.Tk, ttk.Frame], controller: tk.Tk) -> None:
+        super().__init__(parent)
+        self["style"] = "Secondary.TFrame"
+        self.controller = controller
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(0, weight=1)
+        self.participant = "Test Teilnehmer"
+        self.nr_of_languages = 0
+        self.language_skills = {}
+        self.available_languages = ["Arabisch", "Deutsch", "Englisch", "Italienisch"]
+        self.language_widgets = {}
+
+        frame_left = ttk.Frame(self)
+        frame_left.grid(row=0, column=0, sticky="NSEW")
+        frame_left.rowconfigure(0, weight=1)
+        frame_left.columnconfigure(0, weight=1)
+
+        # create image on canvas
+        create_background_image(path_of_image=f"{self.controller.pic_gallery_path}/backgrounds/office01.jpg",
+                                frame=frame_left, desired_width=1200)
+
+        # RIGHT HAND SIDE
+        frame_right = ttk.Frame(self, style="Secondary.TFrame")
+        frame_right.grid(row=0, column=1, sticky="NSEW")
+        frame_right.columnconfigure(0, weight=1)
+        frame_right.rowconfigure(1, weight=1)
+
+        pos_frame = ttk.Frame(frame_right, style="Secondary.TFrame")
+        pos_frame.grid()
+
+        # header frame
+        header_frame = ttk.Frame(pos_frame, style="Secondary.TFrame")
+        header_frame.grid(sticky="EW", padx=20, pady=30)
+        header_frame.columnconfigure(0, weight=1)
+
+        lbl_header = ttk.Label(header_frame, text="Sprachkenntnisse", style="Secondary.Header.TLabel")
+        lbl_header.grid()
+        lbl_subheader = ttk.Label(header_frame, text=self.participant, style="Secondary.Header.TLabel")
+        lbl_subheader.grid()
+
+
+
+        # CONTENT frame
+        self.content_frame = ttk.Frame(pos_frame, style="Secondary.TFrame")
+        self.content_frame.grid(padx=20, sticky="NSEW")
+
+        btn_add = BLImageButtonLabel(
+            self.content_frame,
+            self.add_language,
+            path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/add_language_01.png",
+            path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/add_language_02.png",
+        )
+        btn_add.grid()
+
+        # LANGUAGES frame
+        self.languages_frame = ttk.Frame(self.content_frame, style="Secondary.TFrame")
+        self.languages_frame.grid()
+
+        # FRAME buttons
+        buttons_frame = ttk.Frame(pos_frame, style="Secondary.TFrame")
+        buttons_frame.grid(row=2, column=0, sticky="EW", pady=30)
+        buttons_frame.columnconfigure(0, weight=1)
+
+        # go button
+        btn = BLImageButtonLabel(parent=buttons_frame, func=self.insert_into_db,
+                                 path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/enter_into_database_01.png",
+                                 path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/enter_into_database_02.png")
+        btn.grid()
+
+        # back button
+        btn = BLImageButtonLabel(parent=buttons_frame,
+                                 func=lambda: self.controller.show_frame(dashboard.DatabaseCreateDashboard),
+                                 path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/back_01.png",
+                                 path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/back_02.png")
+        btn.grid(pady=(20, 10))
+
+
+    def insert_into_db(self) -> None:
+        """Insert data into data base"""
+
+        # get the selected participant ID in database
+
+        # completeness and correctness check
+
+        # ask user to confirm data base entry to be made
+
+        # write to data base
+
+    def completeness_check(self) -> bool:
+        """Check if all mandatory fields have been filled out"""
+        completeness_check = True
+        # ...
+        return completeness_check
+
+    def correctness_check(self) -> bool:
+        """Check whether fields have been filled in correctly"""
+        # ...
+        return True
+
+    def confirm_message(self, participant_first_name: str, participant_last_name: str) -> bool:
+        """Ask user to confirm whether participant should be added to database"""
+
+        pass
+
+    def write_to_db(self) -> bool:
+        """Write participant to data base"""
+
+        pass
+
+    def clear_all_fields(self) -> None:
+        # for variable in self.variables:
+        #     variable.set("")
+        pass
+
+    def show_abort_message(self, name: str) -> None:
+        header = "Kein Datenbankeintrag"
+        message = f"Für {name} wurde kein Datenbankeintrag vorgenommen."
+        MessageWindow(controller=self.controller, message_header=header, message=message, alert=True)
+
+    def show_success_message(self, name: str) -> None:
+        header = "Datenbankeintrag erfolgreich"
+        message = f"{name} wurde erfolgreich in die Datenbank eingetragen."
+        MessageWindow(controller=self.controller, message_header=header, message=message)
+
+    def add_language(self) -> None:
+        """Add two dropdown fields for choosing a language and a language level"""
+
+        lbl_language_name = ttk.Label(self.languages_frame, text="Sprache", style="Secondary.TLabel")
+        lbl_language_name.grid(row=self.nr_of_languages * 2, column=0, sticky="W")
+
+        var_language_name = tk.StringVar()
+        cmb_language_name = ttk.Combobox(self.languages_frame, textvariable=var_language_name)
+        cmb_language_name["values"] = self.available_languages
+        cmb_language_name.grid(row=self.nr_of_languages * 2 + 1, column=0, sticky="W", pady=(0, 10))
+
+        lbl_language_level = ttk.Label(self.languages_frame, text="Level", style="Secondary.TLabel")
+        lbl_language_level.grid(row=self.nr_of_languages * 2, column=1, sticky="W", padx=(10, 0))
+
+        var_language_level = tk.StringVar()
+        cmb_language_level = ttk.Combobox(self.languages_frame, textvariable=var_language_level, state="readonly")
+        cmb_language_level["values"] = ["A1", "A2", "B1", "B2", "C1", "C2"]
+        cmb_language_level.grid(row=self.nr_of_languages * 2 + 1, column=1, sticky="W", padx=(10, 10), pady=(0, 10))
+
+        widgets = [lbl_language_name, lbl_language_level, cmb_language_name, cmb_language_level]
+        btn_delete = ttk.Button(self.languages_frame, text="löschen",
+                                command=lambda: self.delete_widgets(*widgets, btn_delete))
+        btn_delete.grid(row=self.nr_of_languages * 2 + 1, column=2, sticky="W")
+
+        # self.language_widgets[self.nr_of_languages] =
+
+        self.nr_of_languages += 1
+
+    def delete_widgets(self, *widgets: Union[ttk.Label, ttk.Combobox, ttk.Button]) -> None:
+        """Removes widgets from scree"""
+        for widget in widgets:
+            widget.destroy()
+
