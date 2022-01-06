@@ -83,7 +83,7 @@ class AddParticipant(ttk.Frame):
         self.lbl_cell_phone_nr = ttk.Label(content_frame, text="Handynummer", style="Secondary.TLabel")
         self.lbl_cell_phone_nr.grid(column=0, sticky="W", padx=pad_x, pady=pad_y)
 
-        self.lbl_country_of_origin= ttk.Label(content_frame, text="Herkunftsland", style="Secondary.TLabel")
+        self.lbl_country_of_origin = ttk.Label(content_frame, text="Herkunftsland", style="Secondary.TLabel")
         self.lbl_country_of_origin.grid(column=0, sticky="W", padx=pad_x, pady=pad_y)
 
         self.lbl_driving_license = ttk.Label(content_frame, text="Führerschein", style="Secondary.TLabel")
@@ -95,7 +95,8 @@ class AddParticipant(ttk.Frame):
         self.lbl_mother_tongue = ttk.Label(content_frame, text="Muttersprache", style="Secondary.TLabel")
         self.lbl_mother_tongue.grid(column=0, sticky="W", padx=pad_x, pady=pad_y)
 
-        self.lbl_school_degree_germany = ttk.Label(content_frame, text="Schulabschluss aus Deutschland", style="Secondary.TLabel")
+        self.lbl_school_degree_germany = ttk.Label(content_frame, text="Schulabschluss aus Deutschland",
+                                                   style="Secondary.TLabel")
         self.lbl_school_degree_germany.grid(column=0, sticky="W", padx=pad_x, pady=pad_y)
 
         self.lbl_jc_id = ttk.Label(content_frame, text="Kundennummer (Jobcenter)*", style="Secondary.TLabel")
@@ -218,7 +219,7 @@ class AddParticipant(ttk.Frame):
         if self.controller.db.check_for_participant_jc_id(jobcenter_id=self.jc_id.get()):
             msg = f"Es existiert bereits ein Eintrag mit der Kundennummer {self.jc_id.get()} in der Datenbank." \
                   f" Ein erneuter Eintrag wurde nicht vorgenommen."
-            MessageWindow(controller=self.controller,message_header= "Dateinbankeintrag bereits vorhanden",
+            MessageWindow(controller=self.controller, message_header="Dateinbankeintrag bereits vorhanden",
                           message=msg, alert=True)
             return
 
@@ -786,12 +787,12 @@ class AddLanguageSkills(ttk.Frame):
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1)
-        self.participant = "Test Teilnehmer"
+        self.participant = ""
         self.widget_count = 0
         self.language_skills = {}
-        self.available_languages = ["Arabisch", "Deutsch", "Englisch", "Italienisch"]
+        self.available_languages = ["Arabisch", "Deutsch", "Englisch", "Farsi", "Italienisch", "Russisch", "Spanisch"]
         self.language_widgets = {}
-        self.language_and_level = []
+        self.list_of_languages_and_levels = []
 
         frame_left = ttk.Frame(self)
         frame_left.grid(row=0, column=0, sticky="NSEW")
@@ -806,10 +807,12 @@ class AddLanguageSkills(ttk.Frame):
         frame_right = ttk.Frame(self, style="Secondary.TFrame")
         frame_right.grid(row=0, column=1, sticky="NSEW")
         frame_right.columnconfigure(0, weight=1)
-        frame_right.rowconfigure(1, weight=1)
+        frame_right.rowconfigure(0, weight=1)
 
         pos_frame = ttk.Frame(frame_right, style="Secondary.TFrame")
-        pos_frame.grid()
+        pos_frame.grid(sticky="NSEW")
+        pos_frame.columnconfigure(0, weight=1)
+        pos_frame.rowconfigure(1, weight=1)
 
         # header frame
         header_frame = ttk.Frame(pos_frame, style="Secondary.TFrame")
@@ -821,11 +824,10 @@ class AddLanguageSkills(ttk.Frame):
         lbl_subheader = ttk.Label(header_frame, text=self.participant, style="Secondary.Header.TLabel")
         lbl_subheader.grid()
 
-
-
         # CONTENT frame
         self.content_frame = ttk.Frame(pos_frame, style="Secondary.TFrame")
         self.content_frame.grid(padx=20, sticky="NSEW")
+        self.content_frame.columnconfigure(0, weight=1)
 
         btn_add = BLImageButtonLabel(
             self.content_frame,
@@ -833,11 +835,12 @@ class AddLanguageSkills(ttk.Frame):
             path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/add_language_01.png",
             path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/add_language_02.png",
         )
-        btn_add.grid()
+        btn_add.grid(pady=(10, 20))
 
         # LANGUAGES frame
         self.languages_frame = ttk.Frame(self.content_frame, style="Secondary.TFrame")
         self.languages_frame.grid()
+        self.add_language()
 
         # FRAME buttons
         buttons_frame = ttk.Frame(pos_frame, style="Secondary.TFrame")
@@ -845,7 +848,7 @@ class AddLanguageSkills(ttk.Frame):
         buttons_frame.columnconfigure(0, weight=1)
 
         # go button
-        btn = BLImageButtonLabel(parent=buttons_frame, func=self.insert_into_db,
+        btn = BLImageButtonLabel(parent=buttons_frame, func=self.write_to_database_test,
                                  path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/enter_into_database_01.png",
                                  path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/enter_into_database_02.png")
         btn.grid()
@@ -922,35 +925,52 @@ class AddLanguageSkills(ttk.Frame):
 
         var_language_level = self.language_widgets[self.widget_count][1]
         cmb_language_level = ttk.Combobox(self.languages_frame, textvariable=var_language_level, state="readonly")
-        cmb_language_level["values"] = ["A1", "A2", "B1", "B2", "C1", "C2"]
+        cmb_language_level["values"] = ["A1", "A2", "B1", "B2", "C1", "C2", "Muttersprache"]
         cmb_language_level.grid(row=self.widget_count * 2 + 1, column=1, sticky="W", padx=(10, 10), pady=(0, 10))
 
         widgets = [lbl_language_name, lbl_language_level, cmb_language_name, cmb_language_level]
-        btn_delete = ttk.Button(self.languages_frame, text="löschen",
-                                command=lambda: self.delete_widgets(*widgets, btn_delete))
-        btn_delete.grid(row=self.widget_count * 2 + 1, column=2, sticky="W")
+        pos = self.widget_count
+        btn_delete = BLImageButtonLabel(parent=self.languages_frame,
+                                        func=lambda: self.delete_widgets(*widgets, btn_delete, language_pos=pos),
+                                        path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/x_01.png",
+                                        path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/x_02.png")
+        btn_delete.grid(row=self.widget_count * 2 + 1, column=2, sticky="NW", pady=(0, 10))
 
-        self.language_and_level.append([var_language_name, var_language_level])
-
+        self.list_of_languages_and_levels.append([var_language_name, var_language_level])
 
         self.widget_count += 1
 
-    def delete_widgets(self, *widgets: Union[ttk.Label, ttk.Combobox, ttk.Button]) -> None:
+    def delete_widgets(self, *widgets: Union[ttk.Label, ttk.Combobox, BLImageButtonLabel], language_pos: int) -> None:
         """Removes widgets from scree"""
         for widget in widgets:
             widget.destroy()
 
-    def collect_data(self) -> None:
-        """Get the entered language"""
+        # set the language name and level to
+        self.list_of_languages_and_levels[language_pos][0].set(None)
+        self.list_of_languages_and_levels[language_pos][1].set(None)
 
-        for item in self.language_and_level:
+        # remove language from dict of language and skills
+        language_name = self.list_of_languages_and_levels[language_pos][0].get()
+        self.language_skills.pop(language_name, None)
+
+    def collect_data(self) -> None:
+        """Write user defined languages and their levels into dictionary"""
+
+        for item in self.list_of_languages_and_levels:
             language_name = item[0].get()
             language_level = item[1].get()
-            if language_name != "" and language_level != "":
+            if language_name != "" and language_name is not None and language_level != "" and language_level is not None:
                 self.language_skills[language_name] = language_level
 
-        print("Sprachkenntnisse")
-        for name, level in self.language_skills.items():
-            print(f"Sprache: {name}, level: {level}")
+    def write_to_database_test(self):
+        id = "80"
+        for language, level in self.language_skills.items():
+            try:
+                self.controller.db.add_language_skill(participant_database_id=id, language=language, level=level)
+            except sqlite3.IntegrityError as err:
+                self.controller.bl_logger.exception(f"Cannot add {language} with {level} to the database for"
+                                                    f" participant with the ID {id}.")
 
-
+    def refresh(self, participant: Participant = "") -> None:
+        """Update the frame"""
+        self.participant = participant

@@ -34,6 +34,17 @@ class Database:
 
         print(f"{coach} successfully added to the database.")
 
+    def add_language_skill(self, participant_database_id: str, language: str, level: str) -> None:
+        """Add a language including level of proficiency for a particular participant to the database"""
+
+        sql = "INSERT INTO Sprachkenntnisse (Teilnehmer_ID, Sprache, Level) " \
+              "VALUES (?, ?, ?)"
+
+        self.connect_to_database()
+        with closing(self.conn.cursor()) as cursor:
+            cursor.execute(sql, (participant_database_id, language, level))
+            self.conn.commit()
+
     def add_jobcenter(self, jobcenter: Jobcenter) -> None:
         """Insert jobcenter data into the data base"""
 
