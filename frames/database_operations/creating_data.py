@@ -934,6 +934,9 @@ class AddLanguageSkills(ttk.Frame):
 
         tk.messagebox.showinfo("Great", self.participant)
 
+        self.controller.frames[OverviewParticipant].refresh(participant=self.participant)
+        self.controller.show_frame(OverviewParticipant)
+
     def duplicate_check(self) -> bool:
         """Check whether languages have been entered more than once"""
 
@@ -1068,3 +1071,46 @@ class AddLanguageSkills(ttk.Frame):
     #             row=row_counter, column=1, sticky="W")
     #
     #         row_counter += 1
+
+
+class OverviewParticipant(ttk.Frame):
+    """A frame that gives an overview of data to be written to database"""
+
+    def __init__(self, parent: Union[tk.Tk, ttk.Frame], controller: tk.Tk) -> None:
+        super().__init__(parent)
+        self["style"] = "Secondary.TFrame"
+        self.controller = controller
+        self.participant = None
+
+    def refresh(self, participant: Participant) -> None:
+        """Refresh the page with client data"""
+
+        self.participant = participant
+        attributes = [attr for attr in dir(participant)
+                      if not attr.startswith('__') and not callable(getattr(participant, attr))]
+
+        # personal data
+        labels = ["Anrede", "Vorname", "Nachname"]
+        personal_data = [participant.title, participant.first_name, participant.last_name]
+
+        row_counter = 0
+        for label_text, data in zip(labels, personal_data):
+            ttk.Label(self, text=label_text, style="Secondary.TLabel").grid(
+                row=row_counter, column=0, sticky="E", padx=10)
+            ttk.Label(self, text=data, style="Secondary.TLabel").grid(
+                row=row_counter, column=1, sticky="W"
+            )
+            row_counter += 1
+
+        # Language skills
+        for language_name, level in self.participant.language_skills.items():
+            ttk.Label(self, text=language_name, style="Secondary.TLabel").grid(
+                row=row_counter, column=0, sticky="E", padx=10)
+            ttk.Label(self, text=level, style="Secondary.TLabel").grid(
+                row=row_counter, column=1, sticky="W")
+
+            row_counter += 1
+
+
+
+        # language skills

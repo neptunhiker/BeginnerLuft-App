@@ -5,7 +5,8 @@ from databases.backups import Backup
 from databases.database import Database
 from frames.boilerplate import Boilerplate
 from frames.change_password import ChangePassword
-from frames.database_operations.creating_data import AddParticipant, AddCoach, AddJobcenter, AddLanguageSkills
+from frames.database_operations.creating_data import AddParticipant, AddCoach, AddJobcenter, AddLanguageSkills, \
+    OverviewParticipant
 from frames.database_operations.reading_data import ReadParticipants, ReadCoaches, ReadJobcenter
 from frames.invoice import Invoice
 from frames.login import Login
@@ -146,6 +147,12 @@ class BeginnerLuftApp(tk.Tk):
         )
         login_frame.grid(row=0, column=0, sticky="NSEW")
 
+        overview_participant_frame = OverviewParticipant(
+            parent=self.container,
+            controller=self,
+        )
+        overview_participant_frame.grid(row=0, column=0, sticky="NSEW")
+
         read_coaches_frame = ReadCoaches(
             parent=self.container,
             controller=self,
@@ -193,6 +200,7 @@ class BeginnerLuftApp(tk.Tk):
             dashboard.DatabaseOperationsDashboard: database_operations_dashboard_frame,
             Invoice: invoice_frame,
             Login: login_frame,
+            OverviewParticipant: overview_participant_frame,
             ReadCoaches: read_coaches_frame,
             ReadJobcenter: read_jobcenter_frame,
             ReadParticipants: read_participant_frame,
@@ -211,10 +219,13 @@ class BeginnerLuftApp(tk.Tk):
 
     def show_frame(self, container, refresh: bool = False) -> None:
         if self.logged_in or container == Login:
-            # run a refresh method of the frame if it has one
-            method = getattr(container, "refresh", None)
-            if callable(method):
-                self.frames[container].refresh()
+            print(container)
+            print(refresh)
+            if refresh:
+                # run a refresh method of the frame if it has one
+                method = getattr(container, "refresh", None)
+                if callable(method):
+                    self.frames[container].refresh()
 
             frame = self.frames[container]
             frame.tkraise()
