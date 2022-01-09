@@ -48,7 +48,7 @@ class AddParticipant(ttk.Frame):
         header_frame.grid(sticky="EW", padx=20, pady=30)
         header_frame.columnconfigure(0, weight=1)
 
-        lbl_add_participant = ttk.Label(header_frame, text="Teilnehmer:In hinzufügen", style="Secondary.Header.TLabel")
+        lbl_add_participant = ttk.Label(header_frame, text="Persönliche Informationen", style="Secondary.Header.TLabel")
         lbl_add_participant.grid()
 
         # CONTENT frame
@@ -188,9 +188,9 @@ class AddParticipant(ttk.Frame):
         buttons_frame.columnconfigure(0, weight=1)
 
         # go button
-        btn = BLImageButtonLabel(parent=buttons_frame, func=self.insert_into_db,
-                                 path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/enter_into_database_01.png",
-                                 path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/enter_into_database_02.png")
+        btn = BLImageButtonLabel(parent=buttons_frame, func=self.next_frame,
+                                 path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/next_written_01.png",
+                                 path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/next_written_02.png")
         btn.grid()
 
         # back button
@@ -200,36 +200,70 @@ class AddParticipant(ttk.Frame):
                                  path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/back_02.png")
         btn.grid(pady=(20, 10))
 
+        self.pre_populate()
         self.cmb_title.focus()
 
-    def insert_into_db(self) -> None:
-        """Insert data into data base"""
+    def next_frame(self) -> None:
+        """Show the next frame"""
 
         # check if all fields have been entered that have an asterix
         if not self.completeness_check() or not self.correctness_check():
             return
 
-        # ask user to confirm data base entry to be made
-        confirmation_to_write = self.confirm_message(self.first_name.get(), self.last_name.get())
-        if not confirmation_to_write:
-            self.show_abort_message()
-            return
+        # get data from form and create Participant object
+        participant = self.create_participant()
 
-        # Check if a user with a given jobcenter id already exists in database
-        if self.controller.db.check_for_participant_jc_id(jobcenter_id=self.jc_id.get()):
-            msg = f"Es existiert bereits ein Eintrag mit der Kundennummer {self.jc_id.get()} in der Datenbank." \
-                  f" Ein erneuter Eintrag wurde nicht vorgenommen."
-            MessageWindow(controller=self.controller, message_header="Dateinbankeintrag bereits vorhanden",
-                          message=msg, alert=True)
-            return
+        # navigate to next frame
+        self.controller.frames[AddLanguageSkills].refresh(participant=participant)
+        self.controller.frames[AddLanguageSkills].tkraise()
 
-        # write to data base
-        if self.write_to_db():
-            first_name = self.first_name.get()
-            last_name = self.last_name.get()
-            full_name = f"{first_name} {last_name}"
-            self.clear_all_fields()
-            self.show_success_message(name=full_name)
+    def create_participant(self) -> Participant:
+        """Create a participant from data entered by user"""
+
+        return Participant(
+            title=self.title.get(),
+            first_name=self.first_name.get(),
+            last_name=self.last_name.get(),
+            street_and_nr=self.street_and_nr.get(),
+            zip_code=self.zip.get(),
+            city=self.city.get(),
+            client_id_with_jc=self.jc_id.get(),
+            country_of_origin=self.country_of_origin.get(),
+            driving_license=self.driving_license.get(),
+            email=self.email.get(),
+            cell_phone_nr=self.cell_phone_nr.get(),
+            residency_status=self.residency_status.get(),
+            school_degree_germany=self.school_degree_germany.get(),
+        )
+
+    # def insert_into_db(self) -> None:
+    #     """Insert data into data base"""
+    #
+    #     # check if all fields have been entered that have an asterix
+    #     if not self.completeness_check() or not self.correctness_check():
+    #         return
+    #
+    #     # ask user to confirm data base entry to be made
+    #     confirmation_to_write = self.confirm_message(self.first_name.get(), self.last_name.get())
+    #     if not confirmation_to_write:
+    #         self.show_abort_message()
+    #         return
+    #
+    #     # Check if a user with a given jobcenter id already exists in database
+    #     if self.controller.db.check_for_participant_jc_id(jobcenter_id=self.jc_id.get()):
+    #         msg = f"Es existiert bereits ein Eintrag mit der Kundennummer {self.jc_id.get()} in der Datenbank." \
+    #               f" Ein erneuter Eintrag wurde nicht vorgenommen."
+    #         MessageWindow(controller=self.controller, message_header="Dateinbankeintrag bereits vorhanden",
+    #                       message=msg, alert=True)
+    #         return
+    #
+    #     # write to data base
+    #     if self.write_to_db():
+    #         first_name = self.first_name.get()
+    #         last_name = self.last_name.get()
+    #         full_name = f"{first_name} {last_name}"
+    #         self.clear_all_fields()
+    #         self.show_success_message(name=full_name)
 
     def completeness_check(self) -> bool:
         """Check if all mandatory fields have been filled out"""
@@ -283,60 +317,70 @@ class AddParticipant(ttk.Frame):
         else:
             return True
 
-    def confirm_message(self, participant_first_name: str, participant_last_name: str) -> bool:
-        """Ask user to confirm whether participant should be added to database"""
+    # def confirm_message(self, participant_first_name: str, participant_last_name: str) -> bool:
+    #     """Ask user to confirm whether participant should be added to database"""
+    #
+    #     title = "Teilnehmer:In in Datenbank eintragen"
+    #     full_name = f"{participant_first_name} {participant_last_name}"
+    #     msg = f"Soll {full_name} wirklich in die Datenbank eingetragen werden?"
+    #     ans = tk.messagebox.askyesno(title=title, message=msg, default="no")
+    #
+    #     return ans
+    #
+    # def write_to_db(self) -> bool:
+    #     """Write participant to data base"""
+    #
+    #     participant = Participant(
+    #         title=self.title.get(),
+    #         first_name=self.first_name.get(),
+    #         last_name=self.last_name.get(),
+    #         street_and_nr=self.street_and_nr.get(),
+    #         zip_code=self.zip.get(),
+    #         city=self.city.get(),
+    #         country_of_origin=self.country_of_origin.get(),
+    #         driving_license=self.driving_license.get(),
+    #         email=self.email.get(),
+    #         cell_phone_nr=self.cell_phone_nr.get(),
+    #         residency_status=self.residency_status.get(),
+    #         mother_tongue=self.mother_tongue.get(),
+    #         school_degree_germany=self.school_degree_germany.get(),
+    #         client_id_with_jc=self.jc_id.get(),
+    #     )
+    #
+    #     try:
+    #         self.controller.db.add_participant(participant)
+    #         self.controller.bl_logger.info(f"{self.controller.current_user} added participant {participant.first_name} "
+    #                                        f"{participant.last_name} to the data base.")
+    #     except sqlite3.OperationalError as err:
+    #         print(err)
+    #         DatabaseErrorWindow(self.controller)
+    #         return False
+    #     else:
+    #         return True
 
-        title = "Teilnehmer:In in Datenbank eintragen"
-        full_name = f"{participant_first_name} {participant_last_name}"
-        msg = f"Soll {full_name} wirklich in die Datenbank eingetragen werden?"
-        ans = tk.messagebox.askyesno(title=title, message=msg, default="no")
+    def pre_populate(self) -> None:
+        """Fill the form with data for test purposes"""
 
-        return ans
+        participant = Participant.test_participant()
 
-    def write_to_db(self) -> bool:
-        """Write participant to data base"""
-
-        participant = Participant(
-            title=self.title.get(),
-            first_name=self.first_name.get(),
-            last_name=self.last_name.get(),
-            street_and_nr=self.street_and_nr.get(),
-            zip_code=self.zip.get(),
-            city=self.city.get(),
-            country_of_origin=self.country_of_origin.get(),
-            driving_license=self.driving_license.get(),
-            email=self.email.get(),
-            cell_phone_nr=self.cell_phone_nr.get(),
-            residency_status=self.residency_status.get(),
-            mother_tongue=self.mother_tongue.get(),
-            school_degree_germany=self.school_degree_germany.get(),
-            client_id_with_jc=self.jc_id.get(),
-        )
-
-        try:
-            self.controller.db.add_participant(participant)
-            self.controller.bl_logger.info(f"{self.controller.current_user} added participant {participant.first_name} "
-                                           f"{participant.last_name} to the data base.")
-        except sqlite3.OperationalError as err:
-            print(err)
-            DatabaseErrorWindow(self.controller)
-            return False
-        else:
-            return True
+        self.title.set(participant.title)
+        self.first_name.set(participant.first_name)
+        self.last_name.set(participant.last_name)
+        self.jc_id.set(participant.id_with_jc)
 
     def clear_all_fields(self) -> None:
         for variable in self.variables:
             variable.set("")
 
-    def show_abort_message(self) -> None:
-        header = "Kein Datenbankeintrag"
-        message = f"Für {self.first_name.get()} {self.last_name.get()} wurde kein Datenbankeintrag vorgenommen."
-        MessageWindow(controller=self.controller, message_header=header, message=message, alert=True)
-
-    def show_success_message(self, name: str) -> None:
-        header = "Datenbankeintrag erfolgreich"
-        message = f"{name} wurde erfolgreich in die Datenbank eingetragen."
-        MessageWindow(controller=self.controller, message_header=header, message=message)
+    # def show_abort_message(self) -> None:
+    #     header = "Kein Datenbankeintrag"
+    #     message = f"Für {self.first_name.get()} {self.last_name.get()} wurde kein Datenbankeintrag vorgenommen."
+    #     MessageWindow(controller=self.controller, message_header=header, message=message, alert=True)
+    #
+    # def show_success_message(self, name: str) -> None:
+    #     header = "Datenbankeintrag erfolgreich"
+    #     message = f"{name} wurde erfolgreich in die Datenbank eingetragen."
+    #     MessageWindow(controller=self.controller, message_header=header, message=message)
 
 
 class AddCoach(ttk.Frame):
@@ -787,21 +831,27 @@ class AddLanguageSkills(ttk.Frame):
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1)
-        self.participant = ""
+        self.participant = None
+        self.full_name = ""
         self.widget_count = 0
         self.language_skills = {}
         self.available_languages = ["Arabisch", "Deutsch", "Englisch", "Farsi", "Italienisch", "Russisch", "Spanisch"]
         self.language_widgets = {}
         self.list_of_languages_and_levels = []
+        self.error_message = tk.StringVar()
+        self.error_message.set("")
 
-        frame_left = ttk.Frame(self)
-        frame_left.grid(row=0, column=0, sticky="NSEW")
-        frame_left.rowconfigure(0, weight=1)
-        frame_left.columnconfigure(0, weight=1)
+        self.frame_left = ttk.Frame(self)
+        self.frame_left.grid(row=0, column=0, sticky="NSEW")
+        self.frame_left.rowconfigure(0, weight=1)
+        self.frame_left.columnconfigure(0, weight=1)
 
         # create image on canvas
         create_background_image(path_of_image=f"{self.controller.pic_gallery_path}/backgrounds/office01.jpg",
-                                frame=frame_left, desired_width=1200)
+                                frame=self.frame_left, desired_width=1200)
+
+        # existing language skills
+        # self.show_existing_data()
 
         # RIGHT HAND SIDE
         frame_right = ttk.Frame(self, style="Secondary.TFrame")
@@ -821,7 +871,9 @@ class AddLanguageSkills(ttk.Frame):
 
         lbl_header = ttk.Label(header_frame, text="Sprachkenntnisse", style="Secondary.Header.TLabel")
         lbl_header.grid()
-        lbl_subheader = ttk.Label(header_frame, text=self.participant, style="Secondary.Header.TLabel")
+        self.var_full_name = tk.StringVar()
+        self.var_full_name.set(self.full_name)
+        lbl_subheader = ttk.Label(header_frame, textvariable=self.var_full_name, style="Secondary.Header.TLabel")
         lbl_subheader.grid()
 
         # CONTENT frame
@@ -847,65 +899,79 @@ class AddLanguageSkills(ttk.Frame):
         buttons_frame.grid(row=2, column=0, sticky="EW", pady=30)
         buttons_frame.columnconfigure(0, weight=1)
 
-        # go button
-        btn = BLImageButtonLabel(parent=buttons_frame, func=self.write_to_database_test,
-                                 path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/enter_into_database_01.png",
-                                 path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/enter_into_database_02.png")
-        btn.grid()
+        # error message
+        lbl_error_message = ttk.Label(buttons_frame, textvariable=self.error_message, style="Secondary.Error.TLabel")
+        lbl_error_message.grid()
+
+        # next button
+        btn_next = BLImageButtonLabel(parent=buttons_frame, func=self.next_frame,
+                                      path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/next_written_01.png",
+                                      path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/next_written_02.png")
+        btn_next.grid()
 
         # back button
-        btn = BLImageButtonLabel(parent=buttons_frame,
-                                 func=self.collect_data,
-                                 path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/ok_01.png",
-                                 path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/ok_02.png")
-        btn.grid(pady=(20, 10))
+        btn_back = BLImageButtonLabel(parent=buttons_frame, func=lambda: self.controller.show_frame(AddParticipant),
+                                      path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/back_01.png",
+                                      path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/back_02.png")
+        btn_back.grid()
 
-    def insert_into_db(self) -> None:
-        """Insert data into data base"""
+    def next_frame(self) -> None:
+        """Navgiate to next frame"""
 
-        # get the selected participant ID in database
+        if not self.completeness_check():
+            self.error_message.set("Bitte Sprache und Level ausfüllen!")
+            return
 
-        # completeness and correctness check
+        if not self.duplicate_check():
+            self.error_message.set("Bitte jede Sprache nur einmal auswählen!")
+            return
 
-        # ask user to confirm data base entry to be made
+        self.collect_data()
+        self.language_skills_to_participant()
 
-        # write to data base
+        self.clear_all_fields()
+        self.error_message.set("")
+
+        tk.messagebox.showinfo("Great", self.participant)
+
+    def duplicate_check(self) -> bool:
+        """Check whether languages have been entered more than once"""
+
+        language_names = [item[0].get() for item in self.list_of_languages_and_levels]
+        unique_language_names = set(language_names)
+
+        if len(language_names) != len(unique_language_names):
+            return False
+
+        return True
 
     def completeness_check(self) -> bool:
         """Check if all mandatory fields have been filled out"""
-        completeness_check = True
-        # ...
-        return completeness_check
 
-    def correctness_check(self) -> bool:
-        """Check whether fields have been filled in correctly"""
-        # ...
+        if len(self.list_of_languages_and_levels) == 0:
+            return False
+
+        for item in self.list_of_languages_and_levels:
+            language_name = item[0].get()
+            language_level = item[1].get()
+            if language_name == "" or language_level == "":
+                return False
+
         return True
 
-    def confirm_message(self, participant_first_name: str, participant_last_name: str) -> bool:
-        """Ask user to confirm whether participant should be added to database"""
-
-        pass
-
-    def write_to_db(self) -> bool:
-        """Write participant to data base"""
-
-        pass
-
     def clear_all_fields(self) -> None:
-        # for variable in self.variables:
-        #     variable.set("")
-        pass
+        """Clear all existing fields and variables"""
 
-    def show_abort_message(self, name: str) -> None:
-        header = "Kein Datenbankeintrag"
-        message = f"Für {name} wurde kein Datenbankeintrag vorgenommen."
-        MessageWindow(controller=self.controller, message_header=header, message=message, alert=True)
+        self.language_skills = {}
+        self.list_of_languages_and_levels = []
+        self.language_widgets = {}
+        self.widget_count = 0
+        self.error_message.set("")
 
-    def show_success_message(self, name: str) -> None:
-        header = "Datenbankeintrag erfolgreich"
-        message = f"{name} wurde erfolgreich in die Datenbank eingetragen."
-        MessageWindow(controller=self.controller, message_header=header, message=message)
+        for widget in self.languages_frame.winfo_children():
+            widget.destroy()
+
+        self.add_language()
 
     def add_language(self) -> None:
         """Add two dropdown fields for choosing a language and a language level"""
@@ -959,18 +1025,46 @@ class AddLanguageSkills(ttk.Frame):
         for item in self.list_of_languages_and_levels:
             language_name = item[0].get()
             language_level = item[1].get()
-            if language_name != "" and language_name is not None and language_level != "" and language_level is not None:
+            if language_name not in ["", "None"] and language_name is not None and \
+                    language_level not in ["", "None"] and language_level is not None:
                 self.language_skills[language_name] = language_level
 
-    def write_to_database_test(self):
-        id = "80"
-        for language, level in self.language_skills.items():
-            try:
-                self.controller.db.add_language_skill(participant_database_id=id, language=language, level=level)
-            except sqlite3.IntegrityError as err:
-                self.controller.bl_logger.exception(f"Cannot add {language} with {level} to the database for"
-                                                    f" participant with the ID {id}.")
+    def language_skills_to_participant(self) -> bool:
+        """Assign language skills to participant"""
 
-    def refresh(self, participant: Participant = "") -> None:
+        self.participant.language_skills = self.language_skills
+
+    def refresh(self, participant: Participant) -> None:
         """Update the frame"""
         self.participant = participant
+        self.var_full_name.set(self.participant.full_name)
+
+        # self.show_existing_data()
+    #
+    # def get_existing_language_skills(self) -> dict:
+    #     """Show existing data as saved in database"""
+    #
+    #     sql = "SELECT * FROM Sprachkenntnisse WHERE Teilnehmer_ID = 80"
+    #     results = self.controller.db.select_multiple_query(sql)
+    #     existing_skils = {}
+    #     for sqlite3_row in results:
+    #         language_name = sqlite3_row["Sprache"]
+    #         level = sqlite3_row["Level"]
+    #         existing_skils[language_name] = level
+    #
+    #     return existing_skils
+    #
+    # def show_existing_data(self) -> None:
+    #     """Show existing data as saved in database"""
+    #
+    #     # get existing skils
+    #     language_skills = self.get_existing_language_skills()
+    #
+    #     row_counter = 0
+    #     for language_name, level in language_skills.items():
+    #         ttk.Label(self.frame_left, text=language_name, style="Secondary.TLabel").grid(
+    #             row=row_counter, column=0, sticky="E", padx=(0, 10))
+    #         ttk.Label(self.frame_left, text=level, style="Secondary.TLabel").grid(
+    #             row=row_counter, column=1, sticky="W")
+    #
+    #         row_counter += 1

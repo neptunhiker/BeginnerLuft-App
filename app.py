@@ -201,7 +201,7 @@ class BeginnerLuftApp(tk.Tk):
         }
 
         # starting frame
-        self.starting_frame = AddLanguageSkills
+        self.starting_frame = AddParticipant
         if self.starting_frame != Login:
             self.logged_in = True  # automatic log-in for testing purposes only, remove later
 
@@ -209,7 +209,7 @@ class BeginnerLuftApp(tk.Tk):
 
         self.menu()
 
-    def show_frame(self, container):
+    def show_frame(self, container, refresh: bool = False) -> None:
         if self.logged_in or container == Login:
             # run a refresh method of the frame if it has one
             method = getattr(container, "refresh", None)
@@ -234,6 +234,8 @@ class BeginnerLuftApp(tk.Tk):
 
     def nav_to_database_operations(self):
         self.show_frame(dashboard.DatabaseOperationsDashboard)
+
+
         
     def nav_to_password_change(self):
         self.frames[ChangePassword].refresh()

@@ -86,11 +86,13 @@ class Participant(Human):
         return cls(title=title, first_name=first_name, last_name=last_name, street_and_nr=street_and_nr,
                    zip_code=zip_code, city=city, client_id_with_jc=id_with_jc)
 
-    def __str__(self):
+    def __str__(self) -> str:
+        # to be updated
         return f"{self.title} {self.first_name} {self.last_name} {self.street_and_nr} {self.zip_code} {self.city} " \
-               f"Kundennummer: {self.id_with_jc}"
+               f"Kundennummer: {self.id_with_jc} {self.language_skills}"
 
     def __repr__(self) -> str:
+        # to be updated
         return f"{self.__class__.__name__}({self.title}, {self.first_name}, {self.last_name}, {self.street_and_nr}, " \
                f"{self.zip_code}, {self.city}, {self.id_with_jc}, {self.data_base_id})"
 
