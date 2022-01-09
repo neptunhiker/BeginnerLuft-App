@@ -268,6 +268,8 @@ class BeginnerLuftApp(tk.Tk):
         self.style.configure("Bold.Secondary.TLabel", font=bl_fonts.bl_font_bold)
         self.style.configure("Secondary.Header.TLabel", background=bl_colors["bg secondary"],
                              foreground=bl_colors["fg primary"])
+        self.style.configure("Secondary.Title.TLabel", background=bl_colors["bg secondary"],
+                             foreground=bl_colors["fg primary"])
         self.style.configure("Secondary.Error.TLabel", background=bl_colors["bg secondary"],
                              foreground="red", font=bl_fonts.bl_font_error)
         self.style.configure("Secondary.Emphasize.TLabel", background=bl_colors["bg secondary"],

@@ -932,8 +932,6 @@ class AddLanguageSkills(ttk.Frame):
         self.clear_all_fields()
         self.error_message.set("")
 
-        tk.messagebox.showinfo("Great", self.participant)
-
         self.controller.frames[OverviewParticipant].refresh(participant=self.participant)
         self.controller.show_frame(OverviewParticipant)
 
@@ -1081,36 +1079,80 @@ class OverviewParticipant(ttk.Frame):
         self["style"] = "Secondary.TFrame"
         self.controller = controller
         self.participant = None
+        self.columnconfigure((0, 1, 2), weight=1)
+        self.rowconfigure((1, 2), weight=1)
+
+        self.frame_header = ttk.Frame(self, style="Secondary.TFrame")
+        self.frame_header.grid(row=0, column=0, columnspan=3, sticky="EW", pady=50, padx=20)
+        self.frame_header.columnconfigure(0, weight=1)
+        ttk.Label(self.frame_header, text="Zusammenfassung", style="Secondary.Title.TLabel").grid()
+
+        self.frame_personal_data = ttk.Frame(self, style="Border.Secondary.TFrame")
+        self.frame_personal_data.grid(row=1, column=0, sticky="NSEW", padx=20, pady=20)
+        ttk.Label(self.frame_personal_data, text="Persönliche Daten", style="Secondary.Header.TLabel").grid(
+            columnspan=2, padx=10, pady=5)
+
+        self.frame_jobcenter = ttk.Frame(self, style="Border.Secondary.TFrame")
+        self.frame_jobcenter.grid(row=2, column=0, sticky="NSEW", padx=20, pady=20)
+        ttk.Label(self.frame_jobcenter, text="Jobcenter", style="Secondary.Header.TLabel").grid(
+            columnspan=2, padx=10, pady=5)
+
+        self.frame_languages = ttk.Frame(self, style="Border.Secondary.TFrame")
+        self.frame_languages.grid(row=1, column=1, sticky="NSEW", padx=20, pady=20)
+        ttk.Label(self.frame_languages, text="Sprachkenntnisse", style="Secondary.Header.TLabel").grid(
+            columnspan=2, padx=10, pady=5)
+
+        self.frame_work = ttk.Frame(self, style="Border.Secondary.TFrame")
+        self.frame_work.grid(row=2, column=1, sticky="NSEW", padx=20, pady=20)
+        ttk.Label(self.frame_work, text="Arbeitserfahrung", style="Secondary.Header.TLabel").grid(
+            columnspan=2, padx=10, pady=5)
+
+        self.frame_education = ttk.Frame(self, style="Border.Secondary.TFrame")
+        self.frame_education.grid(row=1, column=2, sticky="NSEW", padx=20, pady=20)
+        ttk.Label(self.frame_education, text="Bildungsabschlüsse",
+                  style="Secondary.Header.TLabel").grid(columnspan=2, padx=10, pady=5)
+
+        self.frame_coaching_goals = ttk.Frame(self, style="Border.Secondary.TFrame")
+        self.frame_coaching_goals.grid(row=2, column=2, sticky="NSEW", padx=20, pady=20)
+        ttk.Label(self.frame_coaching_goals, text="Coaching-Ziele", style="Secondary.Header.TLabel").grid(
+            columnspan=2, padx=10, pady=5)
+
+        # BUTTON FRAME
+        self.frame_buttons = ttk.Frame(self, style="Testing.TFrame")
+        self.frame_buttons.grid(row=3, column=0, columnspan=3, sticky="NSEW", padx=20, pady=20)
+        self.frame_buttons.columnconfigure(0, weight=1)
+
+        btn_ok = BLImageButtonLabel(parent=self.frame_buttons, func=lambda: print("ok"),
+                                    path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/ok_01.png",
+                                    path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/ok_02.png")
+        btn_ok.grid()
 
     def refresh(self, participant: Participant) -> None:
         """Refresh the page with client data"""
 
         self.participant = participant
-        attributes = [attr for attr in dir(participant)
-                      if not attr.startswith('__') and not callable(getattr(participant, attr))]
 
         # personal data
         labels = ["Anrede", "Vorname", "Nachname"]
         personal_data = [participant.title, participant.first_name, participant.last_name]
 
-        row_counter = 0
+        row_counter = 1
         for label_text, data in zip(labels, personal_data):
-            ttk.Label(self, text=label_text, style="Secondary.TLabel").grid(
-                row=row_counter, column=0, sticky="E", padx=10)
-            ttk.Label(self, text=data, style="Secondary.TLabel").grid(
+            ttk.Label(self.frame_personal_data, text=label_text, style="Secondary.TLabel").grid(
+                row=row_counter, column=0, sticky="E", padx=10, pady=5)
+            ttk.Label(self.frame_personal_data, text=data, style="Secondary.TLabel").grid(
                 row=row_counter, column=1, sticky="W"
             )
             row_counter += 1
 
         # Language skills
+        row_counter = 1
         for language_name, level in self.participant.language_skills.items():
-            ttk.Label(self, text=language_name, style="Secondary.TLabel").grid(
-                row=row_counter, column=0, sticky="E", padx=10)
-            ttk.Label(self, text=level, style="Secondary.TLabel").grid(
+            ttk.Label(self.frame_languages, text=language_name, style="Secondary.TLabel").grid(
+                row=row_counter, column=0, sticky="E", padx=10, pady=5)
+            ttk.Label(self.frame_languages, text=level, style="Secondary.TLabel").grid(
                 row=row_counter, column=1, sticky="W")
 
             row_counter += 1
-
-
 
         # language skills
