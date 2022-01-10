@@ -1,36 +1,36 @@
-from dataclasses import dataclass, field
-import datetime
+from dataclasses import dataclass
 
 
-@dataclass(order=True)
+@dataclass
 class Workexperience:
-    sort_index: datetime.date = field(init=False, repr=False)
-    start_date: datetime.date
-    end_date: datetime.date
-    description: str
-
-    def __post_init__(self) -> None:
-        self.sort_index = self.start_date
+    industry: str
+    years_of_experience: str
+    leadership_responsibility: bool
 
     def __str__(self) -> str:
-        format = "%Y-%m-%d"
-        return f"Workexperience from {self.start_date.strftime(format)} until {self.end_date.strftime(format)}" \
-               f" - description: {self.description}"
+
+        if self.leadership_responsibility:
+            return f"{self.years_of_experience} experience in the '{self.industry}' " \
+                   f"industry with leadership responsibility"
+        else:
+            return f"{self.years_of_experience} experience in the '{self.industry}' " \
+                   f"industry without leadership responsibility"
+
 
 
 if __name__ == '__main__':
     exp01 = Workexperience(
-        start_date=datetime.date(2019, 12, 13),
-        end_date=datetime.date(2021, 1, 31),
-        description="Mein Job"
+        industry="Bankenwesen",
+        years_of_experience="< 2,5 Jahre",
+        leadership_responsibility=True
     )
 
     exp02 = Workexperience(
-        start_date=datetime.date(2020, 12, 13),
-        end_date=datetime.date(2021, 1, 31),
-        description="Mein Job"
+        industry="Bankenwesen",
+        years_of_experience="< 5 Jahre",
+        leadership_responsibility=False
     )
 
-    print(exp02>exp01)
+    print(exp01)
     print(exp02)
 
