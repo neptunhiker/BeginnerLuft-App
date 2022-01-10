@@ -81,10 +81,17 @@ class Participant(Human):
         street_and_nr = f"{random.choice(streets)} {str(random.randint(1, 123))}"
         zip_code = "12345"
         city = "Berlin"
+        email = f"{first_name}.{last_name}@beispiel.com"
+        cell_phone_nr = "0176 23432x23"
+        driving_license = random.choice((True, False))
+        residency_status = "Duldung"
+        country_of_origin = random.choice(("Syrien", "Afghanistan", "Irak", "Iran"))
         id_with_jc = str(random.randint(1000000000, 9999999999)) + random.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
         return cls(title=title, first_name=first_name, last_name=last_name, street_and_nr=street_and_nr,
-                   zip_code=zip_code, city=city, client_id_with_jc=id_with_jc)
+                   zip_code=zip_code, city=city, email=email, cell_phone_nr=cell_phone_nr,
+                   driving_license=driving_license,
+                   country_of_origin=country_of_origin, residency_status=residency_status, client_id_with_jc=id_with_jc)
 
     def __str__(self) -> str:
         # to be updated
