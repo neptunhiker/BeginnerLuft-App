@@ -6,7 +6,7 @@ from databases.database import Database
 from frames.boilerplate import Boilerplate
 from frames.change_password import ChangePassword
 from frames.database_operations.creating_data import AddParticipant, AddCoach, AddJobcenter, AddLanguageSkills, \
-    OverviewParticipant
+    AddWorkExperience, OverviewParticipant
 from frames.database_operations.reading_data import ReadParticipants, ReadCoaches, ReadJobcenter
 from frames.invoice import Invoice
 from frames.login import Login
@@ -85,6 +85,12 @@ class BeginnerLuftApp(tk.Tk):
             controller=self,
         )
         add_participant_frame.grid(row=0, column=0, sticky="NSEW")
+
+        add_work_experience_frame = AddWorkExperience(
+            parent=self.container,
+            controller=self,
+        )
+        add_work_experience_frame.grid(row=0, column=0, sticky="NSEW")
 
         boilerplate_frame = Boilerplate(
             parent=self.container,
@@ -190,6 +196,7 @@ class BeginnerLuftApp(tk.Tk):
             AddJobcenter: add_jobcenter_frame,
             AddLanguageSkills: add_language_skills,
             AddParticipant: add_participant_frame,
+            AddWorkExperience: add_work_experience_frame,
             Boilerplate: boilerplate_frame,
             ChangePassword: change_pw_frame,
             dashboard.Dashboard: dashboard_frame,

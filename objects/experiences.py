@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Workexperience:
+class WorkExperience:
     industry: str
     years_of_experience: str
     leadership_responsibility: bool
@@ -15,7 +15,6 @@ class Workexperience:
         else:
             return f"{self.years_of_experience} experience in the '{self.industry}' " \
                    f"industry without leadership responsibility"
-
 
 
 if __name__ == '__main__':

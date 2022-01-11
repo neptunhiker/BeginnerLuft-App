@@ -905,8 +905,8 @@ class AddLanguageSkills(ttk.Frame):
         self.clear_all_fields()
         self.error_message.set("")
 
-        self.controller.frames[OverviewParticipant].refresh(participant=self.participant)
-        self.controller.show_frame(OverviewParticipant)
+        self.controller.frames[AddWorkExperience].refresh(participant=self.participant)
+        self.controller.show_frame(AddWorkExperience)
 
     def duplicate_check(self) -> bool:
         """Check whether languages have been entered more than once"""
@@ -1010,7 +1010,7 @@ class AddLanguageSkills(ttk.Frame):
     def language_skills_to_participant(self) -> bool:
         """Assign language skills to participant"""
 
-        self.participant.language_skills = self.language_skills
+        self.participant.work_experiences = self.language_skills
 
     def refresh(self, participant: Participant) -> None:
         """Update the frame"""
@@ -1047,6 +1047,7 @@ class AddLanguageSkills(ttk.Frame):
     #
     #         row_counter += 1
 
+
 class AddWorkExperience(ttk.Frame):
     """A frame that allows to add work experience to the database"""
 
@@ -1060,10 +1061,13 @@ class AddWorkExperience(ttk.Frame):
         self.participant = None
         self.full_name = ""
         self.widget_count = 0
-        self.language_skills = {}
-        self.available_languages = ["Arabisch", "Deutsch", "Englisch", "Farsi", "Italienisch", "Russisch", "Spanisch"]
-        self.language_widgets = {}
-        self.list_of_languages_and_levels = []
+        self.work_experiences = {}
+        self.widgets = {}
+        self.available_industries = ["Bauen", "Dienstleistungen", "Energie",
+                                     "Tourismus", "Industrie", "Land- und Forstwirtschaft", "Handwerk",
+                                     "Transport und Verkehr"]
+        self.available_durations = ["< 1 Jahr", "1 bis 3 Jahre", "3 bis 5 Jahre", "> 5 Jahre"]
+        self.list_of_work_experiences = []
         self.error_message = tk.StringVar()
         self.error_message.set("")
 
@@ -1075,9 +1079,6 @@ class AddWorkExperience(ttk.Frame):
         # create image on canvas
         create_background_image(path_of_image=f"{self.controller.pic_gallery_path}/backgrounds/office01.jpg",
                                 frame=self.frame_left, desired_width=1200)
-
-        # existing language skills
-        # self.show_existing_data()
 
         # RIGHT HAND SIDE
         frame_right = ttk.Frame(self, style="Secondary.TFrame")
@@ -1095,7 +1096,7 @@ class AddWorkExperience(ttk.Frame):
         header_frame.grid(sticky="EW", padx=20, pady=30)
         header_frame.columnconfigure(0, weight=1)
 
-        lbl_header = ttk.Label(header_frame, text="Sprachkenntnisse", style="Secondary.Header.TLabel")
+        lbl_header = ttk.Label(header_frame, text="Arbeitserfahrung", style="Secondary.Header.TLabel")
         lbl_header.grid()
         self.var_full_name = tk.StringVar()
         self.var_full_name.set(self.full_name)
@@ -1109,17 +1110,17 @@ class AddWorkExperience(ttk.Frame):
 
         btn_add = BLImageButtonLabel(
             self.content_frame,
-            self.add_language,
-            path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/add_language_01.png",
-            path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/add_language_02.png",
+            self.add_work_experience,
+            path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/add_work_experience_01.png",
+            path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/add_work_experience_02.png",
         )
         btn_add.grid(pady=(10, 20))
 
-        # LANGUAGES frame
-        self.languages_frame = ttk.Frame(self.content_frame, style="Secondary.TFrame")
-        self.languages_frame.grid()
-        self.add_language(pre_populate=True)  # pre_populate for testing purposes
-        self.add_language(pre_populate=True)
+        # WORK EXPERIENCES frame
+        self.work_experiences_frame = ttk.Frame(self.content_frame, style="Secondary.TFrame")
+        self.work_experiences_frame.grid()
+        self.add_work_experience(pre_populate=True)  # pre_populate for testing purposes
+        self.add_work_experience(pre_populate=True)
 
         # FRAME buttons
         buttons_frame = ttk.Frame(pos_frame, style="Secondary.TFrame")
@@ -1131,13 +1132,15 @@ class AddWorkExperience(ttk.Frame):
         lbl_error_message.grid()
 
         # next button
-        btn_next = BLImageButtonLabel(parent=buttons_frame, func=self.next_frame,
+        btn_next = BLImageButtonLabel(parent=buttons_frame,
+                                      func=self.next_frame,
                                       path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/next_written_01.png",
                                       path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/next_written_02.png")
         btn_next.grid()
 
         # back button
-        btn_back = BLImageButtonLabel(parent=buttons_frame, func=lambda: self.controller.show_frame(AddParticipant),
+        btn_back = BLImageButtonLabel(parent=buttons_frame,
+                                      func=lambda: self.controller.show_frame(AddLanguageSkills),
                                       path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/back_01.png",
                                       path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/back_02.png")
         btn_back.grid()
@@ -1146,15 +1149,13 @@ class AddWorkExperience(ttk.Frame):
         """Navgiate to next frame"""
 
         if not self.completeness_check():
-            self.error_message.set("Bitte Sprache und Level ausfüllen!")
+            self.error_message.set("Bitte Arbeitserfahrung eintragen!")
             return
 
-        if not self.duplicate_check():
-            self.error_message.set("Bitte jede Sprache nur einmal auswählen!")
-            return
+        # duplicate check
 
         self.collect_data()
-        self.language_skills_to_participant()
+        self.work_experience_to_participant()
 
         self.clear_all_fields()
         self.error_message.set("")
@@ -1162,27 +1163,16 @@ class AddWorkExperience(ttk.Frame):
         self.controller.frames[OverviewParticipant].refresh(participant=self.participant)
         self.controller.show_frame(OverviewParticipant)
 
-    def duplicate_check(self) -> bool:
-        """Check whether languages have been entered more than once"""
-
-        language_names = [item[0].get() for item in self.list_of_languages_and_levels]
-        unique_language_names = set(language_names)
-
-        if len(language_names) != len(unique_language_names):
-            return False
-
-        return True
-
     def completeness_check(self) -> bool:
         """Check if all mandatory fields have been filled out"""
 
-        if len(self.list_of_languages_and_levels) == 0:
+        if len(self.list_of_work_experiences) == 0:
             return False
 
-        for item in self.list_of_languages_and_levels:
-            language_name = item[0].get()
-            language_level = item[1].get()
-            if language_name == "" or language_level == "":
+        for item in self.list_of_work_experiences:
+            industry = item[0].get()
+            duration = item[1].get()
+            if industry == "" or duration == "":
                 return False
 
         return True
@@ -1190,86 +1180,88 @@ class AddWorkExperience(ttk.Frame):
     def clear_all_fields(self) -> None:
         """Clear all existing fields and variables"""
 
-        self.language_skills = {}
-        self.list_of_languages_and_levels = []
-        self.language_widgets = {}
+        self.work_experiences = {}
+        self.list_of_work_experiences = []
+        self.widgets = {}
         self.widget_count = 0
         self.error_message.set("")
 
-        for widget in self.languages_frame.winfo_children():
+        for widget in self.work_experiences_frame.winfo_children():
             widget.destroy()
 
-        self.add_language()
+        self.add_work_experience()
 
-    def add_language(self, pre_populate: bool = False) -> None:
-        """Add two dropdown fields for choosing a language and a language level"""
+    def add_work_experience(self, pre_populate: bool = False) -> None:
+        """Add two dropdown fields for choosing an industry and an experience"""
 
-        self.language_widgets[self.widget_count] = [tk.StringVar(), tk.StringVar()]
+        self.widgets[self.widget_count] = [tk.StringVar(), tk.StringVar()]
 
-        lbl_language_name = ttk.Label(self.languages_frame, text="Sprache", style="Secondary.TLabel")
-        lbl_language_name.grid(row=self.widget_count * 2, column=0, sticky="W")
+        lbl_industry = ttk.Label(self.work_experiences_frame, text="Branche", style="Secondary.TLabel")
+        lbl_industry.grid(row=self.widget_count * 2, column=0, sticky="W")
 
-        var_language_name = self.language_widgets[self.widget_count][0]
-        cmb_language_name = ttk.Combobox(self.languages_frame, textvariable=var_language_name)
-        cmb_language_name["values"] = self.available_languages
-        cmb_language_name.grid(row=self.widget_count * 2 + 1, column=0, sticky="W", pady=(0, 10))
+        var_industry = self.widgets[self.widget_count][0]
+        cmb_industry = ttk.Combobox(self.work_experiences_frame, textvariable=var_industry, state="readonly")
+        cmb_industry["values"] = self.available_industries
+        cmb_industry.grid(row=self.widget_count * 2 + 1, column=0, sticky="W", pady=(0, 10))
 
-        lbl_language_level = ttk.Label(self.languages_frame, text="Level", style="Secondary.TLabel")
-        lbl_language_level.grid(row=self.widget_count * 2, column=1, sticky="W", padx=(10, 0))
+        lbl_experience_duration = ttk.Label(self.work_experiences_frame, text="Dauer", style="Secondary.TLabel")
+        lbl_experience_duration.grid(row=self.widget_count * 2, column=1, sticky="W", padx=(10, 0))
 
-        var_language_level = self.language_widgets[self.widget_count][1]
-        cmb_language_level = ttk.Combobox(self.languages_frame, textvariable=var_language_level, state="readonly")
-        cmb_language_level["values"] = ["A1", "A2", "B1", "B2", "C1", "C2", "Muttersprache"]
-        cmb_language_level.grid(row=self.widget_count * 2 + 1, column=1, sticky="W", padx=(10, 10), pady=(0, 10))
+        var_experience_duration = self.widgets[self.widget_count][1]
+        cmb_experience_duration = ttk.Combobox(self.work_experiences_frame, textvariable=var_experience_duration,
+                                               state="readonly")
+        cmb_experience_duration["values"] = self.available_durations
+        cmb_experience_duration.grid(row=self.widget_count * 2 + 1, column=1, sticky="W", padx=(10, 10), pady=(0, 10))
 
-        widgets = [lbl_language_name, lbl_language_level, cmb_language_name, cmb_language_level]
+        widgets = [lbl_industry, lbl_experience_duration, cmb_industry, cmb_experience_duration]
         pos = self.widget_count
-        btn_delete = BLImageButtonLabel(parent=self.languages_frame,
-                                        func=lambda: self.delete_widgets(*widgets, btn_delete, language_pos=pos),
+        btn_delete = BLImageButtonLabel(parent=self.work_experiences_frame,
+                                        func=lambda: self.delete_widgets(*widgets, btn_delete, position=pos),
                                         path_to_file_01=f"{self.controller.pic_gallery_path}/buttons/x_01.png",
                                         path_to_file_02=f"{self.controller.pic_gallery_path}/buttons/x_02.png")
         btn_delete.grid(row=self.widget_count * 2 + 1, column=2, sticky="NW", pady=(0, 10))
 
-        self.list_of_languages_and_levels.append([var_language_name, var_language_level])
+        self.list_of_work_experiences.append([var_industry, var_experience_duration])
 
         self.widget_count += 1
 
         if pre_populate:
-            var_language_name.set(random.choice(("Deutsch", "Englisch", "Farsi", "Russich")))
-            var_language_level.set(random.choice(("A1", "A2", "B1", "B2", "C1", "C2", "Muttersprache")))
+            var_industry.set(random.choice(self.available_industries))
+            var_experience_duration.set(random.choice(self.available_durations))
 
-    def delete_widgets(self, *widgets: Union[ttk.Label, ttk.Combobox, BLImageButtonLabel], language_pos: int) -> None:
+    def delete_widgets(self, *widgets: Union[ttk.Label, ttk.Combobox, BLImageButtonLabel], position: int) -> None:
         """Removes widgets from scree"""
         for widget in widgets:
             widget.destroy()
 
-        # set the language name and level to
-        self.list_of_languages_and_levels[language_pos][0].set(None)
-        self.list_of_languages_and_levels[language_pos][1].set(None)
+        #
+        self.list_of_work_experiences[position][0].set(None)
+        self.list_of_work_experiences[position][1].set(None)
 
-        # remove language from dict of language and skills
-        language_name = self.list_of_languages_and_levels[language_pos][0].get()
-        self.language_skills.pop(language_name, None)
+        # remove languag
+        industry = self.list_of_work_experiences[position][0].get()
+        self.work_experiences.pop(industry, None)
 
     def collect_data(self) -> None:
-        """Write user defined languages and their levels into dictionary"""
+        """Write data for industry and duration into dictionary"""
 
-        for item in self.list_of_languages_and_levels:
-            language_name = item[0].get()
-            language_level = item[1].get()
-            if language_name not in ["", "None"] and language_name is not None and \
-                    language_level not in ["", "None"] and language_level is not None:
-                self.language_skills[language_name] = language_level
+        for item in self.list_of_work_experiences:
+            industry = item[0].get()
+            duration = item[1].get()
+            if industry not in ["", "None"] and industry is not None and \
+                    duration not in ["", "None"] and duration is not None:
+                self.work_experiences[industry] = duration
 
-    def language_skills_to_participant(self) -> bool:
-        """Assign language skills to participant"""
+    def work_experience_to_participant(self) -> bool:
+        """Assign work experience to participant"""
 
-        self.participant.language_skills = self.language_skills
+        self.participant.work_experiences = self.work_experiences
 
     def refresh(self, participant: Participant) -> None:
         """Update the frame"""
         self.participant = participant
         self.var_full_name.set(self.participant.full_name)
+
 
 class OverviewParticipant(ttk.Frame):
     """A frame that gives an overview of data to be written to database"""
@@ -1358,7 +1350,7 @@ class OverviewParticipant(ttk.Frame):
         """Add language skills to the screen"""
 
         row_counter = 1
-        for language_name, level in self.participant.language_skills.items():
+        for language_name, level in self.participant.work_experiences.items():
             ttk.Label(self.frame_languages, text=language_name, style="Bold.Secondary.TLabel").grid(
                 row=row_counter, column=0, sticky="W", padx=10, pady=5)
             ttk.Label(self.frame_languages, text=level, style="Secondary.TLabel").grid(

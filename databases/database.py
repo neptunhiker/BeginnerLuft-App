@@ -2,6 +2,7 @@ from contextlib import closing
 import sqlite3
 from typing import List, Type, Union
 
+from objects.experiences import WorkExperience
 from objects.jobcenter import Jobcenter
 from objects.people import Coach, Employee, Participant
 from objects.training import Training
@@ -58,6 +59,20 @@ class Database:
             self.conn.commit()
 
         print(f"{jobcenter} successfully added to the database.")
+
+    def add_work_experience(self, participant: Participant, work_experience: WorkExperience) -> None:
+        """Insert workexperience data into the data base"""
+
+        sql = "INSERT INTO Arbeitserfahrung ('Teilnehmer-ID', Branche, Dauer, Führungsverantwortung) " \
+              "VALUES (?, ?, ?)"
+
+        self.connect_to_database()
+        with closing(self.conn.cursor()) as cursor:
+            cursor.execute(sql, (participant.data_base_id, work_experience.industry,
+                                 work_experience.years_of_experience, work_experience.leadership_responsibility))
+            self.conn.commit()
+
+        print(f"{work_experience} successfully added to the database for participant {participant.full_name}.")
 
     def add_participant(self, participant: Participant) -> None:
         """Insert participant data into the data base"""
@@ -323,6 +338,16 @@ class Database:
         return Training(name=sqlite3_row["Bezeichnung"],
                         cost_per_training_lesson=cost_per_training_lesson,
                         data_base_id=sqlite3_row["ID"])
+
+    @staticmethod
+    def create_work_experience(sqlite3_row: sqlite3.Row) -> WorkExperience:
+        """Create a work experience object from an sqlite3.Row"""
+
+        return WorkExperience(
+            industry=sqlite3_row["Branche"],
+            years_of_experience=sqlite3_row["Dauer"],
+            leadership_responsibility=sqlite3_row["Führungsverantwortung"]
+        )
 
     @classmethod
     def test_database(cls) -> "Database":
